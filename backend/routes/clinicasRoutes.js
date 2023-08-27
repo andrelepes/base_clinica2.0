@@ -8,7 +8,7 @@ const clinicasController = require('../controllers/clinicasController');
 router.get('/', auth, clinicasController.listClinicas);
 
 // POST para adicionar uma nova clínica
-router.post('/', auth, clinicasController.addClinica);
+router.post('/', clinicasController.addClinica);
 
 // PUT para atualizar uma clínica
 router.put('/:id', auth, clinicasController.updateClinica);
