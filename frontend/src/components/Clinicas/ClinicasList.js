@@ -37,20 +37,12 @@ function ClinicasList() {
         }
     }
 
-    const handleEdit = (id) => {
-        const clinicaToEdit = clinicas.find(c => c.id === id);
-        setEditingClinica(clinicaToEdit);
-        setShowForm(true);
+    const handleAddLinkedPsychologist = () => {
+        // Lógica para adicionar psicólogo(a) vinculado(a)
     }
 
-    const handleDelete = async (id) => {
-        try {
-            await api.delete(`/clinicas/${id}`);
-            fetchClinicas();
-        } catch (error) {
-            console.error("Erro ao deletar clínica:", error);
-            alert("Ocorreu um erro ao deletar a clínica.");
-        }
+    const handleAddLinkedSecretary = () => {
+        // Lógica para adicionar secretário(a) vinculado(a)
     }
 
     return (
@@ -58,6 +50,8 @@ function ClinicasList() {
             <h2>Clínica</h2>
 
             {!showForm && <button onClick={() => setShowForm(true)}>Adicionar Nova Clínica</button>}
+            {!showForm && <button onClick={handleAddLinkedPsychologist}>Adicionar Psicólogo(a) Vinculado(a)</button>}
+            {!showForm && <button onClick={handleAddLinkedSecretary}>Adicionar Secretário(a) Vinculado(a)</button>}
 
             {showForm && <AddClinicaForm onFormSubmit={handleNewClinica} initialData={editingClinica} />}
 
