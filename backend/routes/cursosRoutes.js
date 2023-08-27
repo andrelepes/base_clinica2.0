@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./database');
+const db = require('../../database');
 const { check, validationResult } = require('express-validator');
 const moment = require('moment'); 
 

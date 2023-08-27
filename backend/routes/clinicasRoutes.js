@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./database');
-const auth = require('./authMiddleware');
+const db = require('../../database');
+const auth = require('../../authMiddleware');
 
 // GET para listar todas as clínicas
 router.get('/', auth, async (req, res) => {

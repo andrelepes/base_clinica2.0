@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./database');
-const auth = require('./authMiddleware'); // Importando o middleware de autenticação
+const db = require('../../database');
+const auth = require('../../authMiddleware'); // Importando o middleware de autenticação
 
 // GET todos os pacientes ativos
 router.get('/', (req, res) => {

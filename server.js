@@ -20,13 +20,13 @@ app.get('/test', (req, res) => {
 });
 
 // Importando as rotas
-const pacientesRoutes = require('./pacientesRoutes');
-const psicologosRoutes = require('./psicologosRoutes');
-const agendamentosRoutes = require('./agendamentosRoutes');
-const cursosRoutes = require('./cursosRoutes');
-const usuariosRoutes = require('./usuariosRoutes');
-const prontuariosRoutes = require('./prontuariosRoutes');
-const clinicasRoutes = require('./clinicasRoutes'); // Importando as rotas de clínicas
+const pacientesRoutes = require('./backend/routes/pacientesRoutes');
+const psicologosRoutes = require('./backend/routes/psicologosRoutes');
+const agendamentosRoutes = require('./backend/routes/agendamentosRoutes');
+const cursosRoutes = require('./backend/routes/cursosRoutes');
+const usuariosRoutes = require('./backend/routes/usuariosRoutes');
+const prontuariosRoutes = require('./backend/routes/prontuariosRoutes');
+const clinicasRoutes = require('./backend/routes/clinicasRoutes');
 
 // Definindo as rotas
 app.use('/api/pacientes', authMiddleware, pacientesRoutes);

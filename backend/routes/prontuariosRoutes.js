@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./database');
-const auth = require('./authMiddleware'); // Importe o middleware de autenticação
+const db = require('../../database');
+const auth = require('../../authMiddleware'); // Importe o middleware de autenticação
 
 router.post('/', auth, async (req, res) => {
     const { paciente_id, psicologo_id, data, notas_sessao } = req.body;
