@@ -26,6 +26,14 @@ const ClinicaSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    psicologosVinculados: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Usuario'
+    }],
+    secretariosVinculados: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Usuario'
+    }]
     // Outros campos relevantes
 });
 
