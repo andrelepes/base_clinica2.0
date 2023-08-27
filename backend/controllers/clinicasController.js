@@ -1,31 +1,21 @@
-const db = require('../database');
+const Clinica = require('../models/Clinica');
 
-// Função para listar todas as clínicas
-exports.listClinicas = async (req, res) => {
-    // Implemente a lógica para listar todas as clínicas
-};
-
-// Função para adicionar uma nova clínica
+// Adicionar uma nova clínica
 exports.addClinica = async (req, res) => {
-    // Implemente a lógica para adicionar uma nova clínica
+  // Implementar lógica para adicionar uma nova clínica
 };
 
-// Função para atualizar uma clínica existente
+// Atualizar informações da clínica
 exports.updateClinica = async (req, res) => {
-    // Implemente a lógica para atualizar uma clínica existente
+  // Implementar lógica para atualizar uma clínica existente
 };
 
-// Função para remover uma clínica
+// Deletar uma clínica
 exports.deleteClinica = async (req, res) => {
-    // Implemente a lógica para remover uma clínica
+  // Implementar lógica para deletar uma clínica
 };
 
-// Função para adicionar um psicólogo vinculado
-exports.addLinkedPsychologist = async (req, res) => {
-    // Implemente a lógica para adicionar um psicólogo vinculado
-};
-
-// Função para adicionar um secretário vinculado
-exports.addLinkedSecretary = async (req, res) => {
-    // Implemente a lógica para adicionar um secretário vinculado
+// Adicionar psicólogos e secretários vinculados
+exports.addVinculados = async (req, res) => {
+  // Implementar lógica para adicionar psicólogos e secretários vinculados a uma clínica
 };
