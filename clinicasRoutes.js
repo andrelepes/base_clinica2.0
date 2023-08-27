@@ -1,84 +1,60 @@
 const express = require('express');
 const router = express.Router();
 const db = require('./database');
-const auth = require('./authMiddleware'); // Importando o middleware de autenticação
+const auth = require('./authMiddleware');
 
-// GET todas as clínicas ativas
-router.get('/', auth, (req, res) => {
-    db.any('SELECT * FROM clinicas WHERE status = $1', ['ativo'])
-        .then(data => {
-            res.json(data);
-        })
-        .catch(error => {
-            console.log(error);
-            res.status(500).json({ error });
-        });
-});
-
-// GET uma clínica específica (apenas se estiver ativa)
-router.get('/:id', auth, (req, res) => {
-    const clinicaId = req.params.id;
-    db.one('SELECT * FROM clinicas WHERE id = $1 AND status = $2', [clinicaId, 'ativo'])
-        .then(data => {
-            res.json(data);
-        })
-        .catch(error => {
-            console.log(error);
-            res.status(500).json({ error });
-        });
-});
-
-// POST para criar uma nova clínica
-router.post('/', auth, (req, res) => {
-    if (req.user.funcao !== 'responsavelTecnico') {
-        return res.status(403).json({ msg: 'Apenas o responsável técnico pode adicionar uma nova clínica' });
+// GET para listar todas as clínicas
+router.get('/', auth, async (req, res) => {
+    // Verifique se o usuário é do tipo 'clínica'
+    if (req.user.tipoUsuario !== 'Clinica') {
+        return res.status(403).json({ msg: 'Apenas clínicas podem listar clínicas' });
     }
-    const { nome, endereco, telefone, email, senha } = req.body;
+    // Lógica para listar clínicas
+});
 
-    db.none('INSERT INTO clinicas (nome, endereco, telefone, email, senha) VALUES ($1, $2, $3, $4, $5)', 
-            [nome, endereco, telefone, email, senha])
-        .then(() => {
-            res.json({ message: 'Clínica adicionada com sucesso!' });
-        })
-        .catch(error => {
-            console.log(error);
-            res.status(500).json({ error });
-        });
+// POST para adicionar uma nova clínica
+router.post('/', auth, (req, res) => {
+    // Verifique se o usuário é do tipo 'clínica'
+    if (req.user.tipoUsuario !== 'Clinica') {
+        return res.status(403).json({ msg: 'Apenas clínicas podem adicionar clínicas' });
+    }
+    // Lógica para adicionar clínica
 });
 
 // PUT para atualizar uma clínica
 router.put('/:id', auth, (req, res) => {
-    if (req.user.funcao !== 'responsavelTecnico') {
-        return res.status(403).json({ msg: 'Apenas o responsável técnico pode atualizar uma clínica' });
+    // Verifique se o usuário é do tipo 'clínica'
+    if (req.user.tipoUsuario !== 'Clinica') {
+        return res.status(403).json({ msg: 'Apenas clínicas podem atualizar clínicas' });
     }
-    const clinicaId = req.params.id;
-    const { nome, endereco, telefone, email, senha } = req.body;
-    
-    db.none('UPDATE clinicas SET nome = $1, endereco = $2, telefone = $3, email = $4, senha = $5 WHERE id = $6', [nome, endereco, telefone, email, senha, clinicaId])
-        .then(() => {
-            res.json({ message: 'Clínica atualizada com sucesso!' });
-        })
-        .catch(error => {
-            console.log(error);
-            res.status(500).json({ error });
-        });
+    // Lógica para atualizar clínica
 });
 
-// DELETE para marcar uma clínica como inativa
+// DELETE para remover uma clínica
 router.delete('/:id', auth, (req, res) => {
-    if (req.user.funcao !== 'responsavelTecnico') {
-        return res.status(403).json({ msg: 'Apenas o responsável técnico pode inativar uma clínica' });
+    // Verifique se o usuário é do tipo 'clínica'
+    if (req.user.tipoUsuario !== 'Clinica') {
+        return res.status(403).json({ msg: 'Apenas clínicas podem remover clínicas' });
     }
-    const clinicaId = req.params.id;
-    
-    db.none('UPDATE clinicas SET status = $1 WHERE id = $2', ['inativo', clinicaId])
-        .then(() => {
-            res.json({ message: 'Clínica marcada como inativa!' });
-        })
-        .catch(error => {
-            console.log(error);
-            res.status(500).json({ error });
-        });
+    // Lógica para remover clínica
+});
+
+// POST para adicionar um psicólogo vinculado
+router.post('/add-linked-psychologist', auth, (req, res) => {
+    // Verifique se o usuário é do tipo 'clínica'
+    if (req.user.tipoUsuario !== 'Clinica') {
+        return res.status(403).json({ msg: 'Apenas clínicas podem adicionar psicólogos vinculados' });
+    }
+    // Lógica para adicionar psicólogo vinculado
+});
+
+// POST para adicionar um secretário vinculado
+router.post('/add-linked-secretary', auth, (req, res) => {
+    // Verifique se o usuário é do tipo 'clínica'
+    if (req.user.tipoUsuario !== 'Clinica') {
+        return res.status(403).json({ msg: 'Apenas clínicas podem adicionar secretários vinculados' });
+    }
+    // Lógica para adicionar secretário vinculado
 });
 
 module.exports = router;
