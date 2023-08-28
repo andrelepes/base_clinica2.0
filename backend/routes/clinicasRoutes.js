@@ -17,9 +17,9 @@ router.put('/:id', auth, clinicasController.updateClinica);
 router.delete('/:id', auth, clinicasController.deleteClinica);
 
 // POST para adicionar um psicólogo vinculado
-router.post('/add-linked-psychologist', auth, clinicasController.addVinculados);
+router.post('/add-linked-psychologist', auth, clinicasController.addLinkedPsychologist);  // Corrigido
 
 // POST para adicionar um secretário vinculado
-router.post('/add-linked-secretary', auth, clinicasController.addVinculados);
+router.post('/add-linked-secretary', auth, clinicasController.addLinkedSecretary);  // Corrigido
 
 module.exports = router;
