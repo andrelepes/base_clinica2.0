@@ -1,6 +1,11 @@
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
+    // Permitir a rota de criação de nova clínica sem autenticação
+    if (req.path === '/api/clinicas' && req.method === 'POST') {
+        return next();
+    }
+
     let token = req.header('x-auth-token');
     console.log("Token recebido:", token);  // Adicionado para depuração
 
