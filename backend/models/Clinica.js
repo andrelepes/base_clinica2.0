@@ -1,24 +1,24 @@
 const db = require('../../database'); 
 
 const Clinica = {
-  // Adicionar uma nova clínica
-  add: (clinica) => {
+// Adicionar uma nova clínica
+add: (clinica) => {
     const query = `
-      INSERT INTO clinicas(nome, tipoUsuario, cpfCnpj, telefone, cep, endereco)
-      VALUES($1, $2, $3, $4, $5, $6)
+      INSERT INTO clinicas(nome, tipoUsuario, cpfCnpj, telefone, cep, endereco, email)
+      VALUES($1, $2, $3, $4, $5, $6, $7)
       RETURNING id;
     `;
-    return db.one(query, [clinica.nome, clinica.tipoUsuario, clinica.cpfCnpj, clinica.telefone, clinica.cep, clinica.endereco]);
+    return db.one(query, [clinica.nome, clinica.tipoUsuario, clinica.cpfCnpj, clinica.telefone, clinica.cep, clinica.endereco, clinica.email]);
   },
   
-  // Atualizar uma clínica existente
-  update: (id, clinica) => {
+// Atualizar uma clínica existente
+update: (id, clinica) => {
     const query = `
       UPDATE clinicas
-      SET nome = $1, tipoUsuario = $2, cpfCnpj = $3, telefone = $4, cep = $5, endereco = $6
-      WHERE id = $7;
+      SET nome = $1, tipoUsuario = $2, cpfCnpj = $3, telefone = $4, cep = $5, endereco = $6, email = $7
+      WHERE id = $8;
     `;
-    return db.none(query, [clinica.nome, clinica.tipoUsuario, clinica.cpfCnpj, clinica.telefone, clinica.cep, clinica.endereco, id]);
+    return db.none(query, [clinica.nome, clinica.tipoUsuario, clinica.cpfCnpj, clinica.telefone, clinica.cep, clinica.endereco, clinica.email, id]);
   },
   
   // Deletar uma clínica
