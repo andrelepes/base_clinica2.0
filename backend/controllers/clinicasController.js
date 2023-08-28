@@ -1,5 +1,15 @@
 const Clinica = require('../models/Clinica');
 
+// Listar todas as clínicas
+exports.listClinicas = async (req, res) => {
+    try {
+      const clinicas = await Clinica.find();
+      res.status(200).json(clinicas);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  };
+  
 // Adicionar uma nova clínica
 exports.addClinica = async (req, res) => {
   try {
