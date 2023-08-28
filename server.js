@@ -16,6 +16,7 @@ app.use(bodyParser.json());
 
 // Rota de teste
 app.get('/test', (req, res) => {
+    console.log("Rota de teste acessada");  // Nova mensagem de depuração
     res.send('Test route');
 });
 

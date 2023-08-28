@@ -1,8 +1,9 @@
 const db = require('../../database'); 
 
 const Clinica = {
-// Adicionar uma nova clínica
-add: (clinica) => {
+  // Adicionar uma nova clínica
+  add: (clinica) => {
+    console.log("Adicionando nova clínica ao banco de dados");  // Nova mensagem de depuração
     const query = `
       INSERT INTO clinicas(nome, tipoUsuario, cpfCnpj, telefone, cep, endereco, email)
       VALUES($1, $2, $3, $4, $5, $6, $7)
@@ -11,8 +12,9 @@ add: (clinica) => {
     return db.one(query, [clinica.nome, clinica.tipoUsuario, clinica.cpfCnpj, clinica.telefone, clinica.cep, clinica.endereco, clinica.email]);
   },
   
-// Atualizar uma clínica existente
-update: (id, clinica) => {
+  // Atualizar uma clínica existente
+  update: (id, clinica) => {
+    console.log(`Atualizando clínica com ID ${id}`);  // Nova mensagem de depuração
     const query = `
       UPDATE clinicas
       SET nome = $1, tipoUsuario = $2, cpfCnpj = $3, telefone = $4, cep = $5, endereco = $6, email = $7
@@ -23,6 +25,7 @@ update: (id, clinica) => {
   
   // Deletar uma clínica
   delete: (id) => {
+    console.log(`Deletando clínica com ID ${id}`);  // Nova mensagem de depuração
     const query = `
       DELETE FROM clinicas WHERE id = $1;
     `;
@@ -31,6 +34,7 @@ update: (id, clinica) => {
   
   // Adicionar um psicólogo vinculado a uma clínica
   addLinkedPsychologist: (clinicaId, psychologistId) => {
+    console.log(`Vinculando psicólogo com ID ${psychologistId} à clínica com ID ${clinicaId}`);  // Nova mensagem de depuração
     const query = `
       INSERT INTO linked_psychologists(clinica_id, psychologist_id)
       VALUES($1, $2);
@@ -40,6 +44,7 @@ update: (id, clinica) => {
   
   // Adicionar um secretário vinculado a uma clínica
   addLinkedSecretary: (clinicaId, secretaryId) => {
+    console.log(`Vinculando secretário com ID ${secretaryId} à clínica com ID ${clinicaId}`);  // Nova mensagem de depuração
     const query = `
       INSERT INTO linked_secretaries(clinica_id, secretary_id)
       VALUES($1, $2);
