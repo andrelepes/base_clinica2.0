@@ -12,6 +12,7 @@ exports.listClinicas = async (req, res) => {
   
 // Adicionar uma nova clínica
 exports.addClinica = async (req, res) => {
+    console.log("Entrou no controlador para adicionar uma nova clínica.");  // Adicione esta linha
     try {
         console.log("Adicionando uma nova clínica");  // Nova mensagem de depuração
         const newClinica = await Clinica.add(req.body);
