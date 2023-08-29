@@ -5,11 +5,11 @@ const Clinica = {
     add: (clinica) => {
         console.log("Tentando adicionar nova clínica ao banco de dados.");  // Mensagem de depuração
         const query = `
-            INSERT INTO clinicas(nome, cpfCnpj, telefone, cep, endereco, email)
-            VALUES($1, $2, $3, $4, $5, $6)
+            INSERT INTO clinicas(nome, cpfCnpj, telefone, cep, endereco, email, tipoUsuario)
+            VALUES($1, $2, $3, $4, $5, $6, $7)
             RETURNING id;
         `;
-        return db.one(query, [clinica.nome, clinica.cpfCnpj, clinica.telefone, clinica.cep, clinica.endereco, clinica.email]);
+        return db.one(query, [clinica.nome, clinica.cpfCnpj, clinica.telefone, clinica.cep, clinica.endereco, clinica.email, clinica.tipoUsuario]);
     },
   
     // Atualizar uma clínica existente
