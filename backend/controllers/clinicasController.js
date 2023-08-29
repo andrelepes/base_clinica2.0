@@ -12,10 +12,9 @@ exports.listClinicas = async (req, res) => {
   
 // Adicionar uma nova clínica
 exports.addClinica = async (req, res) => {
-    console.log("Entrou no controlador para adicionar uma nova clínica.");  // Adicione esta linha
     try {
-        console.log("Adicionando uma nova clínica");  // Nova mensagem de depuração
-        const newClinica = await Clinica.add(req.body);
+        const { nome, cpfCnpj, telefone, cep, endereco, email, tipoUsuario } = req.body;
+        const newClinica = await Clinica.add({ nome, cpfCnpj, telefone, cep, endereco, email, tipoUsuario });
         res.status(201).json(newClinica);
     } catch (err) {
         res.status(500).json({ error: err.message });
