@@ -7,9 +7,6 @@ const RegistrationComponent = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [perfil, setPerfil] = useState(''); // Novo campo Perfil
-  const [tipoUsuario, settipoUsuario] = useState('');
-  const [clinicaId, setClinicaId] = useState('');
-  const [clinicaSenha, setClinicaSenha] = useState('');
 
   const navigate = useNavigate();
 
