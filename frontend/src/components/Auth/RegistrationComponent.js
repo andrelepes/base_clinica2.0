@@ -12,10 +12,17 @@ const RegistrationComponent = () => {
 
   const handleRegister = async () => {
     try {
-      const response = await api.post('/usuarios/registrar', { nome, email, senha: password, tipoUsuario }); // Atualizado
+      let payload = { nome, email, senha: password, tipoUsuario };
+  
+      // Se o tipo de usuário necessita de um clinicaId, adicione-o ao payload
+      if (['Psicologo Vinculado', 'Secretario Vinculado'].includes(tipoUsuario)) {
+        payload = { ...payload, clinica_id: clinicaId };
+      }
+  
+      const response = await api.post('/usuarios/registrar', payload);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('username', nome);
-
+  
       alert('Registro bem-sucedido! Você será redirecionado para a página de login.');
       navigate('/login');
     } catch (error) {
@@ -23,6 +30,7 @@ const RegistrationComponent = () => {
       alert('Falha no registro. Por favor, tente novamente.');
     }
   };
+  
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
