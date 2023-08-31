@@ -7,7 +7,7 @@ const RegistrationComponent = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [tipoUsuario, settipoUsuario] = useState('');
-  const [clinicaId, setClinicaId] = useState(''); // Adicionado novamente
+  const [clinicaId] = useState('');
 
   const navigate = useNavigate();
 
