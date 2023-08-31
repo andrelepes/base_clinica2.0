@@ -55,7 +55,7 @@ router.post('/login', async (req, res) => {
         const payload = {
             user: {
                 id: usuario.id,
-                funcao: usuario.funcao,
+                tipoUsuario: usuario.tipoUsuario,
                 clinica_id: usuario.clinica_id
             }
         };
@@ -70,10 +70,10 @@ router.post('/login', async (req, res) => {
 // Registrar novo usuário
 router.post('/registrar', async (req, res) => {
     console.log("Corpo da requisição:", req.body);
-    const { nome, email, senha, funcao, clinica_id, clinicaSenha } = req.body;
+    const { nome, email, senha, tipoUsuario, clinica_id, clinicaSenha } = req.body;
 
     // Verificar se todos os campos necessários estão presentes
-    if (!nome || !email || !senha || !funcao || !clinica_id) {
+    if (!nome || !email || !senha || !tipoUsuario || !clinica_id) {
         return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
     }
 
@@ -84,8 +84,8 @@ router.post('/registrar', async (req, res) => {
             return res.status(400).json({ message: 'E-mail já registrado' });
         }
 
-        // Se o usuário é um "Responsável Técnico", verifique a senha da clínica
-        if (funcao === 'Responsável Técnico') {
+        // Se o usuário é um "Secretario", verifique a senha da clínica
+        if (tipoUsuario === 'Secretario') {
             const clinica = await db.oneOrNone('SELECT * FROM clinicas WHERE id = $1', [clinica_id]);
             if (clinica && clinica.senha !== clinicaSenha) {
                 return res.status(400).json({ message: 'Senha da clínica inválida' });
@@ -97,15 +97,15 @@ router.post('/registrar', async (req, res) => {
         const senhaCriptografada = await bcrypt.hash(senha, salt);
 
         // Insira o novo usuário no banco de dados
-        await db.none('INSERT INTO usuarios (nome, email, senha, funcao, clinica_id) VALUES ($1, $2, $3, $4, $5)',
-            [nome, email, senhaCriptografada, funcao, clinica_id]);
+        await db.none('INSERT INTO usuarios (nome, email, senha, tipoUsuario, clinica_id) VALUES ($1, $2, $3, $4, $5)',
+            [nome, email, senhaCriptografada, tipoUsuario, clinica_id]);
 
         // Criar token JWT com informações adicionais
         const payload = {
             user: {
                 id: email,
                 nome: nome,
-                funcao: funcao,
+                tipoUsuario: tipoUsuario,
                 clinica_id: clinica_id
             }
         };

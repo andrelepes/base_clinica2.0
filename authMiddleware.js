@@ -25,7 +25,7 @@ module.exports = (req, res, next) => {
 
     // Decode the user information and role
     req.user = decoded.user;
-    req.funcao = decoded.funcao;  // Updated: Role of the user
+    req.tipoUsuario = decoded.tipoUsuario; 
     req.clinicaId = decoded.clinicaId; // Clinic ID
 
     next();

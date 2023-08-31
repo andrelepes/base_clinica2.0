@@ -7,7 +7,7 @@ const RegistrationComponent = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [perfil, setPerfil] = useState(''); // Novo campo Perfil
-  const [funcao, setFuncao] = useState('');
+  const [tipoUsuario, settipoUsuario] = useState('');
   const [clinicaId, setClinicaId] = useState('');
   const [clinicaSenha, setClinicaSenha] = useState('');
 
@@ -15,7 +15,7 @@ const RegistrationComponent = () => {
 
   const handleRegister = async () => {
     try {
-      const response = await api.post('/usuarios/registrar', { nome, email, senha: password, perfil, funcao, clinica_id: clinicaId, clinicaSenha }); // Adicionado perfil
+      const response = await api.post('/usuarios/registrar', { nome, email, senha: password, perfil, tipoUsuario, clinica_id: clinicaId, clinicaSenha }); // Adicionado perfil
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('username', nome);
 
