@@ -9,7 +9,37 @@ exports.listClinicas = async (req, res) => {
         res.status(500).json({ erro: err.message });
     }
 };
-  
+
+// Listar informações da clínica por ID
+exports.getClinicaById = async (req, res) => {
+    try {
+        const clinica = await Clinica.getById(req.params.id);
+        res.status(200).json(clinica);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+};
+
+// Listar psicólogos vinculados a uma clínica
+exports.listLinkedPsychologists = async (req, res) => {
+    try {
+        const psychologists = await Clinica.listLinkedPsychologists(req.params.clinicaId);
+        res.status(200).json(psychologists);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+};
+
+// Listar secretários vinculados a uma clínica
+exports.listLinkedSecretaries = async (req, res) => {
+    try {
+        const secretaries = await Clinica.listLinkedSecretaries(req.params.clinicaId);
+        res.status(200).json(secretaries);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+};
+
 // Adicionar uma nova clínica
 exports.addClinica = async (req, res) => {
     try {
@@ -22,7 +52,6 @@ exports.addClinica = async (req, res) => {
         }
 
         // Logic to generate clinica_id
-        // This is just a placeholder. You will need to implement this logic based on your database schema.
         const clinica_id = await Clinica.generateClinicaId();
 
         const novaClinica = await Clinica.add({ nome, cpfCnpj, telefone, cep, endereco, email, tipoUsuario, clinica_id });
