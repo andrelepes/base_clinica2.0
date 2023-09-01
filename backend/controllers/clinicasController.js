@@ -21,7 +21,11 @@ exports.addClinica = async (req, res) => {
             return res.status(400).json({ mensagem: 'Campos obrigatórios faltando' });
         }
 
-        const novaClinica = await Clinica.add({ nome, cpfCnpj, telefone, cep, endereco, email, tipoUsuario });
+        // Logic to generate clinica_id
+        // This is just a placeholder. You will need to implement this logic based on your database schema.
+        const clinica_id = await Clinica.generateClinicaId();
+
+        const novaClinica = await Clinica.add({ nome, cpfCnpj, telefone, cep, endereco, email, tipoUsuario, clinica_id });
         res.status(201).json(novaClinica);
     } catch (err) {
         console.log('Erro:', err);

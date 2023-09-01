@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
-const db = require('../database'); // Adicionei esta linha para o acesso ao banco de dados
+const db = require('../../database'); // Adicionei esta linha para o acesso ao banco de dados
 require('dotenv').config();
 
 // Configuração do Nodemailer com OAuth2
@@ -73,8 +73,9 @@ router.post('/registrar', async (req, res) => {
     console.log("Corpo da requisição:", req.body);
     const { nome, email, senha, tipoUsuario, clinica_id } = req.body;
 
-    if (!nome || !email || !senha || !tipoUsuario || !clinica_id) {
-        return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
+    // Validação de campos obrigatórios
+    if (!nome || !email || !senha || !tipoUsuario) {
+        return res.status(400).json({ message: 'Campos obrigatórios faltando' });
     }
 
     try {
@@ -82,16 +83,25 @@ router.post('/registrar', async (req, res) => {
             return res.status(400).json({ message: 'E-mail já registrado' });
         }
 
-
         // Criptografe a senha
         const salt = await bcrypt.genSalt(10);
         const senhaCriptografada = await bcrypt.hash(senha, salt);
 
-        await Usuarios.inserirUsuario(nome, email, senhaCriptografada, tipoUsuario, clinica_id);
+        let clinicaIdToUse = clinica_id;
+
+        // Se o usuário é uma clínica, crie um novo clinica_id (aqui você pode chamar uma função para fazer isso)
+        if (tipoUsuario === 'Clinica' && !clinica_id) {
+            // Aqui você pode inserir a lógica para criar um novo clinica_id
+            // Por exemplo, inserir uma nova clínica no banco de dados e obter o ID gerado
+            const novaClinica = await db.one('INSERT INTO clinicas (nome, email, tipoUsuario) VALUES ($1, $2, $3) RETURNING id', [nome, email, tipoUsuario]);
+            clinicaIdToUse = novaClinica.id;
+        }
+
+        await Usuarios.inserirUsuario(nome, email, senhaCriptografada, tipoUsuario, clinicaIdToUse);
 
         // Insira o novo usuário no banco de dados
         await db.none('INSERT INTO usuarios (nome, email, senha, tipoUsuario, clinica_id) VALUES ($1, $2, $3, $4, $5)',
-            [nome, email, senhaCriptografada, tipoUsuario, clinica_id]);
+            [nome, email, senhaCriptografada, tipoUsuario, clinicaIdToUse]);
 
         // Criar token JWT com informações adicionais
         const payload = {
@@ -99,7 +109,7 @@ router.post('/registrar', async (req, res) => {
                 id: email,
                 nome: nome,
                 tipoUsuario: tipoUsuario,
-                clinica_id: clinica_id
+                clinica_id: clinicaIdToUse
             }
         };
         const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });

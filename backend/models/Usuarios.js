@@ -1,4 +1,4 @@
-const db = require('../database'); // Ajuste o caminho conforme necessário
+const db = require('../../database'); // Ajuste o caminho conforme necessário
 
 class Usuarios {
   // Método para verificar se um e-mail já está registrado
