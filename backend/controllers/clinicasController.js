@@ -17,8 +17,8 @@ exports.addClinica = async (req, res) => {
         const { nome, cpfCnpj, telefone, cep, endereco, email, tipoUsuario } = req.body;
 
         // Verificação de campos obrigatórios
-        if (!nome || !cpfCnpj || !telefone || !cep || !endereco || !email || !tipoUsuario) {
-            return res.status(400).json({ mensagem: 'Todos os campos são obrigatórios' });
+        if (!nome || !email || !tipoUsuario) {
+            return res.status(400).json({ mensagem: 'Campos obrigatórios faltando' });
         }
 
         const novaClinica = await Clinica.add({ nome, cpfCnpj, telefone, cep, endereco, email, tipoUsuario });
