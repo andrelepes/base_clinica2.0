@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext } from 'react';
 
 // Criar o contexto
-const ClinicaContext = createContext();
+export const ClinicaContext = createContext();  // <-- Adicionei o export aqui
 
 // Componente provedor
 export const ClinicaProvider = ({ children }) => {
