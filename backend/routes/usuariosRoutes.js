@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../../database');
+const Usuarios = require('../models/Usuarios');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
-require('dotenv').config(); // Para carregar as variáveis de ambiente do .env
+const db = require('../database'); // Adicionei esta linha para o acesso ao banco de dados
+require('dotenv').config();
 
 // Configuração do Nodemailer com OAuth2
 const transporter = nodemailer.createTransport({
@@ -70,31 +71,23 @@ router.post('/login', async (req, res) => {
 // Registrar novo usuário
 router.post('/registrar', async (req, res) => {
     console.log("Corpo da requisição:", req.body);
-    const { nome, email, senha, tipoUsuario, clinica_id, clinicaSenha } = req.body;
+    const { nome, email, senha, tipoUsuario, clinica_id } = req.body;
 
-    // Verificar se todos os campos necessários estão presentes
     if (!nome || !email || !senha || !tipoUsuario || !clinica_id) {
         return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
     }
 
     try {
-        // Verifique se o e-mail já está registrado
-        const usuarioExistente = await db.oneOrNone('SELECT * FROM usuarios WHERE email = $1', [email]);
-        if (usuarioExistente) {
+        if (await Usuarios.emailJaRegistrado(email)) {
             return res.status(400).json({ message: 'E-mail já registrado' });
         }
 
-        // Se o usuário é um "Secretario", verifique a senha da clínica
-        if (tipoUsuario === 'Secretario') {
-            const clinica = await db.oneOrNone('SELECT * FROM clinicas WHERE id = $1', [clinica_id]);
-            if (clinica && clinica.senha !== clinicaSenha) {
-                return res.status(400).json({ message: 'Senha da clínica inválida' });
-            }
-        }
 
         // Criptografe a senha
         const salt = await bcrypt.genSalt(10);
         const senhaCriptografada = await bcrypt.hash(senha, salt);
+
+        await Usuarios.inserirUsuario(nome, email, senhaCriptografada, tipoUsuario, clinica_id);
 
         // Insira o novo usuário no banco de dados
         await db.none('INSERT INTO usuarios (nome, email, senha, tipoUsuario, clinica_id) VALUES ($1, $2, $3, $4, $5)',
