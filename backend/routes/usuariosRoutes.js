@@ -85,27 +85,31 @@ router.post('/registrar', async (req, res) => {
 
         let clinicaIdToUse = clinica_id;
 
-        // Se o usuário é uma clínica, crie um novo clinica_id (aqui você pode chamar uma função para fazer isso)
+        // Se o usuário é uma clínica, crie um novo clinica_id
         if (tipoUsuario === 'Clinica' && !clinica_id) {
             const novaClinica = await db.one('INSERT INTO clinicas (nome, email, tipoUsuario) VALUES ($1, $2, $3) RETURNING id', [nome, email, tipoUsuario]);
             clinicaIdToUse = novaClinica.id;
         }
 
         // Use a função inserirUsuario para inserir o novo usuário
-        await Usuarios.inserirUsuario(nome, email, senhaCriptografada, tipoUsuario, clinicaIdToUse);
+        const resultado = await Usuarios.inserirUsuario(nome, email, senhaCriptografada, tipoUsuario, clinicaIdToUse);
 
-        // Criar token JWT com informações adicionais
-        const payload = {
-            user: {
-                id: email,
-                nome: nome,
-                tipoUsuario: tipoUsuario,
-                clinica_id: clinicaIdToUse
-            }
-        };
-        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+        if (resultado.success) {
+            // Criar token JWT com informações adicionais
+            const payload = {
+                user: {
+                    id: email,
+                    nome: nome,
+                    tipoUsuario: tipoUsuario,
+                    clinica_id: clinicaIdToUse
+                }
+            };
+            const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
 
-        res.json({ message: 'Usuário registrado com sucesso!', token: token });
+            res.json({ message: resultado.message, token: token });
+        } else {
+            res.status(500).json({ message: resultado.message });
+        }
     } catch (error) {
         console.error(error);
         res.status(500).send('Erro no servidor');

@@ -17,9 +17,10 @@ class Usuarios {
     try {
       await db.none('INSERT INTO usuarios (nome, email, senha, tipoUsuario, clinica_id) VALUES ($1, $2, $3, $4, $5)',
         [nome, email, senhaCriptografada, tipoUsuario, clinica_id]);
+      return { success: true, message: 'Usuário registrado com sucesso!' };
     } catch (error) {
       console.error('Erro ao inserir usuário:', error);
-      throw error;
+      return { success: false, message: 'Erro ao inserir usuário' };
     }
   }
 
@@ -27,3 +28,4 @@ class Usuarios {
 }
 
 module.exports = Usuarios;
+
