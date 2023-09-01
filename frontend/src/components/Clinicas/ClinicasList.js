@@ -1,71 +1,68 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import api from 'C:/Users/andre/base_clinica/frontend/src/services/api';
-import AddClinicaForm from './AddClinicaForm'; // Importe ou crie este componente para adicionar clínicas
+import api from '../../services/api';
+import AddClinicaForm from './AddClinicaForm';
+import { ClinicContext } from '../../contexts/ClinicaContext';
 
 function ClinicasList() {
-    const [clinicas, setClinicas] = useState([]);
-    const [showForm, setShowForm] = useState(false);
-    const [editingClinica, setEditingClinica] = useState(null);
+  const [clinicas, setClinicas] = useState([]);
+  const { clinicData, setClinicData } = useContext(ClinicContext);
+  const [showForm, setShowForm] = useState(false);
+  const [editingClinica, setEditingClinica] = useState(null);
 
-    useEffect(() => {
-        fetchClinicas();
-    }, []);
+  useEffect(() => {
+    fetchClinicas();
+  }, []);
 
-    const fetchClinicas = async () => {
-        try {
-            const response = await api.get('/clinicas');
-            setClinicas(response.data);
-        } catch (error) {
-            console.error('Erro ao buscar as clínicas:', error);
-        }
+  const fetchClinicas = async () => {
+    try {
+      const response = await api.get('/clinicas');
+      setClinicas(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar as clínicas:', error);
     }
+  };
 
-    const handleNewClinica = async (clinicaData) => {
-        try {
-            if (editingClinica) {
-                await api.put(`/clinicas/${editingClinica.id}`, clinicaData);
-                setEditingClinica(null);
-            } else {
-                await api.post('/clinicas', clinicaData);
-            }
-            fetchClinicas();
-            setShowForm(false);
-        } catch (error) {
-            console.error('Erro ao adicionar/atualizar clínica:', error);
-            alert("Ocorreu um erro ao adicionar/atualizar a clínica.");
-        }
+  const handleNewClinica = async (clinicaData) => {
+    try {
+      if (editingClinica) {
+        await api.put(`/clinicas/${editingClinica.id}`, clinicaData);
+        setEditingClinica(null);
+      } else {
+        await api.post('/clinicas', clinicaData);
+      }
+      fetchClinicas();
+      setShowForm(false);
+    } catch (error) {
+      console.error('Erro ao adicionar/atualizar clínica:', error);
+      alert('Ocorreu um erro ao adicionar/atualizar a clínica.');
     }
+  };
 
-    const handleAddLinkedPsychologist = () => {
-        // Lógica para adicionar psicólogo(a) vinculado(a)
-    }
+  return (
+    <div>
+      <h2>Clínica</h2>
+      <div>
+        <h3>Informações da Clínica</h3>
+        <p>Nome: {clinicData.nome}</p>
+        <p>Email: {clinicData.email}</p>
+        {/* Add more fields as needed */}
+        <button onClick={() => setEditingClinica(clinicData)}>Atualizar Perfil</button>
+      </div>
 
-    const handleAddLinkedSecretary = () => {
-        // Lógica para adicionar secretário(a) vinculado(a)
-    }
+      {showForm && <AddClinicaForm onFormSubmit={handleNewClinica} initialData={editingClinica} />}
 
-    return (
-        <div>
-            <h2>Clínica</h2>
+      <div>
+        <h3>Psicólogos Vinculados</h3>
+        {/* List linked psychologists here */}
+      </div>
 
-            {!showForm && <button onClick={() => setShowForm(true)}>Adicionar Nova Clínica</button>}
-            {!showForm && <button onClick={handleAddLinkedPsychologist}>Adicionar Psicólogo(a) Vinculado(a)</button>}
-            {!showForm && <button onClick={handleAddLinkedSecretary}>Adicionar Secretário(a) Vinculado(a)</button>}
-
-            {showForm && <AddClinicaForm onFormSubmit={handleNewClinica} initialData={editingClinica} />}
-
-            <ul>
-                {clinicas.map(clinica => (
-                    <li key={clinica.id}>
-                        <Link to={`/clinicas/${clinica.id}`}>{clinica.nome}</Link>
-                        <span onClick={() => handleEdit(clinica.id)} style={{ cursor: 'pointer', marginLeft: '10px' }}>✎</span>
-                        <span onClick={() => handleDelete(clinica.id)} style={{ cursor: 'pointer', marginLeft: '5px' }}>🗑️</span>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
+      <div>
+        <h3>Secretários Vinculados</h3>
+        {/* List linked secretaries here */}
+      </div>
+    </div>
+  );
 }
 
 export default ClinicasList;

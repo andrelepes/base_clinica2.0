@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { ClinicContext } from '../../contexts/ClinicaContext';
 
 function AddClinicaForm({ initialData = {}, onFormSubmit }) {
+    const { clinicData, setClinicData } = useContext(ClinicContext);
     const defaultData = {
         nome: '',
         cpf: '',
@@ -10,17 +12,11 @@ function AddClinicaForm({ initialData = {}, onFormSubmit }) {
         endereco: ''
     };
 
-    const [formData, setFormData] = useState({ ...defaultData, ...initialData });
+    const [formData, setFormData] = useState({ ...defaultData, ...clinicData });
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
-        const formattedInitialData = initialData ? {
-            ...initialData,
-            data_nascimento: initialData.data_nascimento ? initialData.data_nascimento.split("T")[0] : ""
-        } : {};
-
-        setFormData(prev => ({ ...defaultData, ...formattedInitialData }));
-    }, [initialData]);
+        setFormData(prev => ({ ...defaultData, ...clinicData }));
+    }, [clinicData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -32,14 +28,8 @@ function AddClinicaForm({ initialData = {}, onFormSubmit }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        const formattedCPF = formData.cpf.replace(/[.-]/g, '');
-        const newPatientData = {
-            ...formData,
-            cpf: formattedCPF
-        };
-
-        onFormSubmit(newPatientData);
+        onFormSubmit(formData);
+        setClinicData(formData);
     };
 
     return (
@@ -65,7 +55,7 @@ function AddClinicaForm({ initialData = {}, onFormSubmit }) {
 
             <div></div> {/* Espaço vazio para alinhar o botão à direita */}
             <button type="submit">
-                {(initialData && initialData.id) ? 'Atualizar Clínica' : 'Adicionar Clínica'}
+                'Atualizar Clínica'
             </button>
         </form>
     );
