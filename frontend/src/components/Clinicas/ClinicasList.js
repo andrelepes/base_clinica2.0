@@ -2,11 +2,11 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import AddClinicaForm from './AddClinicaForm';
-import { ClinicContext } from '../../contexts/ClinicaContext';
+import { ClinicaContext } from '../../contexts/ClinicaContext';
 
 function ClinicasList() {
   const [clinicas, setClinicas] = useState([]);
-  const { clinicData, setClinicData } = useContext(ClinicContext);
+  const { clinicData, setClinicData } = useContext(ClinicaContext);
   const [showForm, setShowForm] = useState(false);
   const [editingClinica, setEditingClinica] = useState(null);
 

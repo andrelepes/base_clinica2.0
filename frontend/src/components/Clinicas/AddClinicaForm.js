@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { ClinicContext } from '../../contexts/ClinicaContext';
+import { ClinicaContext } from '../../contexts/ClinicaContext';
 
 function AddClinicaForm({ initialData = {}, onFormSubmit }) {
-    const { clinicData, setClinicData } = useContext(ClinicContext);
+    const { clinicData, setClinicData } = useContext(ClinicaContext);
     const defaultData = {
         nome: '',
         cpf: '',
