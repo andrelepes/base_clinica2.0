@@ -15,9 +15,12 @@ exports.addClinica = async (req, res) => {
     try {
         console.log('Corpo da requisição:', req.body);
         const { nome, cpfCnpj, telefone, cep, endereco, email, tipoUsuario } = req.body;
+
+        // Verificação de campos obrigatórios
         if (!nome || !cpfCnpj || !telefone || !cep || !endereco || !email || !tipoUsuario) {
-            return res.status(400).json({ mensagem: 'Campos obrigatórios faltando' });
+            return res.status(400).json({ mensagem: 'Todos os campos são obrigatórios' });
         }
+
         const novaClinica = await Clinica.add({ nome, cpfCnpj, telefone, cep, endereco, email, tipoUsuario });
         res.status(201).json(novaClinica);
     } catch (err) {
@@ -25,9 +28,6 @@ exports.addClinica = async (req, res) => {
         res.status(500).json({ erro: err.message });
     }
 };
-
-// Código existente para atualizar, deletar e adicionar psicólogos e secretários vinculados a uma clínica
-// ...
 
 // Atualizar informações da clínica
 exports.updateClinica = async (req, res) => {
