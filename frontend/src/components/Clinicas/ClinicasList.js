@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import api from '../../services/api';
 import AddClinicaForm from './AddClinicaForm';
 import { ClinicaContext } from '../../contexts/ClinicaContext';
@@ -9,18 +9,19 @@ function ClinicasList() {
   const [showForm, setShowForm] = useState(false);
   const [editingClinica, setEditingClinica] = useState(null);
 
-  useEffect(() => {
-    const fetchClinicas = async () => {
-      try {
-        const response = await api.get('/clinicas');
-        setClinicas(response.data);
-      } catch (error) {
-        console.error('Erro ao buscar as clínicas:', error);
-      }
-    };
+// eslint-disable-next-line react-hooks/exhaustive-deps
+const fetchClinicas = useCallback(async () => {
+    try {
+      const response = await api.get('/clinicas');
+      setClinicas(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar as clínicas:', error);
+    }
+  }, []);  
 
+  useEffect(() => {
     fetchClinicas();
-  }, []);
+  }, [fetchClinicas]);
 
   const handleNewClinica = async (clinicaData) => {
     try {
