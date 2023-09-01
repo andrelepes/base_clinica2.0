@@ -79,10 +79,6 @@ router.post('/registrar', async (req, res) => {
     }
 
     try {
-        if (await Usuarios.emailJaRegistrado(email)) {
-            return res.status(400).json({ message: 'E-mail já registrado' });
-        }
-
         // Criptografe a senha
         const salt = await bcrypt.genSalt(10);
         const senhaCriptografada = await bcrypt.hash(senha, salt);
@@ -91,17 +87,12 @@ router.post('/registrar', async (req, res) => {
 
         // Se o usuário é uma clínica, crie um novo clinica_id (aqui você pode chamar uma função para fazer isso)
         if (tipoUsuario === 'Clinica' && !clinica_id) {
-            // Aqui você pode inserir a lógica para criar um novo clinica_id
-            // Por exemplo, inserir uma nova clínica no banco de dados e obter o ID gerado
             const novaClinica = await db.one('INSERT INTO clinicas (nome, email, tipoUsuario) VALUES ($1, $2, $3) RETURNING id', [nome, email, tipoUsuario]);
             clinicaIdToUse = novaClinica.id;
         }
 
+        // Use a função inserirUsuario para inserir o novo usuário
         await Usuarios.inserirUsuario(nome, email, senhaCriptografada, tipoUsuario, clinicaIdToUse);
-
-        // Insira o novo usuário no banco de dados
-        await db.none('INSERT INTO usuarios (nome, email, senha, tipoUsuario, clinica_id) VALUES ($1, $2, $3, $4, $5)',
-            [nome, email, senhaCriptografada, tipoUsuario, clinicaIdToUse]);
 
         // Criar token JWT com informações adicionais
         const payload = {
@@ -120,6 +111,7 @@ router.post('/registrar', async (req, res) => {
         res.status(500).send('Erro no servidor');
     }
 });
+
 // Solicitar Recuperação de Senha
 router.post('/solicitar-recuperacao-senha', async (req, res) => {
     const { email } = req.body;
