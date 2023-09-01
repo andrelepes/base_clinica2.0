@@ -5,7 +5,7 @@ import { ClinicaContext } from '../../contexts/ClinicaContext';
 
 function ClinicasList() {
   const [setClinicas] = useState([]);
-  const {clinicData} = useContext(ClinicaContext);
+  const {clinica} = useContext(ClinicaContext);
   const [showForm, setShowForm] = useState(false);
   const [editingClinica, setEditingClinica] = useState(null);
 
@@ -44,10 +44,10 @@ const fetchClinicas = useCallback(async () => {
       <h2>Clínica</h2>
       <div>
         <h3>Informações da Clínica</h3>
-        <p>Nome: {clinicData.nome}</p>
-        <p>Email: {clinicData.email}</p>
+        <p>Nome: {clinica ? clinica.nome : 'Carregando...'}</p>
+        <p>Email: {clinica ? clinica.email : 'Carregando...'}</p>
         {/* Add more fields as needed */}
-        <button onClick={() => setEditingClinica(clinicData)}>Atualizar Perfil</button>
+        <button onClick={() => setEditingClinica(clinica)}>Atualizar Perfil</button>
       </div>
 
       {showForm && <AddClinicaForm onFormSubmit={handleNewClinica} initialData={editingClinica} />}
