@@ -1,14 +1,6 @@
 const db = require('../../database');
 
 const Clinica = {
-    // Listar todas as clínicas
-    listAll: () => {
-        const query = `
-            SELECT * FROM clinicas;
-        `;
-        return db.manyOrNone(query);
-    },
-
     // Obter informações de uma clínica por ID
     getById: (id) => {
         const query = `
@@ -33,16 +25,6 @@ const Clinica = {
         return db.manyOrNone(query, [clinicaId]);
     },
 
-    // Adicionar uma nova clínica
-    add: (clinica) => {
-        const query = `
-            INSERT INTO clinicas(nome, cpfCnpj, telefone, cep, endereco, email, tipoUsuario)
-            VALUES($1, $2, $3, $4, $5, $6, $7)
-            RETURNING id;
-        `;
-        return db.one(query, [clinica.nome, clinica.cpfCnpj, clinica.telefone, clinica.cep, clinica.endereco, clinica.email, clinica.tipoUsuario]);
-    },
-
     // Atualizar uma clínica existente
     update: (id, clinica) => {
         const query = `
@@ -51,14 +33,6 @@ const Clinica = {
             WHERE id = $7;
         `;
         return db.none(query, [clinica.nome, clinica.cpfCnpj, clinica.telefone, clinica.cep, clinica.endereco, clinica.email, id]);
-    },
-
-    // Deletar uma clínica
-    delete: (id) => {
-        const query = `
-            DELETE FROM clinicas WHERE id = $1;
-        `;
-        return db.none(query, [id]);
     },
 
     // Adicionar um psicólogo vinculado a uma clínica
