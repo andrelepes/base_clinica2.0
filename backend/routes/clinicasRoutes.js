@@ -3,11 +3,8 @@ const router = express.Router();
 const auth = require('../../authMiddleware');
 const clinicasController = require('../controllers/clinicasController');
 
-// GET para listar todas as clínicas
-router.get('/', auth, clinicasController.listClinicas);
-
-// GET para obter informações de uma clínica por ID
-router.get('/:id', auth, clinicasController.getClinicaById);
+// GET para obter informações da clínica logada
+router.get('/:id', auth, clinicasController.getCurrentClinica);  // Atualizado aqui
 
 // GET para listar psicólogos vinculados a uma clínica
 router.get('/:id/linked-psychologists', auth, clinicasController.listLinkedPsychologists);
@@ -31,3 +28,4 @@ router.post('/:id/add-linked-psychologist', auth, clinicasController.addLinkedPs
 router.post('/:id/add-linked-secretary', auth, clinicasController.addLinkedSecretary);
 
 module.exports = router;
+

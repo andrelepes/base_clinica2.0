@@ -1,5 +1,15 @@
 const Clinica = require('../models/Clinica');
 
+// Adicionar uma nova clínica
+exports.addClinica = async (req, res) => {
+    try {
+        const newClinica = await Clinica.create(req.body);
+        res.status(201).json({ mensagem: 'Clínica adicionada com sucesso', clinica: newClinica });
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+};
+
 // Obter informações da clínica logada
 exports.getCurrentClinica = async (req, res) => {
     try {
@@ -20,6 +30,17 @@ exports.updateClinica = async (req, res) => {
         res.status(500).json({ erro: err.message });
     }
 };
+
+// Remover uma clínica
+exports.deleteClinica = async (req, res) => {
+    try {
+        await Clinica.delete(req.params.id); // Aqui você pode usar o ID da clínica logada
+        res.status(200).json({ mensagem: 'Clínica removida com sucesso' });
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+};
+
 
 // Listar psicólogos vinculados à clínica logada
 exports.listLinkedPsychologists = async (req, res) => {
