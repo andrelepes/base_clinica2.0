@@ -5,19 +5,18 @@ import { ClinicaContext } from '../../contexts/ClinicaContext';
 
 function ClinicasList() {
   const [setClinicas] = useState([]);
-  const {clinica} = useContext(ClinicaContext);
+  const { clinica } = useContext(ClinicaContext);
   const [showForm, setShowForm] = useState(false);
   const [editingClinica, setEditingClinica] = useState(null);
 
-// eslint-disable-next-line react-hooks/exhaustive-deps
-const fetchClinicas = useCallback(async () => {
+  const fetchClinicas = useCallback(async () => {
     try {
       const response = await api.get('/clinicas');
       setClinicas(response.data);
     } catch (error) {
       console.error('Erro ao buscar as clínicas:', error);
     }
-  }, []);  
+  }, [setClinicas]);
 
   useEffect(() => {
     fetchClinicas();
@@ -46,20 +45,26 @@ const fetchClinicas = useCallback(async () => {
         <h3>Informações da Clínica</h3>
         <p>Nome: {clinica ? clinica.nome : 'Carregando...'}</p>
         <p>Email: {clinica ? clinica.email : 'Carregando...'}</p>
-        {/* Add more fields as needed */}
-        <button onClick={() => setEditingClinica(clinica)}>Atualizar Perfil</button>
+        <p>CNPJ: {clinica ? clinica.cpfcnpj : 'Carregando...'}</p> {/* Novo campo */}
+        <p>CEP: {clinica ? clinica.cep : 'Carregando...'}</p> {/* Novo campo */}
+        <p>Endereço: {clinica ? clinica.endereco : 'Carregando...'}</p>
+        <p>Telefone: {clinica ? clinica.telefone : 'Carregando...'}</p>
+        {/* Adicione mais campos conforme necessário */}
+        <button onClick={() => { setEditingClinica(clinica); setShowForm(true); }}>Atualizar Perfil</button>
       </div>
 
       {showForm && <AddClinicaForm onFormSubmit={handleNewClinica} initialData={editingClinica} />}
 
       <div>
         <h3>Psicólogos Vinculados</h3>
-        {/* List linked psychologists here */}
+        {/* Lista de psicólogos vinculados aqui */}
+        <button onClick={() => { /* Adicione a função para adicionar psicólogo */ }}>Adicionar Psicólogo</button>
       </div>
 
       <div>
         <h3>Secretários Vinculados</h3>
-        {/* List linked secretaries here */}
+        {/* Lista de secretários vinculados aqui */}
+        <button onClick={() => { /* Adicione a função para adicionar secretário */ }}>Adicionar Secretário</button>
       </div>
     </div>
   );

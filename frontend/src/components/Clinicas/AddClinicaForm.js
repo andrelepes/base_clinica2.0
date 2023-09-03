@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { ClinicaContext } from '../../contexts/ClinicaContext';
 
-function UpdateClinicaForm({ initialData = {}, onFormSubmit }) {  // Renomeado para UpdateClinicaForm
+function UpdateClinicaForm({ initialData = {}, onFormSubmit }) {
     const { clinicData, setClinicData } = useContext(ClinicaContext);
     const defaultData = {
         nome: '',
@@ -16,8 +16,7 @@ function UpdateClinicaForm({ initialData = {}, onFormSubmit }) {  // Renomeado p
 
     useEffect(() => {
         setFormData(prev => ({ ...defaultData, ...clinicData }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [clinicData]);
+    }, [clinicData, defaultData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -55,10 +54,10 @@ function UpdateClinicaForm({ initialData = {}, onFormSubmit }) {  // Renomeado p
 
             <div></div> {/* Espaço vazio para alinhar o botão à direita */}
             <button type="submit">
-                Atualizar Clínica  {/* Removido as aspas simples */}
+                Atualizar Clínica
             </button>
         </form>
     );
 }
 
-export default UpdateClinicaForm;  // Renomeado para UpdateClinicaForm
+export default UpdateClinicaForm;
