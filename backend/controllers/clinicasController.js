@@ -14,6 +14,7 @@ exports.addClinica = async (req, res) => {
 exports.getCurrentClinica = async (req, res) => {
     try {
         const clinica = await Clinica.getById(req.params.id); // Aqui você pode usar o ID da clínica logada
+        console.log("Dados da clínica:", clinica);  // Log para depuração
         res.status(200).json(clinica);
     } catch (err) {
         res.status(500).json({ erro: err.message });

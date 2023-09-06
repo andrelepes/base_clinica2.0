@@ -1,37 +1,27 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useContext } from 'react';
 import api from '../../services/api';
 import AddClinicaForm from './AddClinicaForm';
 import { ClinicaContext } from '../../contexts/ClinicaContext';
 
 function ClinicasList() {
-  const [setClinicas] = useState([]);
-  const { clinica } = useContext(ClinicaContext);
+  const { clinica, setClinica } = useContext(ClinicaContext);
   const [showForm, setShowForm] = useState(false);
   const [editingClinica, setEditingClinica] = useState(null);
 
-  const fetchClinicas = useCallback(async () => {
-    try {
-      const response = await api.get('/clinicas');
-      setClinicas(response.data);
-    } catch (error) {
-      console.error('Erro ao buscar as clínicas:', error);
-    }
-  }, [setClinicas]);
-
-  useEffect(() => {
-    fetchClinicas();
-  }, [fetchClinicas]);
-
   const handleNewClinica = async (clinicaData) => {
     try {
+      let response;
       if (editingClinica) {
-        await api.put(`/clinicas/${editingClinica.id}`, clinicaData);
+        response = await api.put(`/clinicas/${editingClinica.id}`, clinicaData);
         setEditingClinica(null);
       } else {
-        await api.post('/clinicas', clinicaData);
+        response = await api.post('/clinicas', clinicaData);
       }
-      fetchClinicas();
       setShowForm(false);
+
+      // Atualizando o estado da clínica após uma operação bem-sucedida
+      setClinica(response.data);
+
     } catch (error) {
       console.error('Erro ao adicionar/atualizar clínica:', error);
       alert('Ocorreu um erro ao adicionar/atualizar a clínica.');
@@ -45,11 +35,10 @@ function ClinicasList() {
         <h3>Informações da Clínica</h3>
         <p>Nome: {clinica ? clinica.nome : 'Carregando...'}</p>
         <p>Email: {clinica ? clinica.email : 'Carregando...'}</p>
-        <p>CNPJ: {clinica ? clinica.cpfcnpj : 'Carregando...'}</p> {/* Novo campo */}
-        <p>CEP: {clinica ? clinica.cep : 'Carregando...'}</p> {/* Novo campo */}
+        <p>CNPJ: {clinica ? clinica.cpfcnpj : 'Carregando...'}</p>
+        <p>CEP: {clinica ? clinica.cep : 'Carregando...'}</p>
         <p>Endereço: {clinica ? clinica.endereco : 'Carregando...'}</p>
         <p>Telefone: {clinica ? clinica.telefone : 'Carregando...'}</p>
-        {/* Adicione mais campos conforme necessário */}
         <button onClick={() => { setEditingClinica(clinica); setShowForm(true); }}>Atualizar Perfil</button>
       </div>
 
@@ -57,13 +46,11 @@ function ClinicasList() {
 
       <div>
         <h3>Psicólogos Vinculados</h3>
-        {/* Lista de psicólogos vinculados aqui */}
         <button onClick={() => { /* Adicione a função para adicionar psicólogo */ }}>Adicionar Psicólogo</button>
       </div>
 
       <div>
         <h3>Secretários Vinculados</h3>
-        {/* Lista de secretários vinculados aqui */}
         <button onClick={() => { /* Adicione a função para adicionar secretário */ }}>Adicionar Secretário</button>
       </div>
     </div>
