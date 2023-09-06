@@ -17,7 +17,7 @@ function UpdateClinicaForm({ initialData = {}, onFormSubmit }) {
 
     useEffect(() => {
         console.log('Dados da clínica do contexto:', clinica);
-        const mappedClinica = { ...clinica, cpf: clinica.cpfcnpj }; // Mapeando cpfcnpj para cpf
+        const mappedClinica = { ...clinica, cpf: clinica.cpfCnpj }; // Mapeando cpfcnpj para cpf
         setFormData(prev => ({ ...defaultData, ...mappedClinica }));
         console.log('Dados do formulário:', formData);
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -33,7 +33,7 @@ function UpdateClinicaForm({ initialData = {}, onFormSubmit }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const mappedFormData = { ...formData, cpfcnpj: formData.cpf }; // Mapeando cpf para cpfcnpj
+        const mappedFormData = { ...formData, cpfCnpj: formData.cpf }; // Mapeando cpf para cpfcnpj
         onFormSubmit(mappedFormData);
         setClinica(mappedFormData);
 

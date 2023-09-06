@@ -29,10 +29,10 @@ const Clinica = {
     update: (id, clinica) => {
         const query = `
             UPDATE clinicas
-            SET nome = $1, cpfCnpj = $2, telefone = $3, cep = $4, endereco = $5, email = $6
+            SET nome = $1, cpfcnpj = $2, telefone = $3, cep = $4, endereco = $5, email = $6
             WHERE id = $7;
         `;
-        return db.none(query, [clinica.nome, clinica.cpfCnpj, clinica.telefone, clinica.cep, clinica.endereco, clinica.email, id]);
+        return db.none(query, [clinica.nome, clinica.cpfcnpj, clinica.telefone, clinica.cep, clinica.endereco, clinica.email, id]);
     },
 
     // Adicionar um psicólogo vinculado a uma clínica
