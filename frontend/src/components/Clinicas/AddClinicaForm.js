@@ -1,23 +1,27 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { ClinicaContext } from '../../contexts/ClinicaContext';
 
 function UpdateClinicaForm({ initialData = {}, onFormSubmit }) {
-    const { clinicData, setClinica } = useContext(ClinicaContext);
-    const defaultData = {
+    const { clinica, setClinica } = useContext(ClinicaContext);
+
+    const defaultData = useMemo(() => ({
         nome: '',
         cpf: '',
         telefone: '',
         email: '',
         cep: '',
         endereco: ''
-    };
+    }), []);
 
-    const [formData, setFormData] = useState({ ...defaultData, ...clinicData });
+    const [formData, setFormData] = useState({ ...defaultData, ...clinica });
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
-        setFormData(prev => ({ ...defaultData, ...clinicData }));
-    }, [clinicData]);
+        console.log('Dados da clínica do contexto:', clinica);
+        const mappedClinica = { ...clinica, cpf: clinica.cpfcnpj }; // Mapeando cpfcnpj para cpf
+        setFormData(prev => ({ ...defaultData, ...mappedClinica }));
+        console.log('Dados do formulário:', formData);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [clinica, defaultData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -29,8 +33,9 @@ function UpdateClinicaForm({ initialData = {}, onFormSubmit }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        onFormSubmit(formData);
-        setClinica(formData);
+        const mappedFormData = { ...formData, cpfcnpj: formData.cpf }; // Mapeando cpf para cpfcnpj
+        onFormSubmit(mappedFormData);
+        setClinica(mappedFormData);
 
         // Forçar um recarregamento da página
         window.location.reload();
@@ -65,3 +70,4 @@ function UpdateClinicaForm({ initialData = {}, onFormSubmit }) {
 }
 
 export default UpdateClinicaForm;
+
