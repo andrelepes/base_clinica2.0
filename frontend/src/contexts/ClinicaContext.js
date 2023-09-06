@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import api from '../services/api';  // Certifique-se de que o caminho está correto
+import jwt_decode from 'jwt-decode';  // Importando a biblioteca para decodificar o JWT
 
 // Criar o contexto
 export const ClinicaContext = createContext();
@@ -11,10 +12,19 @@ export const ClinicaProvider = ({ children }) => {
     useEffect(() => {
         const fetchClinica = async () => {
             try {
-                // Obtendo o ID da clínica logada do localStorage
-                const clinicaId = localStorage.getItem('clinicaId');  
+                // Obtendo o token do localStorage
+                const token = localStorage.getItem('token');  
+                if (!token) {
+                    console.error('Token não encontrado no localStorage');
+                    return;
+                }
+
+                // Decodificando o token para obter o clinicaId
+                const decodedToken = jwt_decode(token);
+                const clinicaId = decodedToken.user.clinica_id;
+
                 if (!clinicaId) {
-                    console.error('ID da clínica não encontrado no localStorage');
+                    console.error('ID da clínica não encontrado no token');
                     return;
                 }
                 
