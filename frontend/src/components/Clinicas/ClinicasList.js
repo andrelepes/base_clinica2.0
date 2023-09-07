@@ -46,15 +46,24 @@ function ClinicasList() {
 
       <div>
         <h3>Psicólogos Vinculados</h3>
-        <button onClick={() => { /* Adicione a função para adicionar psicólogo */ }}>Adicionar Psicólogo</button>
+        <button onClick={handleAddPsicologo}>Adicionar Psicólogo</button>
       </div>
 
       <div>
         <h3>Secretários Vinculados</h3>
-        <button onClick={() => { /* Adicione a função para adicionar secretário */ }}>Adicionar Secretário</button>
+        <button onClick={handleAddSecretario}>Adicionar Secretário</button>
       </div>
     </div>
   );
 }
+const handleAddPsicologo = () => {
+  // Aqui você pode adicionar a lógica para adicionar um psicólogo
+  alert('Adicionar Psicólogo foi clicado');
+};
+
+const handleAddSecretario = () => {
+  // Aqui você pode adicionar a lógica para adicionar um secretário
+  alert('Adicionar Secretário foi clicado');
+};
 
 export default ClinicasList;
