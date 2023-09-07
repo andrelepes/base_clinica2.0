@@ -13,7 +13,6 @@ function AddPatientForm({ initialData = {}, onFormSubmit }) {
 
     const [formData, setFormData] = useState({ ...defaultData, ...initialData });
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         const formattedInitialData = initialData ? {
             ...initialData,
@@ -21,7 +20,7 @@ function AddPatientForm({ initialData = {}, onFormSubmit }) {
         } : {};
 
         setFormData(prev => ({ ...defaultData, ...formattedInitialData }));
-    }, [initialData]);
+    }, [initialData]);  // Adicionado initialData aqui
 
     const handleChange = (e) => {
         const { name, value } = e.target;

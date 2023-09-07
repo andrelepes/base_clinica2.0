@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react'; // Importe useCallback
 import api from 'C:/Users/andre/base_clinica/frontend/src/services/api';
 import AddProntuarioForm from './AddProntuarioForm';
 import { useParams } from 'react-router-dom';
@@ -15,14 +15,14 @@ function PacienteDetalhes() {
     const [editProntuarioId, setEditProntuarioId] = useState(null);
     const { id } = useParams();
 
-    const fetchProntuarios = async () => {
+    const fetchProntuarios = useCallback(async () => { // Use useCallback aqui
         try {
             const response = await api.get(`/pacientes/${id}/prontuarios`);
             setProntuarios(response.data);
         } catch (error) {
             console.error('Erro ao buscar prontuários:', error);
         }
-    };
+    }, [id]); // Adicione as dependências aqui
 
     useEffect(() => {
         const fetchPacienteDetails = async () => {
@@ -36,7 +36,7 @@ function PacienteDetalhes() {
 
         fetchPacienteDetails();
         fetchProntuarios();
-    }, [id]);
+    }, [id, fetchProntuarios]); // Adicione fetchProntuarios aqui
 
     const handleNewProntuario = async (prontuarioData) => {
         try {

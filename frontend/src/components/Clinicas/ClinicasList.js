@@ -1,11 +1,13 @@
 import React, { useState, useContext } from 'react';
 import api from '../../services/api';
 import AddClinicaForm from './AddClinicaForm';
+import AddPsychologistForm from './AddPsychologistForm';
 import { ClinicaContext } from '../../contexts/ClinicaContext';
 
 function ClinicasList() {
   const { clinica, setClinica } = useContext(ClinicaContext);
   const [showForm, setShowForm] = useState(false);
+  const [showPsychologistForm, setShowPsychologistForm] = useState(false);
   const [editingClinica, setEditingClinica] = useState(null);
 
   const handleNewClinica = async (clinicaData) => {
@@ -18,14 +20,29 @@ function ClinicasList() {
         response = await api.post('/clinicas', clinicaData);
       }
       setShowForm(false);
-
-      // Atualizando o estado da clínica após uma operação bem-sucedida
       setClinica(response.data);
-
     } catch (error) {
       console.error('Erro ao adicionar/atualizar clínica:', error);
       alert('Ocorreu um erro ao adicionar/atualizar a clínica.');
     }
+  };
+
+  const handleNewPsychologist = async (psychologistData) => {
+    try {
+      const response = await api.post('/clinicas/:id/add-linked-psychologist', psychologistData);
+      setShowPsychologistForm(false);
+    } catch (error) {
+      console.error('Erro ao adicionar psicólogo:', error);
+      alert('Ocorreu um erro ao adicionar o psicólogo.');
+    }
+  };
+
+  const handleAddPsicologo = () => {
+    setShowPsychologistForm(true);
+  };
+
+  const handleAddSecretario = () => {
+    alert('Adicionar Secretário foi clicado');
   };
 
   return (
@@ -41,14 +58,12 @@ function ClinicasList() {
         <p>Telefone: {clinica ? clinica.telefone : 'Carregando...'}</p>
         <button onClick={() => { setEditingClinica(clinica); setShowForm(true); }}>Atualizar Perfil</button>
       </div>
-
       {showForm && <AddClinicaForm onFormSubmit={handleNewClinica} initialData={editingClinica} />}
-
       <div>
         <h3>Psicólogos Vinculados</h3>
         <button onClick={handleAddPsicologo}>Adicionar Psicólogo</button>
       </div>
-
+      {showPsychologistForm && <AddPsychologistForm onFormSubmit={handleNewPsychologist} />}
       <div>
         <h3>Secretários Vinculados</h3>
         <button onClick={handleAddSecretario}>Adicionar Secretário</button>
@@ -56,14 +71,5 @@ function ClinicasList() {
     </div>
   );
 }
-const handleAddPsicologo = () => {
-  // Aqui você pode adicionar a lógica para adicionar um psicólogo
-  alert('Adicionar Psicólogo foi clicado');
-};
-
-const handleAddSecretario = () => {
-  // Aqui você pode adicionar a lógica para adicionar um secretário
-  alert('Adicionar Secretário foi clicado');
-};
 
 export default ClinicasList;

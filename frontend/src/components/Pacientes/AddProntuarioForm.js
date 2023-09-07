@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 function AddProntuarioForm({ initialData = {}, onFormSubmit }) {
-    const defaultData = {
+    const defaultData = useMemo(() => ({
         data: '',
         notas_sessao: ''
-    };
+    }), []); // Usando useMemo para memorizar defaultData
 
-    const formatInitialData = {
-        ...initialData,
-        data: initialData.data ? new Date(initialData.data).toISOString().split('T')[0] : ''
-    };
-
-    const [formData, setFormData] = useState({ ...defaultData, ...formatInitialData });
+    const [formData, setFormData] = useState(defaultData);
 
     useEffect(() => {
+        const formatInitialData = {
+            ...initialData,
+            data: initialData.data ? new Date(initialData.data).toISOString().split('T')[0] : ''
+        };
         setFormData({ ...defaultData, ...formatInitialData });
-    }, [initialData]);
+    }, [initialData, defaultData]); // Adicionado defaultData aqui
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -46,3 +45,4 @@ function AddProntuarioForm({ initialData = {}, onFormSubmit }) {
 }
 
 export default AddProntuarioForm;
+
