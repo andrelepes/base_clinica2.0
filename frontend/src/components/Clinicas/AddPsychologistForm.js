@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import api from '../../services/api';
+import jwt_decode from 'jwt-decode';
 
 function AddPsychologistForm({ onFormSubmit }) {
   const [formData, setFormData] = useState({
@@ -19,13 +20,14 @@ function AddPsychologistForm({ onFormSubmit }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Dados enviados para o backend:', formData);
-    const clinicaId = 13; // Substitua pelo ID real da clínica
+
+    // Decodificar o token para obter o clinicaId
+    const token = localStorage.getItem('token');
+    const decoded = jwt_decode(token);
+    const clinicaId = decoded.user.clinica_id; // Ajuste isso de acordo com a estrutura do seu token decodificado
+
     try {
-      const response = await api.post(`/clinicas/${clinicaId}/add-linked-psychologist`, {
-        ...formData,
-        clinicaId,
-        psychologistId: 25 // Substitua pelo ID real do psicólogo
-      });
+      const response = await api.post(`/clinicas/${clinicaId}/add-linked-psychologist`, formData);
       console.log('Response from Backend:', response.data);
       onFormSubmit(response.data);
     } catch (error) {
@@ -48,3 +50,4 @@ function AddPsychologistForm({ onFormSubmit }) {
 }
 
 export default AddPsychologistForm;
+
