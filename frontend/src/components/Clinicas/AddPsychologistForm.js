@@ -13,12 +13,15 @@ function AddPsychologistForm({ onFormSubmit }) {
       ...prevState,
       [name]: value
     }));
+    console.log('Form Data Updated:', formData);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Dados enviados para o backend:', formData);
     try {
       const response = await api.post('/clinicas/:id/add-linked-psychologist', formData);
+      console.log('Response from Backend:', response.data);
       onFormSubmit(response.data);
     } catch (error) {
       console.error('Erro ao adicionar psicólogo:', error);
