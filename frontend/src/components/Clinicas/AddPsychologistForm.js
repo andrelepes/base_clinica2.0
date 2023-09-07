@@ -19,8 +19,13 @@ function AddPsychologistForm({ onFormSubmit }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Dados enviados para o backend:', formData);
+    const clinicaId = 13; // Substitua pelo ID real da clínica
     try {
-      const response = await api.post('/clinicas/:id/add-linked-psychologist', formData);
+      const response = await api.post(`/clinicas/${clinicaId}/add-linked-psychologist`, {
+        ...formData,
+        clinicaId,
+        psychologistId: 25 // Substitua pelo ID real do psicólogo
+      });
       console.log('Response from Backend:', response.data);
       onFormSubmit(response.data);
     } catch (error) {

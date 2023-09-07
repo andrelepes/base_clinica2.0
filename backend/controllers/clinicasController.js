@@ -66,13 +66,31 @@ exports.listLinkedSecretaries = async (req, res) => {
 // Adicionar um psicólogo vinculado à clínica logada
 exports.addLinkedPsychologist = async (req, res) => {
     try {
-        console.log('Vinculando um psicólogo à clínica');
-        await Clinica.addLinkedPsychologist(req.params.clinicaId, req.body.psychologistId); // Aqui você pode usar o ID da clínica logada
+        console.log('Dados recebidos:', req.body); // Log para depuração
+        const clinicaId = req.params.clinicaId || req.body.clinicaId;
+        const psychologistId = req.body.psychologistId;
+
+        // Verificar se clinicaId e psychologistId são válidos
+        const clinicaExists = await Clinica.getById(clinicaId);
+        const psychologistExists = await Clinica.getPsychologistById(psychologistId);
+
+        if (!clinicaExists || !psychologistExists) {
+            return res.status(400).json({ mensagem: 'IDs da clínica ou do psicólogo são inválidos' });
+        }
+
+        console.log('ID da clínica recebido:', clinicaId);
+        console.log('ID do psicólogo recebido:', psychologistId);
+
+        await Clinica.addLinkedPsychologist(clinicaId, psychologistId);
         res.status(201).json({ mensagem: 'Psicólogo vinculado com sucesso' });
     } catch (err) {
+        console.error('Erro ao vincular psicólogo:', err);
         res.status(500).json({ erro: err.message });
     }
 };
+
+  
+
 
 // Adicionar um secretário vinculado à clínica logada
 exports.addLinkedSecretary = async (req, res) => {
