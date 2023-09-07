@@ -1,4 +1,5 @@
 const Clinica = require('../models/Clinica');
+const Psicologos = require('../models/Psicologos'); // Importe o novo modelo
 
 // Adicionar uma nova clínica
 exports.addClinica = async (req, res) => {
@@ -66,22 +67,15 @@ exports.listLinkedSecretaries = async (req, res) => {
 // Adicionar um psicólogo vinculado à clínica logada
 exports.addLinkedPsychologist = async (req, res) => {
     try {
-        console.log('Dados recebidos:', req.body); // Log para depuração
         const clinicaId = req.params.clinicaId || req.body.clinicaId;
-        const psychologistId = req.body.psychologistId;
+        const { nome, email } = req.body;
 
-        // Verificar se clinicaId e psychologistId são válidos
-        const clinicaExists = await Clinica.getById(clinicaId);
-        const psychologistExists = await Clinica.getPsychologistById(psychologistId);
+        // Crie um novo psicólogo e obtenha o ID
+        const psychologistId = await Psicologos.create(nome, email);
 
-        if (!clinicaExists || !psychologistExists) {
-            return res.status(400).json({ mensagem: 'IDs da clínica ou do psicólogo são inválidos' });
-        }
-
-        console.log('ID da clínica recebido:', clinicaId);
-        console.log('ID do psicólogo recebido:', psychologistId);
-
+        // Vincule o novo psicólogo à clínica atual
         await Clinica.addLinkedPsychologist(clinicaId, psychologistId);
+
         res.status(201).json({ mensagem: 'Psicólogo vinculado com sucesso' });
     } catch (err) {
         console.error('Erro ao vincular psicólogo:', err);
