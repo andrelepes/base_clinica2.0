@@ -18,7 +18,7 @@ function AddPsychologistForm({ onFormSubmit }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/path/to/add/psychologist', formData); // Substitua pelo caminho real da API
+      const response = await api.post('/api/{id_da_clinica}/add-linked-psychologist', formData);
       onFormSubmit(response.data);
     } catch (error) {
       console.error('Erro ao adicionar psicólogo:', error);
