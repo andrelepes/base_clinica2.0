@@ -9,6 +9,7 @@ import LoginComponent from './components/Auth/LoginComponent';
 import RegistrationComponent from './components/Auth/RegistrationComponent';
 import ClinicasList from './components/Clinicas/ClinicasList';
 import { ClinicaProvider } from './contexts/ClinicaContext'; // Import ClinicaProvider
+import { ClinicaIdProvider } from './contexts/ClinicaIdContext'; // Import ClinicaIdProvider
 
 function HomePage() {
     return (
@@ -40,32 +41,34 @@ function App() {
 
   return (
     <ClinicaProvider> {/* Wrap the components with ClinicaProvider */}
-      <Router>
-        <div className='App'>
-          {token ? (
-            <>
-              <div className='sidebar'>
-                <Sidebar />
-              </div>
-              <div className='main-content'>
-                <Routes>
-                  <Route path='/pacientes/:id' element={<PacienteDetalhes />} />
-                  <Route path='/pacientes' element={<PacientesList />} />
-                  <Route path='/agenda' element={<Agenda />} />
-                  <Route path='/' element={<HomePage />} />
-                  <Route path='/clinicas' element={<ClinicasList />} />
-                </Routes>
-              </div>
-            </>
-          ) : (
-            <Routes>
-              <Route path='/login' element={<LoginComponent />} />
-              <Route path='/register' element={<RegistrationComponent />} />
-              <Route path='*' element={<Navigate to='/login' />} />
-            </Routes>
-          )}
-        </div>
-      </Router>
+      <ClinicaIdProvider> {/* Wrap the components with ClinicaIdProvider */}
+        <Router>
+          <div className='App'>
+            {token ? (
+              <>
+                <div className='sidebar'>
+                  <Sidebar />
+                </div>
+                <div className='main-content'>
+                  <Routes>
+                    <Route path='/pacientes/:id' element={<PacienteDetalhes />} />
+                    <Route path='/pacientes' element={<PacientesList />} />
+                    <Route path='/agenda' element={<Agenda />} />
+                    <Route path='/' element={<HomePage />} />
+                    <Route path='/clinicas' element={<ClinicasList />} />
+                  </Routes>
+                </div>
+              </>
+            ) : (
+              <Routes>
+                <Route path='/login' element={<LoginComponent />} />
+                <Route path='/register' element={<RegistrationComponent />} />
+                <Route path='*' element={<Navigate to='/login' />} />
+              </Routes>
+            )}
+          </div>
+        </Router>
+      </ClinicaIdProvider>
     </ClinicaProvider>
   );
 }
