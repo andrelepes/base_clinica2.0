@@ -1,7 +1,6 @@
 const Clinica = require('../models/Clinica');
-const Psicologos = require('../models/Psicologos'); // Importe o novo modelo
+const Psicologos = require('../models/Psicologos');
 
-// Adicionar uma nova clínica
 exports.addClinica = async (req, res) => {
     try {
         const newClinica = await Clinica.create(req.body);
@@ -11,95 +10,78 @@ exports.addClinica = async (req, res) => {
     }
 };
 
-// Obter informações da clínica logada
 exports.getCurrentClinica = async (req, res) => {
     try {
-        const clinica = await Clinica.getById(req.params.id); // Aqui você pode usar o ID da clínica logada
-        console.log("Dados da clínica:", clinica);  // Log para depuração
+        const clinica = await Clinica.getById(req.params.id);
         res.status(200).json(clinica);
     } catch (err) {
         res.status(500).json({ erro: err.message });
     }
 };
 
-// Atualizar informações da clínica logada
 exports.updateClinica = async (req, res) => {
     try {
-        console.log('Atualizando informações da clínica');
-        await Clinica.update(req.params.id, req.body); // Aqui você pode usar o ID da clínica logada
+        await Clinica.update(req.params.id, req.body);
         res.status(200).json({ mensagem: 'Clínica atualizada com sucesso' });
     } catch (err) {
         res.status(500).json({ erro: err.message });
     }
 };
 
-// Remover uma clínica
 exports.deleteClinica = async (req, res) => {
     try {
-        await Clinica.delete(req.params.id); // Aqui você pode usar o ID da clínica logada
+        await Clinica.delete(req.params.id);
         res.status(200).json({ mensagem: 'Clínica removida com sucesso' });
     } catch (err) {
         res.status(500).json({ erro: err.message });
     }
 };
 
-
-// Listar psicólogos vinculados à clínica logada
 exports.listLinkedPsychologists = async (req, res) => {
     try {
-        const psychologists = await Clinica.listLinkedPsychologists(req.params.clinicaId); // Aqui você pode usar o ID da clínica logada
+        const psychologists = await Clinica.listLinkedPsychologists(req.params.clinicaId);
         res.status(200).json(psychologists);
     } catch (err) {
         res.status(500).json({ erro: err.message });
     }
 };
 
-// Listar secretários vinculados à clínica logada
 exports.listLinkedSecretaries = async (req, res) => {
     try {
-        const secretaries = await Clinica.listLinkedSecretaries(req.params.clinicaId); // Aqui você pode usar o ID da clínica logada
+        const secretaries = await Clinica.listLinkedSecretaries(req.params.clinicaId);
         res.status(200).json(secretaries);
     } catch (err) {
         res.status(500).json({ erro: err.message });
     }
 };
 
-// Adicionar um psicólogo vinculado à clínica logada
 exports.addLinkedPsychologist = async (req, res) => {
-    console.log("Iniciando o processo de vinculação de psicólogo...");  // Log adicional
-    console.log("Dados recebidos:", req.body);
-
     try {
-        console.log('Req Params:', req.params);  // Log para depuração
-        console.log('Req Body:', req.body);  // Log para depuração
+        const { nome, email, cpf } = req.body;
+
+        if (!nome || !email || !cpf) {
+            return res.status(400).json({ mensagem: 'Nome, email e CPF são campos obrigatórios.' });
+        }
 
         const clinicaId = req.params.clinicaId || req.body.clinicaId;
-        const { nome, email, cpf } = req.body;  // Adicione o cpf aqui
 
-        // TODO: Adicione validação para nome, email e cpf aqui
+        const psychologistId = await Psicologos.create(nome, email, cpf);
 
-        // Crie um novo psicólogo e obtenha o ID
-        const psychologistId = await Psicologos.create(nome, email, cpf);  // Passe o cpf aqui
-        console.log('Psicólogo vinculado com sucesso, ID:', psychologistId);  // Log adicional
-
-        // Vincule o novo psicólogo à clínica atual
         await Clinica.addLinkedPsychologist(clinicaId, psychologistId);
 
         res.status(201).json({ mensagem: 'Psicólogo vinculado com sucesso' });
     } catch (err) {
         console.error('Erro ao vincular psicólogo:', err);
-        // TODO: Adicione mensagens de erro personalizadas com base no tipo de erro
-        res.status(500).json({ erro: err.message });
+        res.status(500).json({ erro: 'Ocorreu um erro ao tentar vincular o psicólogo. Tente novamente.' });
     }
 };
 
-// Adicionar um secretário vinculado à clínica logada
 exports.addLinkedSecretary = async (req, res) => {
     try {
-        console.log('Vinculando um secretário à clínica');
-        await Clinica.addLinkedSecretary(req.params.clinicaId, req.body.secretaryId); // Aqui você pode usar o ID da clínica logada
+        await Clinica.addLinkedSecretary(req.params.clinicaId, req.body.secretaryId);
         res.status(201).json({ mensagem: 'Secretário vinculado com sucesso' });
     } catch (err) {
         res.status(500).json({ erro: err.message });
     }
 };
+

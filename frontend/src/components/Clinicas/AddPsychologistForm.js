@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import api from '../../services/api';
 import jwt_decode from 'jwt-decode';
+import { useClinicaId } from '../../contexts/ClinicaIdContext';  // Importar o novo contexto
 
 function AddPsychologistForm({ onFormSubmit }) {
   const [formData, setFormData] = useState({
@@ -8,6 +9,8 @@ function AddPsychologistForm({ onFormSubmit }) {
     email: '',
     cpf: ''  // Novo estado para CPF
   });
+
+  const { clinicaId } = useClinicaId();  // Usar o novo contexto
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,13 +25,8 @@ function AddPsychologistForm({ onFormSubmit }) {
     e.preventDefault();
     console.log('Dados enviados para o backend:', formData);
 
-    // Decodificar o token para obter o clinicaId
-    const token = localStorage.getItem('token');
-    const decoded = jwt_decode(token);
-    const clinicaId = decoded.user.clinica_id;
-
     try {
-      const response = await api.post(`/clinicas/${clinicaId}/add-linked-psychologist`, formData);
+      const response = await api.post(`/clinicas/${clinicaId}/add-linked-psychologist`, formData);  // Usar clinicaId do contexto
       console.log('Resposta do Backend:', response.data);
       onFormSubmit(response.data);
     } catch (error) {
@@ -45,8 +43,8 @@ function AddPsychologistForm({ onFormSubmit }) {
       <label htmlFor="email">Email:</label>
       <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
   
-      <label htmlFor="cpf">CPF:</label>  {/* Novo campo para CPF */}
-      <input type="text" id="cpf" name="cpf" value={formData.cpf} onChange={handleChange} required />  {/* Novo campo para CPF */}
+      <label htmlFor="cpf">CPF:</label>  // Novo campo para CPF
+      <input type="text" id="cpf" name="cpf" value={formData.cpf} onChange={handleChange} required />  // Novo campo para CPF
   
       <button type="submit">Adicionar Psicólogo</button>
     </form>

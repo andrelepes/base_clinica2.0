@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { ClinicaContext } from '../../contexts/ClinicaContext';
+import { useClinicaId } from '../../contexts/ClinicaIdContext';  // Import the new context
 
 function UpdateClinicaForm({ initialData = {}, onFormSubmit }) {
     const { clinica, setClinica } = useContext(ClinicaContext);
+    const { clinicaId, setClinicaId } = useClinicaId();  // Use the new context
 
     const defaultData = useMemo(() => ({
         nome: '',
@@ -36,6 +38,9 @@ function UpdateClinicaForm({ initialData = {}, onFormSubmit }) {
         const mappedFormData = { ...formData, cpfCnpj: formData.cpf }; // Mapeando cpf para cpfcnpj
         onFormSubmit(mappedFormData);
         setClinica(mappedFormData);
+
+        // Update clinicaId if needed
+        setClinicaId(mappedFormData.id || clinica.id);
 
         // Forçar um recarregamento da página
         window.location.reload();
