@@ -66,12 +66,21 @@ exports.listLinkedSecretaries = async (req, res) => {
 
 // Adicionar um psicólogo vinculado à clínica logada
 exports.addLinkedPsychologist = async (req, res) => {
+    console.log("Iniciando o processo de vinculação de psicólogo...");  // Log adicional
+    console.log("Dados recebidos:", req.body);
+
     try {
+        console.log('Req Params:', req.params);  // Log para depuração
+        console.log('Req Body:', req.body);  // Log para depuração
+
         const clinicaId = req.params.clinicaId || req.body.clinicaId;
-        const { nome, email } = req.body;
+        const { nome, email, cpf } = req.body;  // Adicione o cpf aqui
+
+        // TODO: Adicione validação para nome, email e cpf aqui
 
         // Crie um novo psicólogo e obtenha o ID
-        const psychologistId = await Psicologos.create(nome, email);
+        const psychologistId = await Psicologos.create(nome, email, cpf);  // Passe o cpf aqui
+        console.log('Psicólogo vinculado com sucesso, ID:', psychologistId);  // Log adicional
 
         // Vincule o novo psicólogo à clínica atual
         await Clinica.addLinkedPsychologist(clinicaId, psychologistId);
@@ -79,12 +88,10 @@ exports.addLinkedPsychologist = async (req, res) => {
         res.status(201).json({ mensagem: 'Psicólogo vinculado com sucesso' });
     } catch (err) {
         console.error('Erro ao vincular psicólogo:', err);
+        // TODO: Adicione mensagens de erro personalizadas com base no tipo de erro
         res.status(500).json({ erro: err.message });
     }
 };
-
-  
-
 
 // Adicionar um secretário vinculado à clínica logada
 exports.addLinkedSecretary = async (req, res) => {
