@@ -40,8 +40,8 @@ function App() {
   }, []);
 
   return (
-    <ClinicaProvider> {/* Wrap the components with ClinicaProvider */}
-      <ClinicaIdProvider> {/* Wrap the components with ClinicaIdProvider */}
+    <ClinicaIdProvider> {/* Wrap the components with ClinicaIdProvider */}
+      <ClinicaProvider> {/* Wrap the components with ClinicaProvider */}
         <Router>
           <div className='App'>
             {token ? (
@@ -68,8 +68,8 @@ function App() {
             )}
           </div>
         </Router>
-      </ClinicaIdProvider>
-    </ClinicaProvider>
+      </ClinicaProvider>
+    </ClinicaIdProvider>
   );
 }
 

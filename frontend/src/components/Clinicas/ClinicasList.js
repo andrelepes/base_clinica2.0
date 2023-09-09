@@ -3,9 +3,11 @@ import api from '../../services/api';
 import AddClinicaForm from './AddClinicaForm';
 import AddPsychologistForm from './AddPsychologistForm';
 import { ClinicaContext } from '../../contexts/ClinicaContext';
+import { useClinicaId } from '../../contexts/ClinicaIdContext';  // Import the ClinicaIdContext
 
 function ClinicasList() {
   const { clinica, setClinica } = useContext(ClinicaContext);
+  const { clinicaId, setClinicaId } = useClinicaId();  // Use the ClinicaIdContext
   const [showForm, setShowForm] = useState(false);
   const [showPsychologistForm, setShowPsychologistForm] = useState(false);
   const [editingClinica, setEditingClinica] = useState(null);
@@ -21,6 +23,7 @@ function ClinicasList() {
       }
       setShowForm(false);
       setClinica(response.data);
+      setClinicaId(response.data.id);  // Update the clinicaId
     } catch (error) {
       console.error('Erro ao adicionar/atualizar clínica:', error);
       alert('Ocorreu um erro ao adicionar/atualizar a clínica.');
@@ -29,7 +32,7 @@ function ClinicasList() {
 
   const handleNewPsychologist = async (psychologistData) => {
     try {
-      const response = await api.post('/clinicas/:id/add-linked-psychologist', psychologistData);
+      const response = await api.post(`/clinicas/${clinicaId}/add-linked-psychologist`, psychologistData);  // Use the clinicaId
       setShowPsychologistForm(false);
     } catch (error) {
       console.error('Erro ao adicionar psicólogo:', error);

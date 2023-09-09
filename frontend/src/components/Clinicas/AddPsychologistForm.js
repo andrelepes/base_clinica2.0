@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import api from '../../services/api';
-import jwt_decode from 'jwt-decode';
 import { useClinicaId } from '../../contexts/ClinicaIdContext';  // Importar o novo contexto
 
 function AddPsychologistForm({ onFormSubmit }) {
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
-    cpf: ''  // Novo estado para CPF
+    cpf: ''  
   });
 
   const { clinicaId } = useClinicaId();  // Usar o novo contexto
@@ -43,8 +42,8 @@ function AddPsychologistForm({ onFormSubmit }) {
       <label htmlFor="email">Email:</label>
       <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
   
-      <label htmlFor="cpf">CPF:</label>  // Novo campo para CPF
-      <input type="text" id="cpf" name="cpf" value={formData.cpf} onChange={handleChange} required />  // Novo campo para CPF
+      <label htmlFor="cpf">CPF:</label>  
+      <input type="text" id="cpf" name="cpf" value={formData.cpf} onChange={handleChange} required /> 
   
       <button type="submit">Adicionar Psicólogo</button>
     </form>

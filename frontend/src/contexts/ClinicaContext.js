@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import api from '../services/api';  // Certifique-se de que o caminho está correto
-import jwt_decode from 'jwt-decode';  // Importando a biblioteca para decodificar o JWT
+import { useClinicaId } from './ClinicaIdContext';  // Importe o hook useClinicaId
 
 // Criar o contexto
 export const ClinicaContext = createContext();
@@ -8,23 +8,13 @@ export const ClinicaContext = createContext();
 // Componente provedor
 export const ClinicaProvider = ({ children }) => {
     const [clinica, setClinica] = useState(null);
+    const { clinicaId } = useClinicaId();  // Use o hook useClinicaId
 
     useEffect(() => {
         const fetchClinica = async () => {
             try {
-                // Obtendo o token do localStorage
-                const token = localStorage.getItem('token');  
-                if (!token) {
-                    console.error('Token não encontrado no localStorage');
-                    return;
-                }
-
-                // Decodificando o token para obter o clinicaId
-                const decodedToken = jwt_decode(token);
-                const clinicaId = decodedToken.user.clinica_id;
-
                 if (!clinicaId) {
-                    console.error('ID da clínica não encontrado no token');
+                    console.error('ID da clínica não encontrado no contexto');
                     return;
                 }
                 
@@ -36,7 +26,7 @@ export const ClinicaProvider = ({ children }) => {
         };
 
         fetchClinica();
-    }, []);
+    }, [clinicaId]);  // Adicione clinicaId como dependência
 
     // Log para depuração
     useEffect(() => {
@@ -58,3 +48,4 @@ export const useClinica = () => {
     }
     return context;
 };
+
