@@ -4,7 +4,7 @@ class Usuarios {
   // Método para verificar se um e-mail já está registrado
   static async emailJaRegistrado(email) {
     try {
-      const usuario = await db.oneOrNone('SELECT * FROM usuarios WHERE email = $1', [email]);
+      const usuario = await db.oneOrNone('SELECT * FROM usuarios WHERE email_usuario = $1', [email]);
       return usuario !== null;
     } catch (error) {
       console.error('Erro ao verificar e-mail:', error);
@@ -13,10 +13,16 @@ class Usuarios {
   }
 
   // Método para inserir um novo usuário
-  static async inserirUsuario(nome, email, senhaCriptografada, tipoUsuario, clinica_id) {
+  static async inserirUsuario(nome_usuario, email_usuario, senhaCriptografada, tipousuario, clinica_id) {
+    // Verifique se o tipo de usuário é válido
+    const tiposPermitidos = ['clinica', 'psicologo', 'psicologo_vinculado', 'secretario_vinculado'];
+    if (!tiposPermitidos.includes(tipousuario)) {
+      throw new Error('Tipo de usuário inválido');
+    }
+
     try {
-      await db.none('INSERT INTO usuarios (nome, email, senha, tipoUsuario, clinica_id) VALUES ($1, $2, $3, $4, $5)',
-        [nome, email, senhaCriptografada, tipoUsuario, clinica_id]);
+      await db.none('INSERT INTO usuarios (nome_usuario, email_usuario, senha, tipousuario, clinica_id) VALUES ($1, $2, $3, $4, $5)',
+        [nome_usuario, email_usuario, senhaCriptografada, tipousuario, clinica_id]);
       return { success: true, message: 'Usuário registrado com sucesso!' };
     } catch (error) {
       console.error('Erro ao inserir usuário:', error);
@@ -28,4 +34,3 @@ class Usuarios {
 }
 
 module.exports = Usuarios;
-
