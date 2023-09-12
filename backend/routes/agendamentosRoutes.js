@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('../../database');
 const auth = require('../../authMiddleware');
 
-// GET todos os agendamentos
+// GET all appointments
 router.get('/', auth, (req, res) => {
     db.any('SELECT * FROM agendamentos')
         .then(data => {
@@ -15,10 +15,10 @@ router.get('/', auth, (req, res) => {
         });
 });
 
-// GET um agendamento específico
+// GET a specific appointment
 router.get('/:id', auth, (req, res) => {
     const agendamentoId = req.params.id;
-    db.oneOrNone('SELECT * FROM agendamentos WHERE id = $1', [agendamentoId])
+    db.oneOrNone('SELECT * FROM agendamentos WHERE agendamento_id = $1', [agendamentoId])
         .then(data => {
             if (data) {
                 res.json(data);
@@ -32,14 +32,15 @@ router.get('/:id', auth, (req, res) => {
         });
 });
 
-// POST para criar um novo agendamento
+// POST to create a new appointment
 router.post('/', auth, (req, res) => {
-    if (req.user.funcao !== 'psicologo') {
-        return res.status(403).json({ msg: 'Apenas psicólogos podem criar um novo agendamento.' });
+    const allowedRoles = ['clinica', 'psicologo', 'psicologo_vinculado', 'secretario_vinculado'];
+    if (!allowedRoles.includes(req.user.funcao)) {
+        return res.status(403).json({ msg: 'Você não tem permissão para criar um novo agendamento.' });
     }
-    const { data_hora, paciente_id, psicologo_id } = req.body;
-    const status = "agendado";
-    db.none('INSERT INTO agendamentos (data_hora, paciente_id, psicologo_id, status) VALUES ($1, $2, $3, $4)', [data_hora, paciente_id, psicologo_id, status])
+    const { data_hora_agendamento, paciente_id, usuario_id } = req.body;
+    const status_agendamento = 'agendado';
+    db.none('INSERT INTO agendamentos (data_hora_agendamento, paciente_id, usuario_id, status_agendamento) VALUES ($1, $2, $3, $4)', [data_hora_agendamento, paciente_id, usuario_id, status_agendamento])
         .then(() => {
             res.json({ message: 'Agendamento adicionado com sucesso!' });
         })
@@ -49,16 +50,17 @@ router.post('/', auth, (req, res) => {
         });
 });
 
-// PUT para atualizar um agendamento
+// PUT to update an appointment
 router.put('/:id', auth, (req, res) => {
-    if (req.user.funcao !== 'psicologo') {
-        return res.status(403).json({ msg: 'Apenas psicólogos podem atualizar um agendamento.' });
+    const allowedRoles = ['clinica', 'psicologo', 'psicologo_vinculado', 'secretario_vinculado'];
+    if (!allowedRoles.includes(req.user.funcao)) {
+        return res.status(403).json({ msg: 'Você não tem permissão para atualizar um agendamento.' });
     }
     const agendamentoId = req.params.id;
-    const { data_hora, paciente_id, psicologo_id, status } = req.body;
+    const { data_hora_agendamento, paciente_id, usuario_id, status_agendamento } = req.body;
 
-    const query = 'UPDATE agendamentos SET data_hora = $1, paciente_id = $2, psicologo_id = $3, status = $4 WHERE id = $5';
-    const values = [data_hora, paciente_id, psicologo_id, status || 'agendado', agendamentoId];
+    const query = 'UPDATE agendamentos SET data_hora_agendamento = $1, paciente_id = $2, usuario_id = $3, status_agendamento = $4 WHERE agendamento_id = $5';
+    const values = [data_hora_agendamento, paciente_id, usuario_id, status_agendamento || 'agendado', agendamentoId];
 
     db.none(query, values)
         .then(() => {
@@ -70,13 +72,14 @@ router.put('/:id', auth, (req, res) => {
         });
 });
 
-// DELETE para excluir um agendamento
+// DELETE to delete an appointment
 router.delete('/:id', auth, (req, res) => {
-    if (req.user.funcao !== 'psicologo') {
-        return res.status(403).json({ msg: 'Apenas psicólogos podem excluir um agendamento.' });
+    const allowedRoles = ['clinica', 'psicologo', 'psicologo_vinculado', 'secretario_vinculado'];
+    if (!allowedRoles.includes(req.user.funcao)) {
+        return res.status(403).json({ msg: 'Você não tem permissão para excluir um agendamento.' });
     }
     const agendamentoId = req.params.id;
-    db.none('DELETE FROM agendamentos WHERE id = $1', [agendamentoId])
+    db.none('DELETE FROM agendamentos WHERE agendamento_id = $1', [agendamentoId])
         .then(() => {
             res.json({ message: 'Agendamento deletado com sucesso!' });
         })

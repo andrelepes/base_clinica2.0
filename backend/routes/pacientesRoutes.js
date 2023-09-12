@@ -1,96 +1,81 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../../database');
-const auth = require('../../authMiddleware'); // Importando o middleware de autenticação
+const auth = require('../../authMiddleware');
+
+// Middleware de autenticação
+router.use(auth);
 
 // GET todos os pacientes ativos
 router.get('/', (req, res) => {
-    db.any('SELECT * FROM pacientes WHERE status = $1', ['ativo'])
+    db.any('SELECT * FROM pacientes WHERE status_paciente = $1 AND clinica_id = $2', ['ativo', req.clinicaId])
         .then(data => {
             res.json(data);
         })
         .catch(error => {
             console.log(error);
-            res.status(500).json({ error });
+            res.status(500).json({ erro: 'Erro interno do servidor.' });
         });
 });
 
 // GET um paciente específico (apenas se estiver ativo)
 router.get('/:id', (req, res) => {
     const pacienteId = req.params.id;
-    db.one('SELECT * FROM pacientes WHERE id = $1 AND status = $2', [pacienteId, 'ativo'])
+    db.one('SELECT * FROM pacientes WHERE paciente_id = $1 AND status_paciente = $2 AND clinica_id = $3', [pacienteId, 'ativo', req.clinicaId])
         .then(data => {
             res.json(data);
         })
         .catch(error => {
             console.log(error);
-            res.status(500).json({ error });
+            res.status(500).json({ erro: 'Erro interno do servidor.' });
         });
 });
 
 // POST para criar um novo paciente
 router.post('/', (req, res) => {
-    if (!['psicologo', 'responsavelTecnico'].includes(req.user.funcao)) {
-        return res.status(403).json({ msg: 'Apenas psicólogos ou responsável técnico podem adicionar um novo paciente' });
-    }
-    const { cpf, nome, data_nascimento, telefone, email, cep, endereco } = req.body;
-
-    // Primeiro, verificamos se o CPF já existe
-    db.oneOrNone('SELECT * FROM pacientes WHERE cpf = $1', [cpf])
+    const { nome_paciente, email_paciente, data_nascimento_paciente, telefone_paciente, cpf_paciente, cep_paciente, endereco_paciente } = req.body;
+    db.oneOrNone('SELECT * FROM pacientes WHERE cpf_paciente = $1 AND clinica_id = $2', [cpf_paciente, req.clinicaId])
         .then(data => {
             if (data) {
-                // Se o CPF já existir, enviamos um erro
-                console.log('CPF já existe na base de dados.');
-                return res.status(409).json({ error: 'Um paciente com esse CPF já existe!' });
+                return res.status(409).json({ erro: 'Um paciente com esse CPF já existe!' });
             } else {
-                // Se o CPF não existir, inserimos o novo paciente
-                console.log('Inserindo novo paciente...');
-                return db.none('INSERT INTO pacientes (cpf, nome, data_nascimento, telefone, email, cep, endereco) VALUES ($1, $2, $3, $4, $5, $6, $7)', 
-                        [cpf, nome, data_nascimento, telefone, email, cep, endereco])
+                return db.none('INSERT INTO pacientes (nome_paciente, email_paciente, data_nascimento_paciente, telefone_paciente, cpf_paciente, cep_paciente, endereco_paciente, clinica_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', 
+                        [nome_paciente, email_paciente, data_nascimento_paciente, telefone_paciente, cpf_paciente, cep_paciente, endereco_paciente, req.clinicaId])
                         .then(() => {
-                            console.log('Paciente inserido com sucesso.');
-                            res.json({ message: 'Paciente adicionado com sucesso!' });
+                            res.json({ mensagem: 'Paciente adicionado com sucesso!' });
                         });
             }
         })
         .catch(error => {
-            console.log('Erro ao inserir paciente:', error);
-            res.status(500).json({ error: 'Erro interno. Por favor, tente novamente mais tarde.' });
+            console.log(error);
+            res.status(500).json({ erro: 'Erro interno do servidor.' });
         });
 });
 
 // PUT para atualizar um paciente
 router.put('/:id', (req, res) => {
-    if (!['psicologo', 'responsavelTecnico'].includes(req.user.funcao)) {
-        return res.status(403).json({ msg: 'Apenas psicólogos ou responsável técnico podem atualizar um paciente' });
-    }
     const pacienteId = req.params.id;
-    const { cpf, nome, data_nascimento, telefone, email, cep, endereco } = req.body;
-    
-    db.none('UPDATE pacientes SET cpf = $1, nome = $2, data_nascimento = $3, telefone = $4, email = $5, cep = $6, endereco = $7 WHERE id = $8', [cpf, nome, data_nascimento, telefone, email, cep, endereco, pacienteId])
+    const { nome_paciente, email_paciente, data_nascimento_paciente, telefone_paciente, cpf_paciente, cep_paciente, endereco_paciente } = req.body;
+    db.none('UPDATE pacientes SET nome_paciente = $1, email_paciente = $2, data_nascimento_paciente = $3, telefone_paciente = $4, cpf_paciente = $5, cep_paciente = $6, endereco_paciente = $7 WHERE paciente_id = $8 AND clinica_id = $9', [nome_paciente, email_paciente, data_nascimento_paciente, telefone_paciente, cpf_paciente, cep_paciente, endereco_paciente, pacienteId, req.clinicaId])
         .then(() => {
-            res.json({ message: 'Paciente atualizado com sucesso!' });
+            res.json({ mensagem: 'Paciente atualizado com sucesso!' });
         })
         .catch(error => {
             console.log(error);
-            res.status(500).json({ error });
+            res.status(500).json({ erro: 'Erro interno do servidor.' });
         });
 });
 
 // DELETE para marcar um paciente como inativo
 router.delete('/:id', (req, res) => {
-    if (!['psicologo', 'responsavelTecnico'].includes(req.user.funcao)) {
-        return res.status(403).json({ msg: 'Apenas psicólogos ou responsável técnico podem inativar um paciente' });
-    }
     const pacienteId = req.params.id;
-    
-    db.none('UPDATE pacientes SET status = $1 WHERE id = $2', ['inativo', pacienteId])
+    db.none('UPDATE pacientes SET status_paciente = $1 WHERE paciente_id = $2 AND clinica_id = $3', ['inativo', pacienteId, req.clinicaId])
         .then(() => {
-            res.json({ message: 'Paciente marcado como inativo!' });
+            res.json({ mensagem: 'Paciente marcado como inativo!' });
         })
         .catch(error => {
             console.log(error);
-            res.status(500).json({ error });
+            res.status(500).json({ erro: 'Erro interno do servidor.' });
         });
 });
 
