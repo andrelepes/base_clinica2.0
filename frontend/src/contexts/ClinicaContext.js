@@ -18,7 +18,7 @@ export const ClinicaProvider = ({ children }) => {
                     return;
                 }
                 
-                const response = await api.get(`/clinicas/${clinicaId}`);
+                const response = await api.get(`/usuarios/${clinicaId}`);
                 setClinica(response.data);
             } catch (error) {
                 console.error('Erro ao buscar informações da clínica:', error);

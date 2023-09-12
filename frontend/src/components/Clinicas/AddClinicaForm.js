@@ -7,19 +7,19 @@ function UpdateClinicaForm({ initialData = {}, onFormSubmit }) {
     const { clinicaId, setClinicaId } = useClinicaId();  // Use the new context
 
     const defaultData = useMemo(() => ({
-        nome: '',
-        cpf: '',
-        telefone: '',
-        email: '',
-        cep: '',
-        endereco: ''
+        nome_usuario: '',
+        cpfcnpj: '',
+        telefone_usuario: '',
+        email_usuario: '',
+        cep_usuario: '',
+        endereco_usuario: ''
     }), []);
 
     const [formData, setFormData] = useState({ ...defaultData, ...clinica });
 
     useEffect(() => {
         console.log('Dados da clínica do contexto:', clinica);
-        const mappedClinica = { ...clinica, cpf: clinica.cpfCnpj }; // Mapeando cpfcnpj para cpf
+        const mappedClinica = { ...clinica, cpfcnpj: clinica.cpfcnpj }; // Mapeando cpfcnpj para cpf
         setFormData(prev => ({ ...defaultData, ...mappedClinica }));
         console.log('Dados do formulário:', formData);
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -35,7 +35,7 @@ function UpdateClinicaForm({ initialData = {}, onFormSubmit }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const mappedFormData = { ...formData, cpfCnpj: formData.cpf }; // Mapeando cpf para cpfcnpj
+        const mappedFormData = { ...formData, cpfcnpj: formData.cpfcnpj}; // Mapeando cpf para cpfcnpj
         onFormSubmit(mappedFormData);
         setClinica(mappedFormData);
 

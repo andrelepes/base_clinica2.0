@@ -3,15 +3,15 @@ import api from '../../services/api';
 import { Link } from 'react-router-dom';
 
 const LoginComponent = () => {
-  const [email, setEmail] = useState('');
+  const [email_usuario, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault(); // Evitar o comportamento padrão do formulário
-    console.log(`Tentando fazer login com email: ${email} e senha: ${senha}`);
+    console.log(`Tentando fazer login com email: ${email_usuario} e senha: ${senha}`);
     try {
-      const response = await api.post('/usuarios/login', { email, senha });
+      const response = await api.post('/usuarios/login', { email_usuario, senha });
       localStorage.setItem('token', response.data.token);
       setErrorMsg('');
 

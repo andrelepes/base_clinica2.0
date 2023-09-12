@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 
 function AddPatientForm({ initialData = {}, onFormSubmit }) {
     const defaultData = {
-        cpf: '',
-        nome: '',
-        data_nascimento: '',
-        telefone: '',
-        email: '',
-        cep: '',
-        endereco: ''
+        cpf_paciente: '',
+        nome_paciente: '',
+        data_nascimento_paciente: '',
+        telefone_paciente: '',
+        email_paciente: '',
+        cep_paciente: '',
+        endereco_paciente: ''
     };
 
     const [formData, setFormData] = useState({ ...defaultData, ...initialData });
@@ -16,11 +16,11 @@ function AddPatientForm({ initialData = {}, onFormSubmit }) {
     useEffect(() => {
         const formattedInitialData = initialData ? {
             ...initialData,
-            data_nascimento: initialData.data_nascimento ? initialData.data_nascimento.split("T")[0] : ""
+            data_nascimento_paciente: initialData.data_nascimento_paciente ? initialData.data_nascimento_paciente.split('T')[0] : ''
         } : {};
 
         setFormData(prev => ({ ...defaultData, ...formattedInitialData }));
-    }, [initialData]);  // Adicionado initialData aqui
+    }, [initialData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -33,10 +33,10 @@ function AddPatientForm({ initialData = {}, onFormSubmit }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const formattedCPF = formData.cpf.replace(/[.-]/g, '');
+        const formattedCPF = formData.cpf_paciente.replace(/[.-]/g, '');
         const newPatientData = {
             ...formData,
-            cpf: formattedCPF
+            cpf_paciente: formattedCPF
         };
 
         onFormSubmit(newPatientData);
@@ -44,30 +44,30 @@ function AddPatientForm({ initialData = {}, onFormSubmit }) {
 
     return (
         <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '1rem' }}>
-            <label htmlFor="cpf">CPF:</label>
-            <input type="text" id="cpf" name="cpf" value={formData.cpf} onChange={handleChange} required />
+            <label htmlFor='cpf_paciente'>CPF:</label>
+            <input type='text' id='cpf_paciente' name='cpf_paciente' value={formData.cpf_paciente} onChange={handleChange} required />
 
-            <label htmlFor="nome">Nome:</label>
-            <input type="text" id="nome" name="nome" value={formData.nome} onChange={handleChange} required />
+            <label htmlFor='nome_paciente'>Nome:</label>
+            <input type='text' id='nome_paciente' name='nome_paciente' value={formData.nome_paciente} onChange={handleChange} required />
 
-            <label htmlFor="data_nascimento">Data de Nascimento:</label>
-            <input type="date" id="data_nascimento" name="data_nascimento" value={formData.data_nascimento} onChange={handleChange} required />
+            <label htmlFor='data_nascimento_paciente'>Data de Nascimento:</label>
+            <input type='date' id='data_nascimento_paciente' name='data_nascimento_paciente' value={formData.data_nascimento_paciente} onChange={handleChange} required />
 
-            <label htmlFor="telefone">Telefone:</label>
-            <input type="tel" id="telefone" name="telefone" value={formData.telefone} onChange={handleChange} required />
+            <label htmlFor='telefone_paciente'>Telefone:</label>
+            <input type='tel' id='telefone_paciente' name='telefone_paciente' value={formData.telefone_paciente} onChange={handleChange} required />
 
-            <label htmlFor="email">Email:</label>
-            <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
+            <label htmlFor='email_paciente'>Email:</label>
+            <input type='email' id='email_paciente' name='email_paciente' value={formData.email_paciente} onChange={handleChange} required />
 
-            <label htmlFor="cep">CEP:</label>
-            <input type="text" id="cep" name="cep" value={formData.cep} onChange={handleChange} required />
+            <label htmlFor='cep_paciente'>CEP:</label>
+            <input type='text' id='cep_paciente' name='cep_paciente' value={formData.cep_paciente} onChange={handleChange} required />
 
-            <label htmlFor="endereco">Endereço:</label>
-            <input type="text" id="endereco" name="endereco" value={formData.endereco} onChange={handleChange} required />
+            <label htmlFor='endereco_paciente'>Endereço:</label>
+            <input type='text' id='endereco_paciente' name='endereco_paciente' value={formData.endereco_paciente} onChange={handleChange} required />
 
-            <div></div> {/* Espaço vazio para alinhar o botão à direita */}
-            <button type="submit">
-                {(initialData && initialData.id) ? 'Atualizar Paciente' : 'Adicionar Paciente'}
+            <div></div>
+            <button type='submit'>
+                {(initialData && initialData.paciente_id) ? 'Atualizar Paciente' : 'Adicionar Paciente'}
             </button>
         </form>
     );

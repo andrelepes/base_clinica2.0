@@ -7,10 +7,10 @@ router.post('/', auth, async (req, res) => {
     const { paciente_id, psicologo_id, data_hora_agendamento, notas_sessao } = req.body;
 
     // Verificação de permissão
-    if (['psicologo', 'psicologo_vinculado'].includes(req.tipoUsuario) && req.user !== paciente_id) {
+    if (['psicologo', 'psicologo_vinculado'].includes(req.tipousuario) && req.user !== paciente_id) {
         return res.status(403).json({ msg: 'Permissão negada.' });
     }
-    if (['clinica'].includes(req.tipoUsuario) && req.clinicaId !== paciente_id) {
+    if (['clinica'].includes(req.tipousuario) && req.clinicaId !== paciente_id) {
         return res.status(403).json({ msg: 'Permissão negada.' });
     }
 

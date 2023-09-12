@@ -72,19 +72,18 @@ function PacienteDetalhes() {
             alert("Ocorreu um erro ao excluir o prontuário.");
         }
     };
-
     return (
         <div>
             {paciente && (
                 <div>
                     <h2>Detalhes do Paciente</h2>
-                    <p><strong>Nome:</strong> {paciente.nome}</p>
-                    <p><strong>CPF:</strong> {paciente.cpf}</p>
-                    <p><strong>Data de Nascimento:</strong> {formatDate(paciente.data_nascimento.split('T')[0])}</p>
-                    <p><strong>Telefone:</strong> {paciente.telefone}</p>
-                    <p><strong>Email:</strong> {paciente.email}</p>
-                    <p><strong>CEP:</strong> {paciente.cep}</p>
-                    <p><strong>Endereço:</strong> {paciente.endereco}</p>
+                    <p><strong>Nome:</strong> {paciente.nome_paciente}</p>
+                    <p><strong>CPF:</strong> {paciente.cpf_paciente}</p>
+                    <p><strong>Data de Nascimento:</strong> {formatDate(paciente.data_nascimento_paciente.split('T')[0])}</p>
+                    <p><strong>Telefone:</strong> {paciente.telefone_paciente}</p>
+                    <p><strong>Email:</strong> {paciente.email_paciente}</p>
+                    <p><strong>CEP:</strong> {paciente.cep_paciente}</p>
+                    <p><strong>Endereço:</strong> {paciente.endereco_paciente}</p>
                 </div>
             )}
             <h3>Prontuários</h3>
@@ -92,16 +91,16 @@ function PacienteDetalhes() {
             {showProntuarioForm && 
                 <AddProntuarioForm 
                     onFormSubmit={handleNewProntuario} 
-                    initialData={editProntuarioId ? prontuarios.find(p => p.id === editProntuarioId) : {}}
+                    initialData={editProntuarioId ? prontuarios.find(p => p.prontuario_id === editProntuarioId) : {}}
                 />
             }
             
             <ul>
                 {prontuarios.map(prontuario => (
-                    <li key={prontuario.id}>
-                        Data: {formatDate(prontuario.data.split('T')[0])} | Notas: {prontuario.notas_sessao}
-                        <button onClick={() => handleEditProntuario(prontuario.id)}>Editar</button>
-                        <button onClick={() => handleDeleteProntuario(prontuario.id)}>Excluir</button>
+                    <li key={prontuario.prontuario_id}>
+                        Data: {formatDate(prontuario.data_prontuario.split('T')[0])} | Notas: {prontuario.notas_sessao}
+                        <button onClick={() => handleEditProntuario(prontuario.prontuario_id)}>Editar</button>
+                        <button onClick={() => handleDeleteProntuario(prontuario.prontuario_id)}>Excluir</button>
                     </li>
                 ))}
             </ul>

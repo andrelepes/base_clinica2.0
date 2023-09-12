@@ -30,6 +30,25 @@ class Usuarios {
     }
   }
 
+// Método para inserir um novo usuário vinculado
+  static async inserirUsuarioVinculado({ nome_usuario, email_usuario, senha, tipousuario, clinica_id, status_usuario }) {
+ // Verifique se o tipo de usuário é válido
+ const tiposPermitidos = ['clinica', 'psicologo', 'psicologo_vinculado', 'secretario_vinculado'];
+ if (!tiposPermitidos.includes(tipousuario)) {
+   throw new Error('Tipo de usuário inválido');
+ }
+
+ try {
+   await db.none(
+     'INSERT INTO usuarios (nome_usuario, email_usuario, senha, tipousuario, clinica_id, status_usuario) VALUES ($1, $2, $3, $4, $5, $6)',
+     [nome_usuario, email_usuario, senha, tipousuario, clinica_id, status_usuario]
+   );
+   return { success: true, message: 'Usuário registrado com sucesso!' };
+ } catch (error) {
+   console.error('Erro ao inserir usuário:', error);
+   return { success: false, message: 'Erro ao inserir usuário' };
+ }
+}
   // Outros métodos relacionados a usuários podem ser adicionados aqui
 }
 

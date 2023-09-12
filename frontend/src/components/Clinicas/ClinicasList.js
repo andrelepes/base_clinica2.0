@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import api from '../../services/api';
-import AddClinicaForm from './AddClinicaForm';
 import AddPsychologistForm from './AddPsychologistForm';
 import { ClinicaContext } from '../../contexts/ClinicaContext';
 import { useClinicaId } from '../../contexts/ClinicaIdContext';  // Import the ClinicaIdContext
@@ -16,10 +15,10 @@ function ClinicasList() {
     try {
       let response;
       if (editingClinica) {
-        response = await api.put(`/clinicas/${editingClinica.id}`, clinicaData);
+        response = await api.put(`/usuarios/${editingClinica.id}`, clinicaData);
         setEditingClinica(null);
       } else {
-        response = await api.post('/clinicas', clinicaData);
+        response = await api.post('/usuarios', clinicaData);
       }
       setShowForm(false);
       setClinica(response.data);
@@ -32,7 +31,7 @@ function ClinicasList() {
 
   const handleNewPsychologist = async (psychologistData) => {
     try {
-      const response = await api.post(`/clinicas/${clinicaId}/add-linked-psychologist`, psychologistData);  // Use the clinicaId
+      const response = await api.post(`/usuarios/${clinicaId}/add-linked-psychologist`, psychologistData);  // Use the clinicaId
       setShowPsychologistForm(false);
     } catch (error) {
       console.error('Erro ao adicionar psicólogo:', error);
@@ -51,17 +50,6 @@ function ClinicasList() {
   return (
     <div>
       <h2>Clínica</h2>
-      <div>
-        <h3>Informações da Clínica</h3>
-        <p>Nome: {clinica ? clinica.nome : 'Carregando...'}</p>
-        <p>Email: {clinica ? clinica.email : 'Carregando...'}</p>
-        <p>CNPJ: {clinica ? clinica.cpfcnpj : 'Carregando...'}</p>
-        <p>CEP: {clinica ? clinica.cep : 'Carregando...'}</p>
-        <p>Endereço: {clinica ? clinica.endereco : 'Carregando...'}</p>
-        <p>Telefone: {clinica ? clinica.telefone : 'Carregando...'}</p>
-        <button onClick={() => { setEditingClinica(clinica); setShowForm(true); }}>Atualizar Perfil</button>
-      </div>
-      {showForm && <AddClinicaForm onFormSubmit={handleNewClinica} initialData={editingClinica} />}
       <div>
         <h3>Psicólogos Vinculados</h3>
         <button onClick={handleAddPsicologo}>Adicionar Psicólogo</button>

@@ -4,9 +4,8 @@ import { useClinicaId } from '../../contexts/ClinicaIdContext';  // Importar o n
 
 function AddPsychologistForm({ onFormSubmit }) {
   const [formData, setFormData] = useState({
-    nome: '',
-    email: '',
-    cpf: ''  
+    nome_usuario: '',
+    email_usuario: '',
   });
 
   const { clinicaId } = useClinicaId();  // Usar o novo contexto
@@ -25,7 +24,7 @@ function AddPsychologistForm({ onFormSubmit }) {
     console.log('Dados enviados para o backend:', formData);
 
     try {
-      const response = await api.post(`/clinicas/${clinicaId}/add-linked-psychologist`, formData);  // Usar clinicaId do contexto
+      const response = await api.post(`/usuario/${clinicaId}/add-linked-psychologist`, formData);  // Usar clinicaId do contexto
       console.log('Resposta do Backend:', response.data);
       onFormSubmit(response.data);
     } catch (error) {
@@ -37,15 +36,12 @@ function AddPsychologistForm({ onFormSubmit }) {
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor="nome">Nome:</label>
-      <input type="text" id="nome" name="nome" value={formData.nome} onChange={handleChange} required />
+      <input type="text" id="nome" name="nome" value={formData.nome_usuario} onChange={handleChange} required />
   
       <label htmlFor="email">Email:</label>
-      <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
+      <input type="email" id="email" name="email" value={formData.email_usuario} onChange={handleChange} required />
   
-      <label htmlFor="cpf">CPF:</label>  
-      <input type="text" id="cpf" name="cpf" value={formData.cpf} onChange={handleChange} required /> 
-  
-      <button type="submit">Adicionar Psicólogo</button>
+       <button type="submit">Adicionar Psicólogo</button>
     </form>
   );
 }

@@ -31,7 +31,7 @@ class UserController {
 
       // Se o usuário é uma clínica, crie um novo clinica_id
       if (tipousuario === 'Clinica' && !clinica_id) {
-        const novaClinica = await db.one('INSERT INTO clinicas (nome_usuario, email_usuario, tipoUsuario) VALUES ($1, $2, $3) RETURNING id', [nome_usuario, email_usuario, tipousuario]);
+        const novaClinica = await db.one('INSERT INTO clinicas (nome_usuario, email_usuario, tipousuario) VALUES ($1, $2, $3) RETURNING id', [nome_usuario, email_usuario, tipousuario]);
         clinicaIdToUse = novaClinica.id;
       }
 
