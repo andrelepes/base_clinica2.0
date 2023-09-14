@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useClinicaId } from '../../contexts/ClinicaIdContext';  // Importar o contexto
 
 function AddPatientForm({ initialData = {}, onFormSubmit }) {
+    const { clinicaId, usuarioId } = useClinicaId();  // Usar o contexto para obter clinicaId e usuarioId
+
     const defaultData = {
         cpf_paciente: '',
         nome_paciente: '',
@@ -36,7 +39,9 @@ function AddPatientForm({ initialData = {}, onFormSubmit }) {
         const formattedCPF = formData.cpf_paciente.replace(/[.-]/g, '');
         const newPatientData = {
             ...formData,
-            cpf_paciente: formattedCPF
+            cpf_paciente: formattedCPF,
+            usuario_id: usuarioId,  // Incluindo o usuario_id aqui
+            clinica_id: clinicaId
         };
 
         onFormSubmit(newPatientData);
@@ -44,6 +49,7 @@ function AddPatientForm({ initialData = {}, onFormSubmit }) {
 
     return (
         <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '1rem' }}>
+
             <label htmlFor='cpf_paciente'>CPF:</label>
             <input type='text' id='cpf_paciente' name='cpf_paciente' value={formData.cpf_paciente} onChange={handleChange} required />
 

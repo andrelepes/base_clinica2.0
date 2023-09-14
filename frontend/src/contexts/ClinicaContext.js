@@ -24,9 +24,11 @@ export const ClinicaProvider = ({ children }) => {
                 console.error('Erro ao buscar informações da clínica:', error);
             }
         };
-
-        fetchClinica();
-    }, [clinicaId]);  // Adicione clinicaId como dependência
+    
+        if (clinicaId) {
+            fetchClinica();
+        }
+    }, [clinicaId]);
 
     // Log para depuração
     useEffect(() => {

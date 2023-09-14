@@ -5,59 +5,67 @@ const crypto = require('crypto');
 const db = require('../../database');
 require('dotenv').config();
 
-// Middleware para autenticação
-const authenticate = (req, res, next) => {
-  // Lógica de autenticação aqui
-  next();
-};
-
 // Middleware para autorização baseada em tipo de usuário
 class UserController {
  
   static async register(req, res) {
     try {
+      console.log("Início do método de registro");  // Log 1
       const { nome_usuario, email_usuario, senha, tipousuario, clinica_id } = req.body;
-
-      // Validação de campos obrigatórios
+  
+      console.log("Validando campos obrigatórios");  // Log 2
       if (!nome_usuario || !email_usuario || !senha || !tipousuario) {
         return res.status(400).json({ message: 'Campos obrigatórios faltando' });
       }
-
-      // Criptografe a senha
+  
+      console.log("Verificando se o e-mail já existe");  // Log 3
+      const usuarioExistente = await db.oneOrNone('SELECT * FROM usuarios WHERE email_usuario = $1', [email_usuario]);
+      if (usuarioExistente) {
+        return res.status(400).json({ message: 'E-mail já registrado' });
+      }
+  
+      console.log("Criptografando a senha");  // Log 4
       const salt = await bcrypt.genSalt(10);
       const senhaCriptografada = await bcrypt.hash(senha, salt);
+  
+// Use a função inserirUsuario para inserir o novo usuário
+console.log("Inserindo novo usuário");  // Log 6
+const resultado = await Usuarios.inserirUsuario(nome_usuario, email_usuario, senhaCriptografada, tipousuario, null);
 
-      let clinicaIdToUse = clinica_id;
+if (resultado.success) {
+  // Busque o usuário recém-criado para obter o ID
+  const usuario = await db.oneOrNone('SELECT * FROM usuarios WHERE email_usuario = $1', [email_usuario]);
 
-      // Se o usuário é uma clínica, crie um novo clinica_id
-      if (tipousuario === 'Clinica' && !clinica_id) {
-        const novaClinica = await db.one('INSERT INTO clinicas (nome_usuario, email_usuario, tipousuario) VALUES ($1, $2, $3) RETURNING id', [nome_usuario, email_usuario, tipousuario]);
-        clinicaIdToUse = novaClinica.id;
-      }
+  let clinicaIdToUse = null;
 
-      // Use a função inserirUsuario para inserir o novo usuário
-      const resultado = await Usuarios.inserirUsuario(nome_usuario, email_usuario, senhaCriptografada, tipousuario, clinicaIdToUse);
+  // Se o tipo de usuário é "clinica", use o usuario_id como clinica_id
+  if (tipousuario === 'clinica') {
+    clinicaIdToUse = usuario.usuario_id;
 
-      if (resultado.success) {
-        // Busque o usuário recém-criado para obter o ID
-        const usuario = await db.oneOrNone('SELECT * FROM usuarios WHERE email_usuario = $1', [email_usuario]);
-        // Criar token JWT com informações adicionais
+    // Atualize o clinica_id do usuário original
+    await db.none('UPDATE usuarios SET clinica_id = $1 WHERE usuario_id = $2', [clinicaIdToUse, usuario.usuario_id]);
+  }
+
+  console.log("Usuário inserido com sucesso");  // Log 7
+  
         const payload = {
           user: {
-            id: usuario.usuario_id,
-            nome: nome_usuario,
+            usuario_id: usuario.usuario_id,
+            nome_usuario: nome_usuario,
             tipousuario: tipousuario,
             clinica_id: clinicaIdToUse
           }
         };
         const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
-
+  
         res.json({ message: resultado.message, token: token });
       } else {
+        console.log("Erro ao inserir usuário");  // Log 8
         res.status(500).json({ message: resultado.message });
       }
     } catch (error) {
       console.error(error);
+      console.error("Erro no servidor:", error);  // Log 9
       res.status(500).send('Erro no servidor');
     }
   }
@@ -75,7 +83,7 @@ class UserController {
         }
         const payload = {
             user: {
-                id: usuario.usuario_id,
+                usuario_id: usuario.usuario_id,
                 tipousuario: usuario.tipousuario,
                 clinica_id: usuario.clinica_id           
             }
@@ -114,7 +122,20 @@ class UserController {
         res.status(500).send('Erro no servidor');
     }
   }
-
+  static async getUserById(req, res) {
+    try {
+      const id = req.params.id;
+      const user = await db.oneOrNone('SELECT * FROM usuarios WHERE usuario_id = $1', [id]);
+      if (!user) {
+        return res.status(404).json({ message: 'Usuário não encontrado' });
+      }
+      res.json(user);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Erro no servidor');
+    }
+  }
+  
   static async updateProfile(req, res) {
     // Lógica de atualização de perfil aqui
   }

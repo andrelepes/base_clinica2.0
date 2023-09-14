@@ -21,12 +21,14 @@ class Usuarios {
     }
 
     try {
+      console.log("Tentando inserir usuário no banco de dados");  // Log adicional
       await db.none('INSERT INTO usuarios (nome_usuario, email_usuario, senha, tipousuario, clinica_id) VALUES ($1, $2, $3, $4, $5)',
         [nome_usuario, email_usuario, senhaCriptografada, tipousuario, clinica_id]);
+        console.log("Usuário inserido com sucesso no banco de dados");  // Log adicional
       return { success: true, message: 'Usuário registrado com sucesso!' };
     } catch (error) {
-      console.error('Erro ao inserir usuário:', error);
-      return { success: false, message: 'Erro ao inserir usuário' };
+      console.error('Erro ao inserir usuário (arquivo Usuarios.js):', error);
+      return { success: false, message: 'Erro ao inserir usuário ((arquivo Usuarios.js)' };
     }
   }
 

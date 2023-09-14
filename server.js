@@ -14,12 +14,6 @@ app.use(cors());
 // Use o bodyParser.json() aqui para que ele seja aplicado a todas as rotas
 app.use(bodyParser.json());
 
-// Rota de teste
-app.get('/test', (req, res) => {
-    console.log("Rota de teste acessada");  // Nova mensagem de depuração
-    res.send('Test route');
-});
-
 // Importando as rotas
 const pacientesRoutes = require('./backend/routes/pacientesRoutes');
 const psicologosRoutes = require('./backend/routes/psicologosRoutes');
@@ -31,7 +25,7 @@ const clinicasRoutes = require('./backend/routes/clinicasRoutes');
 
 // Definindo as rotas
 app.use('/api/pacientes', authMiddleware, pacientesRoutes);
-app.use('/api/psicologos', authMiddleware, psicologosRoutes);
+app.use('/api/psicologos', psicologosRoutes);
 app.use('/api/agendamentos', authMiddleware, agendamentosRoutes);
 app.use('/api/cursos', authMiddleware, cursosRoutes); 
 app.use('/api/usuarios', usuariosRoutes); // Sem middleware de autenticação

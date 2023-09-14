@@ -6,6 +6,11 @@ module.exports = (req, res, next) => {
     return next();
   }
 
+  // Adicionar exceção para a rota de registro de usuários
+  if (req.path === '/api/usuarios/registrar' && req.method === 'POST') {
+    return next();
+  }
+
   let token = req.header('x-auth-token');
   console.log('Token recebido:', token);  // Adicionado para depuração
 
@@ -21,8 +26,10 @@ module.exports = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    console.log('Token decodificado:', decoded);  // Adicionado para depuração
-
+    console.log('Token decodificado:', decoded);
+    console.log('usuario_id no token:', decoded.user.usuario_id);
+    console.log('clinica_id no token:', decoded.user.clinica_id);
+    
     // Decodificar as informações do usuário e o tipo de usuário
     req.user = decoded.usuario_id;
     req.tipoUsuario = decoded.tipousuario;

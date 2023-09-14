@@ -38,5 +38,6 @@ async function sendEmail(to, subject, text) {
 router.post('/login', UserController.login); // Utilizando a função login do controller
 router.post('/registrar', UserController.register); // Utilizando a função register do controller
 router.post('/solicitar-recuperacao-senha', UserController.forgotPassword); // Utilizando a função forgotPassword do controller
+router.get('/:id', UserController.getUserById); // Utilizando a função getUserById do controller
 
 module.exports = router;

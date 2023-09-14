@@ -33,14 +33,14 @@ router.get('/:id', (req, res) => {
 
 // POST para criar um novo paciente
 router.post('/', (req, res) => {
-    const { nome_paciente, email_paciente, data_nascimento_paciente, telefone_paciente, cpf_paciente, cep_paciente, endereco_paciente } = req.body;
+    const { nome_paciente, email_paciente, data_nascimento_paciente, telefone_paciente, cpf_paciente, cep_paciente, endereco_paciente, usuario_id } = req.body;
     db.oneOrNone('SELECT * FROM pacientes WHERE cpf_paciente = $1 AND clinica_id = $2', [cpf_paciente, req.clinicaId])
         .then(data => {
             if (data) {
                 return res.status(409).json({ erro: 'Um paciente com esse CPF já existe!' });
             } else {
-                return db.none('INSERT INTO pacientes (nome_paciente, email_paciente, data_nascimento_paciente, telefone_paciente, cpf_paciente, cep_paciente, endereco_paciente, clinica_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', 
-                        [nome_paciente, email_paciente, data_nascimento_paciente, telefone_paciente, cpf_paciente, cep_paciente, endereco_paciente, req.clinicaId])
+                return db.none('INSERT INTO pacientes (nome_paciente, email_paciente, data_nascimento_paciente, telefone_paciente, cpf_paciente, cep_paciente, endereco_paciente, clinica_id, usuario_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)', 
+                        [nome_paciente, email_paciente, data_nascimento_paciente, telefone_paciente, cpf_paciente, cep_paciente, endereco_paciente, req.clinicaId, usuario_id])
                         .then(() => {
                             res.json({ mensagem: 'Paciente adicionado com sucesso!' });
                         });
