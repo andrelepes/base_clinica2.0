@@ -70,10 +70,10 @@ if (resultado.success) {
     }
   }
   static async login(req, res) {
-    const { email, senha } = req.body;
+    const { email_usuario, senha } = req.body;
 
     try {
-        const usuario = await db.oneOrNone('SELECT * FROM usuarios WHERE email_usuario = $1', [email]);
+        const usuario = await db.oneOrNone('SELECT * FROM usuarios WHERE email_usuario = $1', [email_usuario]);
         if (!usuario) {
             return res.status(400).json({ message: 'Usuário não encontrado' });
         }
