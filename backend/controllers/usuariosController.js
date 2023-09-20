@@ -147,6 +147,53 @@ if (resultado.success) {
   static async getAssociatedRecords(req, res) {
     // Lógica para obter prontuários associados ao usuário aqui
   }
-}
 
+  static async addLinkedPsychologist(req, res) {
+    try {
+      const { nome_usuario, email_usuario, clinicaId } = req.body;
+      const resultado = await Usuarios.addLinkedPsychologist({
+        nome_usuario,
+        email_usuario,
+        tipousuario: 'psicologo_vinculado',
+        clinica_id: clinicaId,
+        status_usuario: 'aguardando confirmacao'
+      });
+      if (resultado.success) {
+        res.status(201).json({ message: 'Psicólogo vinculado adicionado com sucesso!' });
+      } else {
+        res.status(500).json({ erro: 'Erro ao adicionar psicólogo vinculado.' });
+      }
+    } catch (error) {
+      console.error('Erro ao adicionar psicólogo vinculado:', error);
+      res.status(500).json({ erro: 'Ocorreu um erro ao adicionar o psicólogo vinculado.' });
+    }
+  }  
+  static async getLinkedPsychologists(req, res) {
+    console.log("Função getLinkedPsychologists chamada");  // Log 1
+    try {
+      const { clinicaId } = req.params;
+      const psychologists = await db.manyOrNone('SELECT * FROM usuarios WHERE clinica_id = $1 AND tipousuario = $2', [clinicaId, 'psicologo_vinculado']);
+      res.status(200).json(psychologists);
+      console.log("Operação bem-sucedida");  // Log 2
+    } catch (error) {
+      console.log("Erro na função getLinkedPsychologists:", error);  // Log 3
+      res.status(500).json({ error: 'Erro ao buscar psicólogos vinculados' });
+    }
+  }
+  static async updateStatus(req, res) {
+    try {
+      const { usuario_id } = req.params;
+      const { novoStatus } = req.body;
+      const resultado = await Usuarios.atualizarStatusUsuario(usuario_id, novoStatus);
+      if (resultado.success) {
+        res.status(200).json({ message: resultado.message });
+      } else {
+        res.status(500).json({ message: resultado.message });
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error);
+      res.status(500).send('Erro no servidor');
+    }
+  };
+}
 module.exports = UserController;

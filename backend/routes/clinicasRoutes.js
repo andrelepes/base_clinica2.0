@@ -3,7 +3,7 @@ const router = express.Router();
 const auth = require('../../authMiddleware');
 const clinicasController = require('../controllers/clinicasController');
 
-// GET para listar psicólogos vinculados a uma clínica
+// GET e POST para listar psicólogos vinculados a uma clínica
 router.get('/:id/linked-psychologists', auth, clinicasController.listLinkedPsychologists);
 
 // GET para listar secretários vinculados a uma clínica

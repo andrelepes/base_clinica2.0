@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';  // Importação adicional
+import { Link } from 'react-router-dom';
 import api from 'C:/Users/andre/base_clinica/frontend/src/services/api';
 import AddPatientForm from './AddPatientForm';
+import { useClinicaId } from '../../contexts/ClinicaIdContext';  // Importação adicional
 
 function PacientesList() {
     const [pacientes, setPacientes] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [editingPatient, setEditingPatient] = useState(null);
+    const { clinicaId, usuarioId } = useClinicaId();  // Usar o contexto para obter clinicaId e usuarioId
 
     useEffect(() => {
         fetchPacientes();
@@ -23,11 +25,15 @@ function PacientesList() {
 
     const handleNewPatient = async (patientData) => {
         try {
+            const newPatientData = {
+                ...patientData,
+                clinica_id: clinicaId  // incluir o clinica_id aqui
+            };
             if (editingPatient) {
-                await api.put(`/pacientes/${editingPatient.id}`, patientData);
+                await api.put(`/pacientes/${editingPatient.id}`, newPatientData);
                 setEditingPatient(null);
             } else {
-                await api.post('/pacientes', patientData);
+                await api.post('/pacientes', newPatientData);
             }
             fetchPacientes();
             setShowForm(false);
@@ -68,8 +74,8 @@ function PacientesList() {
             <ul>
                 {pacientes.map(paciente => (
                     <li key={paciente.id}>
-                        <Link to={`/pacientes/${paciente.id}`}>{paciente.nome}</Link>  {/* Link adicionado */}
-                        <span onClick={() => handleEdit(paciente.id)} style={{ cursor: 'pointer', marginLeft: '10px' }}>✎</span> 
+                        <Link to={`/pacientes/${paciente.id}`}>{paciente.nome}</Link>
+                        <span onClick={() => handleEdit(paciente.id)} style={{ cursor: 'pointer', marginLeft: '10px' }}>✎</span>
                         <span onClick={() => handleDelete(paciente.id)} style={{ cursor: 'pointer', marginLeft: '5px' }}>🗑️</span>
                     </li>
                 ))}

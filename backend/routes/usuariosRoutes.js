@@ -39,5 +39,9 @@ router.post('/login', UserController.login); // Utilizando a função login do c
 router.post('/registrar', UserController.register); // Utilizando a função register do controller
 router.post('/solicitar-recuperacao-senha', UserController.forgotPassword); // Utilizando a função forgotPassword do controller
 router.get('/:id', UserController.getUserById); // Utilizando a função getUserById do controller
+router.post('/add-linked-psychologist', UserController.addLinkedPsychologist);
+router.get('/linked-psychologists/:clinicaId', UserController.getLinkedPsychologists);
+router.put('/update-status/:usuario_id', UserController.updateStatus);
+
 
 module.exports = router;
