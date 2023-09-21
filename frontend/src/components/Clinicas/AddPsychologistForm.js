@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useClinicaId } from '../../contexts/ClinicaIdContext';
 
-function AddPsychologistForm({ onFormSubmit }) {
+function AddPsychologistForm({ fetchLinkedPsychologists }) {
   const [formData, setFormData] = useState({
     nome_usuario: '',
     email_usuario: '',
@@ -27,15 +27,16 @@ function AddPsychologistForm({ onFormSubmit }) {
     try {
       const response = await api.post(`/usuarios/add-linked-psychologist`, {
         ...formData,
-        clinicaId // Certifique-se de que clinicaId está disponível no contexto ou como prop
+        clinicaId
       });
       console.log('Resposta do Backend:', response.data);
       alert('Psicólogo adicionado com sucesso!');
+      fetchLinkedPsychologists();  // Atualizar a lista de psicólogos vinculados
     } catch (error) {
       console.error('Erro ao adicionar psicólogo:', error);
       alert('Ocorreu um erro ao adicionar o psicólogo.');
     }
-      
+   
   };
 
   return (

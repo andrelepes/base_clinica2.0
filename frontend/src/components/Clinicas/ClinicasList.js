@@ -78,7 +78,7 @@ function ClinicasList() {
         <h3>Psicólogos Vinculados</h3>
         <button onClick={handleAddPsicologo}>Adicionar Psicólogo</button>
       </div>
-      {showPsychologistForm && <AddPsychologistForm />}
+      {showPsychologistForm && <AddPsychologistForm fetchLinkedPsychologists={fetchLinkedPsychologists} />}
       <div>
         <table>
           <thead>
