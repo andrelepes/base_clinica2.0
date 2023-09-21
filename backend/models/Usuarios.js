@@ -74,6 +74,39 @@ static async addLinkedPsychologist({ nome_usuario, email_usuario, tipousuario, c
       return { success: false, message: 'Erro ao atualizar status' };
     }
   }
+// Método para inserir um novo secretário vinculado
+static async addLinkedSecretary({ nome_usuario, email_usuario, tipousuario, clinica_id, status_usuario }) {
+  const tiposPermitidos = ['clinica', 'psicologo_vinculado', 'secretario_vinculado'];
+  if (!tiposPermitidos.includes(tipousuario)) {
+    throw new Error('Tipo de usuário inválido');
+  }
+  
+  // Gerar uma senha temporária (você pode usar qualquer lógica para isso)
+  const senhaTemporaria = "12345";
+  
+  try {
+    await db.none(
+      'INSERT INTO usuarios (nome_usuario, email_usuario, senha, tipousuario, clinica_id, status_usuario) VALUES ($1, $2, $3, $4, $5, $6)',
+      [nome_usuario, email_usuario, senhaTemporaria, tipousuario, clinica_id, status_usuario]
+    );
+    return { success: true, message: 'Usuário registrado com sucesso!' };
+  } catch (error) {
+    console.error('Erro ao inserir usuário:', error);
+    return { success: false, message: 'Erro ao inserir usuário' };
+  }
+}
+
+// Método para obter secretários vinculados
+static async getLinkedSecretaries(clinicaId) {
+  try {
+    const secretaries = await db.any('SELECT * FROM usuarios WHERE clinica_id = $1 AND tipousuario = $2', [clinicaId, 'secretario_vinculado']);
+    return { success: true, data: secretaries };
+  } catch (error) {
+    console.error('Erro ao buscar secretários vinculados:', error);
+    return { success: false, message: 'Erro ao buscar secretários vinculados' };
+  }
+}
+
 }
 
 module.exports = Usuarios;

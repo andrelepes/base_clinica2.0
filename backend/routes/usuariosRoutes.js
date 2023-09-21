@@ -42,6 +42,7 @@ router.get('/:id', UserController.getUserById); // Utilizando a função getUser
 router.post('/add-linked-psychologist', UserController.addLinkedPsychologist);
 router.get('/linked-psychologists/:clinicaId', UserController.getLinkedPsychologists);
 router.put('/update-status/:usuario_id', UserController.updateStatus);
-
+router.post('/add-linked-secretary', UserController.addLinkedSecretary); // Adicionar um secretário vinculado
+router.get('/linked-secretaries/:clinicaId', UserController.getLinkedSecretaries); // Obter secretários vinculados a uma clínica específica
 
 module.exports = router;

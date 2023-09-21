@@ -194,6 +194,39 @@ if (resultado.success) {
       console.error('Erro ao atualizar status:', error);
       res.status(500).send('Erro no servidor');
     }
-  };
+  }
+  // Método para adicionar um secretário vinculado
+static async addLinkedSecretary(req, res) {
+  try {
+    const { nome_usuario, email_usuario, clinicaId } = req.body;
+    const resultado = await Usuarios.addLinkedSecretary({
+      nome_usuario,
+      email_usuario,
+      tipousuario: 'secretario_vinculado',
+      clinica_id: clinicaId,
+      status_usuario: 'aguardando confirmacao'
+    });
+    if (resultado.success) {
+      res.status(201).json({ message: 'Secretário vinculado adicionado com sucesso!' });
+    } else {
+      res.status(500).json({ erro: 'Erro ao adicionar secretário vinculado.' });
+    }
+  } catch (error) {
+    console.error('Erro ao adicionar secretário vinculado:', error);
+    res.status(500).json({ erro: 'Ocorreu um erro ao adicionar o secretário vinculado.' });
+  }
+}
+
+// Método para obter secretários vinculados
+static async getLinkedSecretaries(req, res) {
+  try {
+    const { clinicaId } = req.params;
+    const secretaries = await db.manyOrNone('SELECT * FROM usuarios WHERE clinica_id = $1 AND tipousuario = $2', [clinicaId, 'secretario_vinculado']);
+    res.status(200).json(secretaries);
+  } catch (error) {
+    console.error('Erro ao buscar secretários vinculados:', error);
+    res.status(500).json({ error: 'Erro ao buscar secretários vinculados' });
+  }
+};
 }
 module.exports = UserController;

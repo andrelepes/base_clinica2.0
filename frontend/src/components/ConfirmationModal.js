@@ -6,7 +6,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
 
   return (
     <div className="modal">
-      <p>Tem certeza de que deseja inativar este psicólogo?</p>
+      <p>Tem certeza de que deseja inativar este profissional?</p>
       <button onClick={onClose}>Cancelar</button>
       <button
         onClick={() => {
