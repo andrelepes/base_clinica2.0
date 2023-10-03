@@ -18,6 +18,19 @@ function ClinicasList() {
   const [selectedSecretaryId, setSelectedSecretaryId] = useState(null);
   const [secretaryIndexToInactivate, setSecretaryIndexToInactivate] = useState(null);
   const [expandedSecretaryRowIndex, setExpandedSecretaryRowIndex] = useState(null);
+  
+  const linkStyle = {
+    color: 'blue',
+    textDecoration: 'underline',
+    cursor: 'pointer'
+};
+
+const visitedLinkStyle = {
+    color: 'purple',
+    textDecoration: 'underline',
+    cursor: 'pointer'
+};
+
 
   const fetchLinkedPsychologists = useCallback(async () => {  // Use useCallback aqui
     try {
@@ -147,7 +160,13 @@ function ClinicasList() {
           {linkedPsychologists.map((psychologist, index) => (
           <React.Fragment key={psychologist.usuario_id}>
           <tr onClick={() => toggleExpandRow(index)}>
-          <td>{psychologist.nome_usuario}</td>
+          <td 
+    style={expandedRowIndex === index ? visitedLinkStyle : linkStyle} 
+    onClick={() => toggleExpandRow(index)}
+>
+    {psychologist.nome_usuario}
+</td>
+
           <td>{psychologist.telefone_usuario}</td>
           </tr>
           {expandedRowIndex === index && (
@@ -198,7 +217,13 @@ function ClinicasList() {
         {linkedSecretaries.map((secretary, index) => (
           <React.Fragment key={secretary.usuario_id}>
             <tr onClick={() => toggleExpandSecretaryRow(index)}>
-              <td>{secretary.nome_usuario}</td>
+            <td 
+    style={expandedSecretaryRowIndex === index ? visitedLinkStyle : linkStyle} 
+    onClick={() => toggleExpandSecretaryRow(index)}
+>
+    {secretary.nome_usuario}
+</td>
+
               <td>{secretary.telefone_usuario}</td>
             </tr>
             {expandedSecretaryRowIndex === index && (

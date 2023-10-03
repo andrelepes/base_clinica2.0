@@ -79,3 +79,6 @@
     transform: rotate(360deg);
   }
 }
+.inactive-patient {
+  text-decoration: line-through;
+}

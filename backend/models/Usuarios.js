@@ -106,7 +106,16 @@ static async getLinkedSecretaries(clinicaId) {
     return { success: false, message: 'Erro ao buscar secretários vinculados' };
   }
 }
-
+// Método para buscar um usuário por ID
+static async buscarPorId(usuario_id) {
+  try {
+    const usuario = await db.oneOrNone('SELECT * FROM usuarios WHERE usuario_id = $1', [usuario_id]);
+    return usuario;
+  } catch (error) {
+    console.error('Erro ao buscar usuário por ID:', error);
+    throw error;
+  }
+}
 }
 
 module.exports = Usuarios;

@@ -29,11 +29,13 @@ module.exports = (req, res, next) => {
     console.log('Token decodificado:', decoded);
     console.log('usuario_id no token:', decoded.user.usuario_id);
     console.log('clinica_id no token:', decoded.user.clinica_id);
+    console.log('tipousuario no token:', decoded.user.tipousuario);
     
     // Decodificar as informações do usuário e o tipo de usuário
-    req.user = decoded.usuario_id;
-    req.tipoUsuario = decoded.tipousuario;
-    req.clinicaId = decoded.clinica_id; // Atualize para o novo nome da coluna
+    req.user = decoded.user.usuario_id;
+    req.tipousuario = decoded.user.tipousuario;
+    req.clinicaId = decoded.user.clinica_id;
+
   
     next();
   } catch (err) {

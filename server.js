@@ -16,7 +16,6 @@ app.use(bodyParser.json());
 
 // Importando as rotas
 const pacientesRoutes = require('./backend/routes/pacientesRoutes');
-const psicologosRoutes = require('./backend/routes/psicologosRoutes');
 const agendamentosRoutes = require('./backend/routes/agendamentosRoutes');
 const cursosRoutes = require('./backend/routes/cursosRoutes');
 const usuariosRoutes = require('./backend/routes/usuariosRoutes');
@@ -25,11 +24,10 @@ const clinicasRoutes = require('./backend/routes/clinicasRoutes');
 
 // Definindo as rotas
 app.use('/api/pacientes', authMiddleware, pacientesRoutes);
-app.use('/api/psicologos', psicologosRoutes);
 app.use('/api/agendamentos', authMiddleware, agendamentosRoutes);
 app.use('/api/cursos', authMiddleware, cursosRoutes); 
 app.use('/api/usuarios', usuariosRoutes); // Sem middleware de autenticação
-app.use('/api', authMiddleware, prontuariosRoutes); // Com middleware de autenticação
+app.use('/api/prontuarios', authMiddleware, prontuariosRoutes); // Com middleware de autenticação
 app.use('/api/clinicas', clinicasRoutes); 
 
 const PORT = 3000;
