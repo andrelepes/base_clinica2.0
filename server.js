@@ -21,14 +21,16 @@ const cursosRoutes = require('./backend/routes/cursosRoutes');
 const usuariosRoutes = require('./backend/routes/usuariosRoutes');
 const prontuariosRoutes = require('./backend/routes/prontuariosRoutes');
 const clinicasRoutes = require('./backend/routes/clinicasRoutes');
+const autorizacoesRoutes = require('./backend/routes/autorizacoesRoutes');
 
 // Definindo as rotas
 app.use('/api/pacientes', authMiddleware, pacientesRoutes);
 app.use('/api/agendamentos', authMiddleware, agendamentosRoutes);
 app.use('/api/cursos', authMiddleware, cursosRoutes); 
 app.use('/api/usuarios', usuariosRoutes); // Sem middleware de autenticação
-app.use('/api/prontuarios', authMiddleware, prontuariosRoutes); // Com middleware de autenticação
+app.use('/api/prontuarios', authMiddleware, prontuariosRoutes); 
 app.use('/api/clinicas', clinicasRoutes); 
+app.use('/api/autorizacoes', autorizacoesRoutes);
 
 const PORT = 3000;
 

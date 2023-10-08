@@ -13,18 +13,28 @@ function PacientesList() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const { clinicaId, usuarioId } = useClinicaId();
+    const [psicologosVinculados, setPsicologosVinculados] = useState({});
+
 
     const fetchAllPacientes = useCallback(async () => {
         try {
             let endpoint = `/pacientes/filtrar?page=${currentPage}`;
             const response = await api.get(endpoint);
             setPacientes(response.data.data);
+    
+            // Supondo que a API retorne os psicólogos vinculados em um campo 'psicologosVinculados'
+            const newPsicologosVinculados = {};
+            response.data.data.forEach(paciente => {
+                newPsicologosVinculados[paciente.paciente_id] = paciente.psicologosVinculados;
+            });
+            setPsicologosVinculados(newPsicologosVinculados);
+    
             setTotalPages(response.data.totalPages);
         } catch (error) {
             console.error('Erro ao buscar todos os pacientes:', error);
         }
     }, [currentPage]);
-
+    
     const fetchFilteredPacientes = useCallback(async () => {
         try {
             let endpoint = `/pacientes/filtrar?page=${currentPage}`;
@@ -123,7 +133,22 @@ function PacientesList() {
         }
     }
     
-     
+    const adicionarPsicologo = async (pacienteId) => {
+        // Aqui você pode abrir um modal ou uma nova página para selecionar um psicólogo vinculado
+        // Por simplicidade, vamos assumir que você está usando um prompt para selecionar um psicólogo
+        const psicologoId = prompt("Digite o ID do psicólogo vinculado que você deseja adicionar:");
+        if (psicologoId) {
+            try {
+                await api.post('/caminho/para/api/adicionarPsicologo', { pacienteId, psicologoId });
+                // Atualize a lista de pacientes após adicionar o psicólogo
+                fetchAllPacientes();
+            } catch (error) {
+                console.error("Erro ao adicionar psicólogo:", error);
+                alert("Ocorreu um erro ao adicionar o psicólogo.");
+            }
+        }
+    }
+    
     return (
         <div>
             <h2>Pacientes</h2>
@@ -159,18 +184,23 @@ function PacientesList() {
             {showForm && <AddPatientForm key={editingPatient ? editingPatient.paciente_id : 'new'} onFormSubmit={handleNewPatient} initialData={editingPatient} />}
 
             <ul>
-    {pacientes.map(paciente => (
-        <li key={paciente.paciente_id}>
-            <Link 
-                to={`/pacientes/${paciente.paciente_id}`}
-                style={paciente.status_paciente === 'inativo' ? { textDecoration: 'line-through' } : {}}
-            >
-                {paciente.nome_paciente}
-            </Link>
-            <span onClick={() => handleEdit(paciente.paciente_id)} style={{ cursor: 'pointer', marginLeft: '10px' }}>✎</span>
-            <span onClick={() => handleDelete(paciente.paciente_id)} style={{ cursor: 'pointer', marginLeft: '5px' }}>🗑️</span>
-        </li>
-    ))}
+            {pacientes.map(paciente => (
+    <li key={paciente.paciente_id}>
+        <Link 
+            to={`/pacientes/${paciente.paciente_id}`}
+            style={paciente.status_paciente === 'inativo' ? { textDecoration: 'line-through' } : {}}
+        >
+            {paciente.nome_paciente}
+        </Link>
+        {psicologosVinculados[paciente.paciente_id] && psicologosVinculados[paciente.paciente_id].length > 0 ? (
+            <span className="psicologos">{psicologosVinculados[paciente.paciente_id].join(', ')}</span>
+        ) : (
+            <button onClick={() => adicionarPsicologo(paciente.paciente_id)}>Adicionar psicólogo</button>
+        )}
+        <span onClick={() => handleEdit(paciente.paciente_id)} style={{ cursor: 'pointer', marginLeft: '10px' }}>✎</span>
+        <span onClick={() => handleDelete(paciente.paciente_id)} style={{ cursor: 'pointer', marginLeft: '5px' }}>🗑️</span>
+    </li>
+))}
 </ul>
 
             <div>
