@@ -16,7 +16,10 @@ exports.retirarAutorizacao = async (clinica_id, usuario_id, paciente_id) => {
 
 exports.listarAutorizados = async (paciente_id) => {
     return await db.manyOrNone(
-        'SELECT usuario_id FROM autorizacoes WHERE paciente_id = $1 AND status = $2',
+        `SELECT u.usuario_id, u.nome_usuario 
+         FROM autorizacoes a
+         JOIN usuarios u ON a.usuario_id = u.usuario_id
+         WHERE a.paciente_id = $1 AND a.status = $2`,
         [paciente_id, 'concedido']
     );
 };

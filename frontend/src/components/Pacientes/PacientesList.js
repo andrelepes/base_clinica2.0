@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import AddPatientForm from './AddPatientForm';
 import { useClinicaId } from '../../contexts/ClinicaIdContext';
+import PsicologoSelector from './PsicologoSelector';
+
 
 function PacientesList() {
     const [pacientes, setPacientes] = useState([]);
@@ -14,6 +16,8 @@ function PacientesList() {
     const [totalPages, setTotalPages] = useState(1);
     const { clinicaId, usuarioId } = useClinicaId();
     const [psicologosVinculados, setPsicologosVinculados] = useState({});
+    const [showPsicologoSelector, setShowPsicologoSelector] = useState(false);
+    const [currentPacienteId, setCurrentPacienteId] = useState(null);
 
 
     const fetchAllPacientes = useCallback(async () => {
@@ -21,14 +25,24 @@ function PacientesList() {
             let endpoint = `/pacientes/filtrar?page=${currentPage}`;
             const response = await api.get(endpoint);
             setPacientes(response.data.data);
-    
-            // Supondo que a API retorne os psicólogos vinculados em um campo 'psicologosVinculados'
+        
             const newPsicologosVinculados = {};
-            response.data.data.forEach(paciente => {
-                newPsicologosVinculados[paciente.paciente_id] = paciente.psicologosVinculados;
-            });
-            setPsicologosVinculados(newPsicologosVinculados);
     
+            for (let paciente of response.data.data) {
+                try {
+                    const responseAutorizados = await api.get(`/autorizacoes/autorizados/${paciente.paciente_id}`);
+                    const autorizados = responseAutorizados.data;
+                    newPsicologosVinculados[paciente.paciente_id] = autorizados.map(p => p.nome_usuario);
+                } catch (error) {
+                    if (error.response && error.response.status === 404) {
+                        newPsicologosVinculados[paciente.paciente_id] = []; // Considera como uma lista vazia se receber um erro 404
+                    } else {
+                        console.error('Erro ao buscar psicólogos autorizados para o paciente:', error);
+                    }
+                }
+            }
+    
+            setPsicologosVinculados(newPsicologosVinculados);
             setTotalPages(response.data.totalPages);
         } catch (error) {
             console.error('Erro ao buscar todos os pacientes:', error);
@@ -133,21 +147,10 @@ function PacientesList() {
         }
     }
     
-    const adicionarPsicologo = async (pacienteId) => {
-        // Aqui você pode abrir um modal ou uma nova página para selecionar um psicólogo vinculado
-        // Por simplicidade, vamos assumir que você está usando um prompt para selecionar um psicólogo
-        const psicologoId = prompt("Digite o ID do psicólogo vinculado que você deseja adicionar:");
-        if (psicologoId) {
-            try {
-                await api.post('/caminho/para/api/adicionarPsicologo', { pacienteId, psicologoId });
-                // Atualize a lista de pacientes após adicionar o psicólogo
-                fetchAllPacientes();
-            } catch (error) {
-                console.error("Erro ao adicionar psicólogo:", error);
-                alert("Ocorreu um erro ao adicionar o psicólogo.");
-            }
-        }
-    }
+    const adicionarPsicologo = (pacienteId) => {
+        setCurrentPacienteId(pacienteId);
+        setShowPsicologoSelector(true);
+    };    
     
     return (
         <div>
@@ -183,26 +186,56 @@ function PacientesList() {
             {!showForm && <button onClick={() => setShowForm(true)}>Adicionar Novo Paciente</button>}
             {showForm && <AddPatientForm key={editingPatient ? editingPatient.paciente_id : 'new'} onFormSubmit={handleNewPatient} initialData={editingPatient} />}
 
-            <ul>
-            {pacientes.map(paciente => (
-    <li key={paciente.paciente_id}>
-        <Link 
-            to={`/pacientes/${paciente.paciente_id}`}
-            style={paciente.status_paciente === 'inativo' ? { textDecoration: 'line-through' } : {}}
-        >
-            {paciente.nome_paciente}
-        </Link>
-        {psicologosVinculados[paciente.paciente_id] && psicologosVinculados[paciente.paciente_id].length > 0 ? (
-            <span className="psicologos">{psicologosVinculados[paciente.paciente_id].join(', ')}</span>
-        ) : (
-            <button onClick={() => adicionarPsicologo(paciente.paciente_id)}>Adicionar psicólogo</button>
-        )}
-        <span onClick={() => handleEdit(paciente.paciente_id)} style={{ cursor: 'pointer', marginLeft: '10px' }}>✎</span>
-        <span onClick={() => handleDelete(paciente.paciente_id)} style={{ cursor: 'pointer', marginLeft: '5px' }}>🗑️</span>
-    </li>
-))}
-</ul>
 
+            <table>
+    <thead>
+        <tr>
+            <th></th> {/* Coluna sem título para os botões */}
+            <th>Paciente</th>
+            <th>Psicólogos responsáveis</th>
+        </tr>
+    </thead>
+    <tbody>
+        {pacientes.map(paciente => (
+            <tr key={paciente.paciente_id}>
+                <td>
+                    <button onClick={() => adicionarPsicologo(paciente.paciente_id)}>Adicionar psicólogo</button>
+                    <span onClick={() => handleEdit(paciente.paciente_id)} style={{ cursor: 'pointer', marginLeft: '10px' }}>✎</span>
+                    <span onClick={() => handleDelete(paciente.paciente_id)} style={{ cursor: 'pointer', marginLeft: '5px' }}>🗑️</span>
+                </td>
+                <td>
+                    <Link 
+                        to={`/pacientes/${paciente.paciente_id}`}
+                        style={paciente.status_paciente === 'inativo' ? { textDecoration: 'line-through' } : {}}
+                    >
+                        {paciente.nome_paciente}
+                    </Link>
+                </td>
+                <td>
+                    {psicologosVinculados[paciente.paciente_id] && psicologosVinculados[paciente.paciente_id].length > 0 ? (
+                        psicologosVinculados[paciente.paciente_id].join(', ')
+                    ) : 'Nenhum psicólogo autorizado'}
+                </td>
+            </tr>
+        ))}
+    </tbody>
+</table>
+
+
+{showPsicologoSelector && (
+    <PsicologoSelector onPsicologoSelected={async (psicologoId) => {
+        try {
+            await api.post('/autorizacoes/autorizar', { clinica_id: clinicaId, usuario_id: psicologoId, paciente_id: currentPacienteId });
+            // Atualize a lista de pacientes após adicionar o psicólogo
+            fetchAllPacientes();
+            // Esconda o seletor de psicólogos
+            setShowPsicologoSelector(false);
+        } catch (error) {
+            console.error("Erro ao adicionar psicólogo:", error);
+            alert("Ocorreu um erro ao adicionar o psicólogo.");
+        }
+    }} />
+)}
             <div>
                 {Array.from({ length: totalPages }).map((_, index) => (
                     <button 

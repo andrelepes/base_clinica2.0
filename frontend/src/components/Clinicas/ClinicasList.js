@@ -166,7 +166,6 @@ const visitedLinkStyle = {
 >
     {psychologist.nome_usuario}
 </td>
-
           <td>{psychologist.telefone_usuario}</td>
           </tr>
           {expandedRowIndex === index && (
@@ -223,7 +222,6 @@ const visitedLinkStyle = {
 >
     {secretary.nome_usuario}
 </td>
-
               <td>{secretary.telefone_usuario}</td>
             </tr>
             {expandedSecretaryRowIndex === index && (
