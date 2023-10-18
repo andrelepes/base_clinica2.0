@@ -7,7 +7,7 @@ const autorizacoesController = require('../controllers/autorizacoesController');
 router.post('/autorizar', auth, autorizacoesController.concederAutorizacao);
 
 // Rota para retirar autorização
-router.post('/retirarAutorizacao', auth, autorizacoesController.retirarAutorizacao);
+router.delete('/retirarAutorizacao/:clinica_id/:usuario_id/:paciente_id', auth, autorizacoesController.retirarAutorizacao);
 
 // Rota para listar psicólogos autorizados para um paciente específico
 router.get('/autorizados/:paciente_id', auth, autorizacoesController.listarAutorizados);

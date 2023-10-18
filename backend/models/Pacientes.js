@@ -107,10 +107,6 @@ static async filtrarPacientes(nome, status, tipousuario, clinica_id, usuario_id)
         throw new Error('Tipo de usuário não reconhecido.');
     }
 
-    // Logs de depuração
-    console.log("Query construída:", query);
-    console.log("Valores para a query:", values);
-
     const pacientes = await db.any(query, values);
     return pacientes;
 
@@ -163,21 +159,40 @@ static async filtrarPacientes(nome, status, tipousuario, clinica_id, usuario_id)
     }
   }
 
-  static async marcarComoInativo(paciente_id, clinica_id, usuario_id) {
-    try {
-        const query = 'UPDATE pacientes SET status_paciente = $2, inativado_por = $4 WHERE paciente_id = $1 AND clinica_id = $3';
-        const values = [paciente_id, 'inativo', clinica_id, usuario_id];
-        await db.none(query, values);
-        return { success: true, message: 'Paciente marcado como inativo com sucesso!' };
-    } catch (error) {
-        console.error('Erro ao marcar paciente como inativo:', error);
-        throw error;
-    }
-}
-static async marcarComoAtivo(paciente_id, clinica_id) {
+// Método para marcar paciente como inativo
+static async marcarComoInativo(paciente_id, clinica_id, usuario_id, tipousuario) {
   try {
-      const query = 'UPDATE pacientes SET status_paciente = $2, inativado_por = NULL WHERE paciente_id = $1 AND clinica_id = $3';
-      const values = [paciente_id, 'ativo', clinica_id];
+      let query;
+      const values = [paciente_id, 'inativo', usuario_id];
+
+      if (tipousuario === 'psicologo') {
+          query = 'UPDATE pacientes SET status_paciente = $2, inativado_por = $3 WHERE paciente_id = $1';
+      } else {
+          query = 'UPDATE pacientes SET status_paciente = $2, inativado_por = $3 WHERE paciente_id = $1 AND clinica_id = $4';
+          values.push(clinica_id);
+      }
+
+      await db.none(query, values);
+      return { success: true, message: 'Paciente marcado como inativo com sucesso!' };
+  } catch (error) {
+      console.error('Erro ao marcar paciente como inativo:', error);
+      throw error;
+  }
+}
+
+// Método para marcar paciente como ativo
+static async marcarComoAtivo(paciente_id, clinica_id, tipousuario) {
+  try {
+      let query;
+      const values = [paciente_id, 'ativo'];
+
+      if (tipousuario === 'psicologo') {
+          query = 'UPDATE pacientes SET status_paciente = $2, inativado_por = NULL WHERE paciente_id = $1';
+      } else {
+          query = 'UPDATE pacientes SET status_paciente = $2, inativado_por = NULL WHERE paciente_id = $1 AND clinica_id = $3';
+          values.push(clinica_id);
+      }
+
       await db.none(query, values);
       return { success: true, message: 'Paciente reativado com sucesso!' };
   } catch (error) {

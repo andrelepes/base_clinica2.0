@@ -7,11 +7,13 @@ import PersonIcon from '@mui/icons-material/Person';
 import SchoolIcon from '@mui/icons-material/School';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
-import BusinessIcon from '@mui/icons-material/Business'; // Ícone para clínicas
+import BusinessIcon from '@mui/icons-material/Business'; 
+import { useClinicaId } from '../contexts/ClinicaIdContext'; 
 
 function Sidebar() {
     const username = localStorage.getItem('username') || 'Usuário';
     const navigate = useNavigate();
+    const { tipousuario } = useClinicaId();
 
     const handleLogout = () => {
         localStorage.clear();
@@ -38,10 +40,13 @@ function Sidebar() {
                     <ListItemIcon><PersonIcon /></ListItemIcon>
                     <ListItemText primary="Pacientes" />
                 </ListItem>
-                <ListItem button component={Link} to="/clinicas"> {/* Novo item para clínicas */}
-                    <ListItemIcon><BusinessIcon /></ListItemIcon>
-                    <ListItemText primary="Clínica" />
+                {/* Renderização condicional baseada no tipo de usuário */}
+                { (tipousuario === 'clinica' || tipousuario === 'secretario_vinculado') && (
+               <ListItem button component={Link} to="/clinicas">
+                <ListItemIcon><BusinessIcon /></ListItemIcon>
+                <ListItemText primary="Clínica" />
                 </ListItem>
+               )}
                 <ListItem button component={Link} to="/cursos">
                     <ListItemIcon><SchoolIcon /></ListItemIcon>
                     <ListItemText primary="Cursos" />
@@ -60,3 +65,4 @@ function Sidebar() {
 }
 
 export default Sidebar;
+

@@ -1,49 +1,32 @@
 const Prontuarios = require('../models/Prontuarios');
+const Pacientes = require('../models/Pacientes');
 
 const addProntuario = async (req, res) => {
-    const { paciente_id, psicologo_id, data_hora_agendamento, notas_sessao } = req.body;
+    console.log('Dados recebidos para adicionar prontuário:', req.body);
 
-    // Verificação de permissão
-    if (['psicologo', 'psicologo_vinculado'].includes(req.tipousuario) && req.user !== paciente_id) {
-        return res.status(403).json({ msg: 'Permissão negada.' });
-    }
-    if (['clinica'].includes(req.tipousuario) && req.clinicaId !== paciente_id) {
+    const { paciente_id, usuario_id, data_hora_agendamento, notas_sessao } = req.body;
+
+    if (!(await checkPermission(req, paciente_id, usuario_id))) {
         return res.status(403).json({ msg: 'Permissão negada.' });
     }
 
     try {
-        await Prontuarios.addProntuario(paciente_id, psicologo_id, data_hora_agendamento, notas_sessao);
+        await Prontuarios.addProntuario(paciente_id, usuario_id, data_hora_agendamento, notas_sessao);
+        console.log('Prontuário adicionado com sucesso.');
         res.json({ message: 'Prontuário adicionado com sucesso!' });
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Erro no servidor');
-    }
-};
-
-const getAllProntuarios = async (req, res) => {
-    try {
-        const prontuarios = await Prontuarios.getAllProntuarios();
-        res.json(prontuarios);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Erro no servidor');
-    }
-};
-
-const getProntuarioById = async (req, res) => {
-    const prontuarioId = req.params.id;
-
-    try {
-        const prontuario = await Prontuarios.getProntuarioById(prontuarioId);
-        res.json(prontuario);
-    } catch (error) {
-        console.error(error);
+        console.error('Erro ao adicionar prontuário:', error.message);
         res.status(500).send('Erro no servidor');
     }
 };
 
 const getProntuariosByPacienteId = async (req, res) => {
-    const pacienteId = req.params.id;
+    const pacienteId = req.params.pacientes_id;
+    const usuario_id = req.user;
+
+    if (!(await checkPermission(req, pacienteId, usuario_id))) {
+        return res.status(403).json({ msg: 'Permissão negada.' });
+    }
 
     try {
         const prontuarios = await Prontuarios.getProntuariosByPacienteId(pacienteId);
@@ -54,83 +37,85 @@ const getProntuariosByPacienteId = async (req, res) => {
     }
 };
 
-const updateProntuario = async (req, res) => {
-    const prontuarioId = req.params.id;
-    const { paciente_id, psicologo_id, data_hora_agendamento, data_prontuario, notas_sessao } = req.body;
 
-    // Criar lista de atualizações com base nos dados enviados
-    let updates = [];
-    let values = [];
-    if(paciente_id !== undefined) {
-        updates.push('paciente_id = $' + (values.length + 1));
-        values.push(paciente_id);
-    }
-    if(psicologo_id !== undefined) {
-        updates.push('psicologo_id = $' + (values.length + 1));
-        values.push(psicologo_id);
-    }
-    if(data_hora_agendamento !== undefined) {
-        updates.push('data_hora_agendamento = $' + (values.length + 1));
-        values.push(data_hora_agendamento);
-    }
-    if(data_prontuario !== undefined) {
-        updates.push('data_prontuario = $' + (values.length + 1));
-        values.push(data_prontuario);
-    }
-    if(notas_sessao !== undefined) {
-        updates.push('notas_sessao = $' + (values.length + 1));
-        values.push(notas_sessao);
-    }
-    values.push(prontuarioId);
+const checkPermission = async (req, pacienteId, usuarioId) => {
+    const tipousuario = req.tipousuario;  // asumindo que tipousuario é uma propriedade do objeto req
 
-    try {
-        if(updates.length > 0) {
-            const query = 'UPDATE prontuarios SET ' + updates.join(', ') + ' WHERE prontuario_id = $' + values.length;
-            await Prontuarios.updateProntuario(query, values);
-            res.json({ message: 'Prontuário atualizado com sucesso!' });
-        } else {
-            res.json({ message: 'Nenhuma atualização realizada.' });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Erro no servidor');
+    if (!tipousuario) {
+        return false; // Se tipousuario não estiver definido, negue a permissão.
+    }
+
+    switch (tipousuario) {
+        case 'psicologo':
+        case 'psicologo_vinculado':
+            return await Prontuarios.isPacienteAssociatedToPsicologo(pacienteId, usuarioId);
+        
+        case 'clinica':
+            return await Prontuarios.isPacienteAssociatedToClinica(pacienteId, req.clinicaId);            
+
+        default:
+            return false;  // Por padrão, negue a permissão se tipousuario não corresponder a nenhum tipo conhecido
     }
 };
 
 
-const concludeProntuario = async (req, res) => {
-    const prontuarioId = req.params.id;
+const updateProntuarioById = async (req, res) => {
+    const usuario_id = req.user;
+    const prontuarioId = req.params.prontuario_id;
 
+    // Obtenha o prontuário pelo ID para descobrir o pacienteId associado a ele.
+    const prontuario = await Prontuarios.getProntuarioById(prontuarioId);
+    if (!prontuario) {
+        return res.status(404).json({ msg: 'Prontuário não encontrado.' });
+    }
+
+    // Verifique a permissão usando o pacienteId associado ao prontuário.
+    if (!(await checkPermission(req, prontuario.paciente_id, usuario_id))) {
+        return res.status(403).json({ msg: 'Permissão negada.' });
+    }
+
+    // Atualize os detalhes do prontuário
+    const { data_hora_agendamento, notas_sessao } = req.body;
     try {
-        await Prontuarios.concludeProntuario(prontuarioId);
-        res.json({ message: 'Prontuário marcado como concluído!' });
+        await Prontuarios.updateProntuarioDetails(prontuarioId, data_hora_agendamento, notas_sessao);
+        return res.status(200).json({ msg: 'Prontuário atualizado com sucesso.' });
     } catch (error) {
         console.error(error);
-        res.status(500).send('Erro no servidor');
+        return res.status(500).json({ msg: 'Erro ao atualizar o prontuário.' });
     }
 };
 
 const deleteProntuario = async (req, res) => {
-    const prontuarioId = req.params.id;
+    const prontuarioId = req.params.prontuario_id;
+    const userId = req.user;
 
+    // Primeiro, verifique se o prontuário realmente existe e foi criado pelo usuário atual.
+    const prontuario = await Prontuarios.getProntuarioById(prontuarioId);
+    if (!prontuario) {
+        return res.status(404).json({ msg: 'Prontuário não encontrado.' });
+    }
+
+    if (prontuario.usuario_id !== userId) {
+        return res.status(403).json({ msg: 'Permissão negada. Você só pode deletar prontuários que criou.' });
+    }
+
+    // Proceda para deletar o prontuário.
     try {
-        const result = await Prontuarios.deleteProntuario(prontuarioId);
-        if (result.rowCount === 0) {
-            return res.status(404).send({ message: 'Prontuário não encontrado.' });
+        const rowsDeleted = await Prontuarios.deleteProntuarioById(prontuarioId, userId);
+        if (rowsDeleted === 0) {
+            return res.status(404).json({ msg: 'Prontuário não encontrado ou já foi deletado.' });
         }
-        res.json({ message: 'Prontuário excluído com sucesso!' });
+        return res.status(200).json({ msg: 'Prontuário deletado com sucesso.' });
     } catch (error) {
         console.error(error);
-        res.status(500).send('Erro no servidor');
+        return res.status(500).json({ msg: 'Erro ao deletar o prontuário.' });
     }
 };
 
 module.exports = {
     addProntuario,
-    getAllProntuarios,
-    getProntuarioById,
     getProntuariosByPacienteId,
-    updateProntuario,
-    concludeProntuario,
+    updateProntuarioById,
     deleteProntuario
 };
+

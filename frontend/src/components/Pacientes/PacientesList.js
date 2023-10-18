@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import AddPatientForm from './AddPatientForm';
 import { useClinicaId } from '../../contexts/ClinicaIdContext';
-import PsicologoSelector from './PsicologoSelector';
-
+import EditPatientForm from './EditPatientForm';
 
 function PacientesList() {
     const [pacientes, setPacientes] = useState([]);
@@ -14,11 +13,8 @@ function PacientesList() {
     const [searchName, setSearchName] = useState(''); // State para filtrarPorNome
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const { clinicaId, usuarioId } = useClinicaId();
+    const { clinicaId, usuarioId, tipousuario } = useClinicaId();
     const [psicologosVinculados, setPsicologosVinculados] = useState({});
-    const [showPsicologoSelector, setShowPsicologoSelector] = useState(false);
-    const [currentPacienteId, setCurrentPacienteId] = useState(null);
-
 
     const fetchAllPacientes = useCallback(async () => {
         try {
@@ -119,15 +115,14 @@ function PacientesList() {
             } else {
                 alert("Ocorreu um erro ao adicionar/atualizar o paciente.");
             }
-        }
-
-        if (searchName || selectedStatus) {
-            fetchFilteredPacientes();
-        } else {
-            fetchAllPacientes();
+        } finally {
+            if (searchName || selectedStatus) {
+                fetchFilteredPacientes();
+            } else {
+                fetchAllPacientes();
+            }
         }
     }
-    
     
     const handleDelete = async (paciente_id) => {
         try {
@@ -146,16 +141,9 @@ function PacientesList() {
             alert("Ocorreu um erro ao marcar o paciente como inativo.");
         }
     }
-    
-    const adicionarPsicologo = (pacienteId) => {
-        setCurrentPacienteId(pacienteId);
-        setShowPsicologoSelector(true);
-    };    
-    
     return (
         <div>
             <h2>Pacientes</h2>
-    
             <input 
                 type="text" 
                 placeholder="Buscar por nome" 
@@ -182,73 +170,53 @@ function PacientesList() {
                 <option value="ativo">Ativo</option>
                 <option value="inativo">Inativo</option>
             </select>
-
             {!showForm && <button onClick={() => setShowForm(true)}>Adicionar Novo Paciente</button>}
-            {showForm && <AddPatientForm key={editingPatient ? editingPatient.paciente_id : 'new'} onFormSubmit={handleNewPatient} initialData={editingPatient} />}
-
-
-            <table>
+{showForm && !editingPatient && <AddPatientForm onFormSubmit={handleNewPatient} />}
+{editingPatient && <EditPatientForm key={editingPatient.paciente_id} onFormSubmit={handleNewPatient} initialData={editingPatient} />}
+        <table>
     <thead>
         <tr>
-            <th></th> {/* Coluna sem título para os botões */}
+            <th></th>
             <th>Paciente</th>
             <th>Psicólogos responsáveis</th>
         </tr>
     </thead>
     <tbody>
-        {pacientes.map(paciente => (
-            <tr key={paciente.paciente_id}>
-                <td>
-                    <button onClick={() => adicionarPsicologo(paciente.paciente_id)}>Adicionar psicólogo</button>
-                    <span onClick={() => handleEdit(paciente.paciente_id)} style={{ cursor: 'pointer', marginLeft: '10px' }}>✎</span>
-                    <span onClick={() => handleDelete(paciente.paciente_id)} style={{ cursor: 'pointer', marginLeft: '5px' }}>🗑️</span>
-                </td>
-                <td>
-                    <Link 
-                        to={`/pacientes/${paciente.paciente_id}`}
-                        style={paciente.status_paciente === 'inativo' ? { textDecoration: 'line-through' } : {}}
-                    >
-                        {paciente.nome_paciente}
-                    </Link>
-                </td>
-                <td>
-                    {psicologosVinculados[paciente.paciente_id] && psicologosVinculados[paciente.paciente_id].length > 0 ? (
-                        psicologosVinculados[paciente.paciente_id].join(', ')
-                    ) : 'Nenhum psicólogo autorizado'}
-                </td>
-            </tr>
-        ))}
-    </tbody>
+    {pacientes.map(paciente => (
+        <tr key={paciente.paciente_id}>
+            <td>
+            <span onClick={() => handleEdit(paciente.paciente_id)} style={{ cursor: 'pointer', marginLeft: '10px' }}>✎</span><span onClick={() => handleDelete(paciente.paciente_id)} style={{ cursor: 'pointer', marginLeft: '5px' }}>🗑️</span>
+            </td>
+            <td>
+                <Link 
+                    to={`/pacientes/${paciente.paciente_id}`}
+                    style={paciente.status_paciente === 'inativo' ? { textDecoration: 'line-through' } : {}}
+                >{paciente.nome_paciente}
+                </Link>
+            </td>
+            <td>
+                {psicologosVinculados[paciente.paciente_id] && psicologosVinculados[paciente.paciente_id].length > 0 ? (
+                    psicologosVinculados[paciente.paciente_id].join(', ')
+                ) : 'Nenhum psicólogo autorizado'}
+            </td>
+        </tr>
+    ))}
+</tbody>
 </table>
-
-
-{showPsicologoSelector && (
-    <PsicologoSelector onPsicologoSelected={async (psicologoId) => {
-        try {
-            await api.post('/autorizacoes/autorizar', { clinica_id: clinicaId, usuario_id: psicologoId, paciente_id: currentPacienteId });
-            // Atualize a lista de pacientes após adicionar o psicólogo
-            fetchAllPacientes();
-            // Esconda o seletor de psicólogos
-            setShowPsicologoSelector(false);
-        } catch (error) {
-            console.error("Erro ao adicionar psicólogo:", error);
-            alert("Ocorreu um erro ao adicionar o psicólogo.");
-        }
-    }} />
-)}
             <div>
                 {Array.from({ length: totalPages }).map((_, index) => (
                     <button 
                         key={index} 
                         onClick={() => setCurrentPage(index + 1)}
                         disabled={currentPage === index + 1}
-                    >
-                        {index + 1}
+                    >{index + 1}
                     </button>
                 ))}
             </div>
         </div>
     );
 }
+
+
 
 export default PacientesList;

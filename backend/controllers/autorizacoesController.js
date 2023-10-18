@@ -21,8 +21,7 @@ exports.concederAutorizacao = async (req, res) => {
 };
 
 exports.retirarAutorizacao = async (req, res) => {
-    const { clinica_id, usuario_id, paciente_id } = req.body;
-
+    const { clinica_id, usuario_id, paciente_id } = req.params;
     try {
         await Autorizacoes.retirarAutorizacao(clinica_id, usuario_id, paciente_id);
         res.json({ message: 'Autorização retirada com sucesso!' });

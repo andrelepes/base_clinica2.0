@@ -5,54 +5,61 @@ import { useParams } from 'react-router-dom';
 import { useClinicaId } from '../../contexts/ClinicaIdContext';
 
 function formatDate(isoDate) {
+    if (!isoDate) return 'Data não disponível'; 
     const [year, month, day] = isoDate.split('-');
     return `${day}-${month}-${year}`;
 }
 
+
 function PacienteDetalhes() {
-    const [paciente, setPaciente] = useState(null);
+    const [pacientes, setPaciente] = useState(null);
     const [prontuarios, setProntuarios] = useState([]);
     const [showProntuarioForm, setShowProntuarioForm] = useState(false);
     const [editProntuarioId, setEditProntuarioId] = useState(null);
-    const { id } = useParams();
-    const { usuarioId } = useClinicaId();
+    const { usuarioId, clinicaId, tipousuario } = useClinicaId();
     const { id: paciente_id } = useParams();
 
-
-    const fetchProntuarios = useCallback(async () => { // Use useCallback aqui
+    const fetchProntuarios = useCallback(async () => { 
         try {
-            const response = await api.get(`/api/prontuarios/pacientes/${id}/prontuarios`);
+            const response = await api.get(`/prontuarios/${paciente_id}/prontuarios`);
             setProntuarios(response.data);
         } catch (error) {
             console.error('Erro ao buscar prontuários:', error);
         }
-    }, [id]); // Adicione as dependências aqui
+    }, [paciente_id]); 
 
     useEffect(() => {
         const fetchPacienteDetails = async () => {
             try {
-                const response = await api.get(`/api/pacientes/${id}`);
-                setPaciente(response.data);
+                const response = await api.get(`/pacientes/${paciente_id}`);
+                setPaciente(response.data.data); // Alteração aqui
             } catch (error) {
                 console.error('Erro ao buscar detalhes do paciente:', error);
             }
         };
-
+    
         fetchPacienteDetails();
         fetchProntuarios();
-    }, [id, fetchProntuarios]); // Adicione fetchProntuarios aqui
+    }, [paciente_id, fetchProntuarios]);
+    
 
     const handleNewProntuario = async (prontuarioData) => {
         try {
+            const requestData = {
+                ...prontuarioData,
+                paciente_id: paciente_id,
+                usuario_id: usuarioId,
+                tipousuario: tipousuario,
+                clinica_id: clinicaId,
+            };
+            console.log("Dados do prontuário antes de enviar:", requestData);
+
             if (editProntuarioId) {
                 // Atualizar um prontuário existente
-                await api.put(`/api/prontuarios/${editProntuarioId}`, prontuarioData);
+                await api.put(`/prontuarios/${paciente_id}/prontuarios/${editProntuarioId}`, requestData);
             } else {
                 // Adicionar um novo prontuário
-                await api.post('/api/prontuarios', {
-                    ...prontuarioData,
-                    paciente_id: id
-                });
+                await api.post('/prontuarios/', requestData);
                 setShowProntuarioForm(false);
             }
             fetchProntuarios();
@@ -80,10 +87,28 @@ function PacienteDetalhes() {
             alert("Ocorreu um erro ao definir o paciente como inativo.");
         }
     };
+    const handleSetActive = async () => {
+        try {
+            const updateData = {
+                usuario_id: usuarioId  // Incluindo o usuario_id para rastrear quem ativou o paciente
+            };
+            await api.put(`/pacientes/${paciente_id}/ativo`, updateData);  // Note que eu supus o endpoint /ativo, você precisará verificar isso com seu backend
+            setPaciente(prevState => ({ ...prevState, status_paciente: 'ativo' }));
+            alert("Paciente definido como ativo com sucesso!");
+        } catch (error) {
+            console.error('Erro ao definir paciente como ativo:', error);
+            alert("Ocorreu um erro ao definir o paciente como ativo.");
+        }
+    };
+    const sortedProntuarios = [...prontuarios].sort((a, b) => {
+        const dateA = new Date(a.data_hora_agendamento);
+        const dateB = new Date(b.data_hora_agendamento);
+        return dateB - dateA;
+    });
     
     const handleDeleteProntuario = async (prontuarioId) => {
         try {
-            await api.delete(`/api/prontuarios/${prontuarioId}`);
+            await api.delete(`/prontuarios/prontuarios/${prontuarioId}`);
             fetchProntuarios();
         } catch (error) {
             console.error('Erro ao excluir prontuário:', error);
@@ -92,18 +117,23 @@ function PacienteDetalhes() {
     };
     return (
         <div>
-            {paciente && (
+            {pacientes && (
                 <div>
                     <h2>Detalhes do Paciente</h2>
-                    <p><strong>Nome:</strong> {paciente.nome_paciente}</p>
-                    <p><strong>CPF:</strong> {paciente.cpf_paciente}</p>
-                    <p><strong>Data de Nascimento:</strong> {formatDate(paciente.data_nascimento_paciente.split('T')[0])}</p>
-                    <p><strong>Telefone:</strong> {paciente.telefone_paciente}</p>
-                    <p><strong>Email:</strong> {paciente.email_paciente}</p>
-                    <p><strong>CEP:</strong> {paciente.cep_paciente}</p>
-                    <p><strong>Endereço:</strong> {paciente.endereco_paciente}</p>
-                    <p><strong>Status:</strong> {paciente.status_paciente}</p>
-                    {paciente.status_paciente === 'ativo' && <button onClick={handleSetInactive}>Definir como Inativo</button>}
+                    <p><strong>Nome:</strong> {pacientes.nome_paciente}</p>
+                    <p><strong>CPF:</strong> {pacientes.cpf_paciente}</p>
+                    <p><strong>Data de Nascimento:</strong> {pacientes.data_nascimento_paciente ? formatDate(pacientes.data_nascimento_paciente.split('T')[0]) : 'Data não disponível'}</p>
+                    <p><strong>Telefone:</strong> {pacientes.telefone_paciente}</p>
+                    <p><strong>Email:</strong> {pacientes.email_paciente}</p>
+                    <p><strong>CEP:</strong> {pacientes.cep_paciente}</p>
+                    <p><strong>Endereço:</strong> {pacientes.endereco_paciente}</p>
+                    <p><strong>Status:</strong> {pacientes.status_paciente}</p>
+                    {pacientes.status_paciente === 'ativo' ? (
+    <button onClick={handleSetInactive}>Definir como Inativo</button>
+) : (
+    <button onClick={handleSetActive}>Definir como Ativo</button>
+)}
+
                 </div>
             )}
             <h3>Prontuários</h3>
@@ -116,14 +146,14 @@ function PacienteDetalhes() {
             }
             
             <ul>
-                {prontuarios.map(prontuario => (
-                    <li key={prontuario.prontuario_id}>
-                        Data: {formatDate(prontuario.data_prontuario.split('T')[0])} | Notas: {prontuario.notas_sessao}
-                        <button onClick={() => handleEditProntuario(prontuario.prontuario_id)}>Editar</button>
-                        <button onClick={() => handleDeleteProntuario(prontuario.prontuario_id)}>Excluir</button>
-                    </li>
-                ))}
-            </ul>
+    {sortedProntuarios.map(prontuario => (
+        <li key={prontuario.prontuario_id}>
+            Data: {prontuario.data_hora_agendamento ? formatDate(prontuario.data_hora_agendamento.split('T')[0]) : 'Data não disponível'} | Notas: {prontuario.notas_sessao}
+            <button onClick={() => handleEditProntuario(prontuario.prontuario_id)}>Editar</button>
+            <button onClick={() => handleDeleteProntuario(prontuario.prontuario_id)}>Excluir</button>
+        </li>
+    ))}
+</ul>
         </div>
     );
 }

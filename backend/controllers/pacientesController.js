@@ -141,31 +141,35 @@ static async listarPacientesPaginados(req, res) {
     }
   }
   
-  static async marcarComoInativo(req, res) {
+ // Método para marcar paciente como inativo
+static async marcarComoInativo(req, res) {
     try {
         const { paciente_id } = req.params;
         const clinica_id = req.clinicaId;
         const usuario_id = req.user; 
+        const tipousuario = req.tipousuario; 
 
-        await Pacientes.marcarComoInativo(paciente_id, clinica_id, usuario_id);
+        await Pacientes.marcarComoInativo(paciente_id, clinica_id, usuario_id, tipousuario);
         res.status(200).json({ success: true, message: 'Paciente marcado como inativo com sucesso!' });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Erro ao marcar paciente como inativo.', error });
     }
 }
 
+// Método para marcar paciente como ativo
 static async marcarComoAtivo(req, res) {
     try {
         const { paciente_id } = req.params;
         const clinica_id = req.clinicaId;
-        const usuario_id = req.user; 
+        const tipousuario = req.tipousuario; 
 
-        await Pacientes.marcarComoAtivo(paciente_id, clinica_id, usuario_id);
+        await Pacientes.marcarComoAtivo(paciente_id, clinica_id, tipousuario);
         res.status(200).json({ success: true, message: 'Paciente reativado com sucesso!' });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Erro ao reativar paciente.', error });
     }
 }
+
 
   // ... Outros métodos conforme necessário
 

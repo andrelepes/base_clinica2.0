@@ -5,16 +5,10 @@ const prontuariosController = require('../controllers/prontuariosController');
 
 router.post('/', auth, prontuariosController.addProntuario);
 
-router.get('/', auth, prontuariosController.getAllProntuarios);
+router.get('/:pacientes_id/prontuarios', auth, prontuariosController.getProntuariosByPacienteId);
 
-router.get('/:id', auth, prontuariosController.getProntuarioById);
+router.put('/:pacientes_id/prontuarios/:prontuario_id', auth, prontuariosController.updateProntuarioById);
 
-router.get('/pacientes/:pacientes_id/prontuarios', auth, prontuariosController.getProntuariosByPacienteId);
-
-router.put('/:id', auth, prontuariosController.updateProntuario);
-
-router.put('/:id/concluir', auth, prontuariosController.concludeProntuario);
-
-router.delete('/:id', auth, prontuariosController.deleteProntuario);
+router.delete('/prontuarios/:prontuario_id', auth, prontuariosController.deleteProntuario);
 
 module.exports = router;

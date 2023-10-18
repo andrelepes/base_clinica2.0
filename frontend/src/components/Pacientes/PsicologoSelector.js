@@ -25,10 +25,15 @@ function PsicologoSelector({ onPsicologoSelected }) {
     useEffect(() => {
         // Filtrar psicólogos com base no termo de pesquisa
         const results = psicologos.filter(psicologo =>
-            psicologo.nome_usuario && psicologo.nome_usuario.toLowerCase().includes(searchTerm.toLowerCase())        
+            psicologo.nome_usuario && psicologo.nome_usuario.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredPsicologos(results);
     }, [searchTerm, psicologos]);
+
+    const handlePsicologoClick = (psicologoId) => {
+        onPsicologoSelected(psicologoId);
+        setSearchTerm(''); // Limpar o termo de pesquisa após seleção
+    };
 
     return (
         <div>
@@ -39,15 +44,13 @@ function PsicologoSelector({ onPsicologoSelected }) {
                 onChange={e => setSearchTerm(e.target.value)}
             />
             <ul>
-            {filteredPsicologos.map(psicologo => (
-    <li key={psicologo.usuario_id} onClick={() => onPsicologoSelected(psicologo.usuario_id)}>
-        {psicologo.nome_usuario}
-    </li>
-))}
-
+                {filteredPsicologos.map(psicologo => (
+                    <li key={psicologo.usuario_id} onClick={() => handlePsicologoClick(psicologo.usuario_id)}>
+                        {psicologo.nome_usuario}
+                    </li>
+                ))}
             </ul>
         </div>
     );
 }
-
 export default PsicologoSelector;

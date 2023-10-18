@@ -3,6 +3,8 @@ import jwt_decode from 'jwt-decode';
 
 const ClinicaIdContext = createContext();
 
+
+
 export const useClinicaId = () => {
   const context = useContext(ClinicaIdContext);
   if (!context) {
@@ -14,6 +16,7 @@ export const useClinicaId = () => {
 export const ClinicaIdProvider = ({ children }) => {
   const [clinicaId, setClinicaId] = useState(null);
   const [usuarioId, setUsuarioId] = useState(null);
+  const [tipousuario, setTipousuario] = useState(null);
 
   useEffect(() => {
     const updateClinicaId = () => {
@@ -23,18 +26,21 @@ export const ClinicaIdProvider = ({ children }) => {
           const decoded = jwt_decode(token);
           console.log('Token decodificado:', decoded);
 
-          if (decoded && decoded.user && 'usuario_id' in decoded.user && 'clinica_id' in decoded.user) {
-            console.log('usuario_id no token:', decoded.user.usuario_id);
-            console.log('clinica_id no token:', decoded.user.clinica_id);
+if (decoded && decoded.user && 'usuario_id' in decoded.user && 'clinica_id' in decoded.user && 'tipousuario' in decoded.user) {
+    console.log('usuario_id no token:', decoded.user.usuario_id);
+    console.log('clinica_id no token:', decoded.user.clinica_id);
+    console.log('tipousuario no token:', decoded.user.tipousuario);
 
-            const newClinicaId = decoded.user.clinica_id;
-            const newUsuarioId = decoded.user.usuario_id;
+    const newClinicaId = decoded.user.clinica_id;
+    const newUsuarioId = decoded.user.usuario_id;
+    const newTipousuario = decoded.user.tipousuario;
 
-            setClinicaId(newClinicaId);
-            setUsuarioId(newUsuarioId);
-          } else {
-            console.error('Campos não encontrados no token decodificado');
-          }
+    setClinicaId(newClinicaId);
+    setUsuarioId(newUsuarioId);
+    setTipousuario(newTipousuario);
+} else {
+    console.error('Campos não encontrados no token decodificado');
+}
         } catch (error) {
           console.error('Erro ao decodificar o token:', error);
         }
@@ -56,7 +62,7 @@ export const ClinicaIdProvider = ({ children }) => {
     };
   }, []);
 
-  const value = { clinicaId, setClinicaId, usuarioId, setUsuarioId };
+  const value = { clinicaId, setClinicaId, usuarioId, setUsuarioId, tipousuario, setTipousuario };
 
   return (
     <ClinicaIdContext.Provider value={value}>

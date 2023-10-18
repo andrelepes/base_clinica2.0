@@ -14,7 +14,7 @@ router.get('/filtrar', pacientesController.filtrarPacientes);
 router.get('/', pacientesController.listarPacientes);
 
 // Rota para listar todos os pacientes
-router.get('/', pacientesController.listarPacientesPaginados);
+router.get('/paginados', pacientesController.listarPacientesPaginados);
 
 // Rota para obter informações de um paciente específico
 router.get('/:paciente_id', pacientesController.obterPaciente);
