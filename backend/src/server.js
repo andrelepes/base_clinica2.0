@@ -5,7 +5,7 @@ const cors = require('cors');
 const authMiddleware = require('./authMiddleware'); // Importando o middleware de autenticação
 
 // Importando a conexão com o banco de dados
-const db = require('./database');
+const db = require('./database/database');
 const app = express();
 
 // Middleware para CORS
