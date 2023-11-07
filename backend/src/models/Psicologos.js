@@ -1,4 +1,4 @@
-const db = require('../../database');
+const db = require('../database/database');
 
 class Psicologos {
   static async create(nome, email, cpf, clinicaId) {

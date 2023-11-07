@@ -1,14 +1,31 @@
-const express = require('express');
-const router = express.Router();
-const auth = require('../../authMiddleware');
+const ensureAuthenticated = require('../middlewares/ensureAuthenticated.js');
+
+const prontuariosRoutes = require('express').Router();
+
 const prontuariosController = require('../controllers/prontuariosController');
 
-router.post('/', auth, prontuariosController.addProntuario);
+prontuariosRoutes.post(
+  '/',
+  ensureAuthenticated,
+  prontuariosController.addProntuario
+);
 
-router.get('/:pacientes_id/prontuarios', auth, prontuariosController.getProntuariosByPacienteId);
+prontuariosRoutes.get(
+  '/:pacientes_id/prontuarios',
+  ensureAuthenticated,
+  prontuariosController.getProntuariosByPacienteId
+);
 
-router.put('/:pacientes_id/prontuarios/:prontuario_id', auth, prontuariosController.updateProntuarioById);
+prontuariosRoutes.put(
+  '/:pacientes_id/prontuarios/:prontuario_id',
+  ensureAuthenticated,
+  prontuariosController.updateProntuarioById
+);
 
-router.delete('/prontuarios/:prontuario_id', auth, prontuariosController.deleteProntuario);
+prontuariosRoutes.delete(
+  '/prontuarios/:prontuario_id',
+  ensureAuthenticated,
+  prontuariosController.deleteProntuario
+);
 
-module.exports = router;
+module.exports = { prontuariosRoutes };

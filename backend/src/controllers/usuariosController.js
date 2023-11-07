@@ -2,7 +2,7 @@ const Usuarios = require('../models/Usuarios');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const db = require('../../database');
+const db = require('../database/database');
 require('dotenv').config();
 
 // Middleware para autorização baseada em tipo de usuário
@@ -28,25 +28,25 @@ class UserController {
       const salt = await bcrypt.genSalt(10);
       const senhaCriptografada = await bcrypt.hash(senha, salt);
   
-// Use a função inserirUsuario para inserir o novo usuário
-console.log("Inserindo novo usuário");  // Log 6
-const resultado = await Usuarios.inserirUsuario(nome_usuario, email_usuario, senhaCriptografada, tipousuario, null);
+      // Use a função inserirUsuario para inserir o novo usuário
+      console.log("Inserindo novo usuário");  // Log 6
+      const resultado = await Usuarios.inserirUsuario(nome_usuario, email_usuario, senhaCriptografada, tipousuario, null);
 
-if (resultado.success) {
-  // Busque o usuário recém-criado para obter o ID
-  const usuario = await db.oneOrNone('SELECT * FROM usuarios WHERE email_usuario = $1', [email_usuario]);
+      if (resultado.success) {
+        // Busque o usuário recém-criado para obter o ID
+        const usuario = await db.oneOrNone('SELECT * FROM usuarios WHERE email_usuario = $1', [email_usuario]);
 
-  let clinicaIdToUse = null;
+        let clinicaIdToUse = null;
 
-  // Se o tipo de usuário é "clinica", use o usuario_id como clinica_id
-  if (tipousuario === 'clinica') {
-    clinicaIdToUse = usuario.usuario_id;
+        // Se o tipo de usuário é "clinica", use o usuario_id como clinica_id
+        if (tipousuario === 'clinica') {
+          clinicaIdToUse = usuario.usuario_id;
 
-    // Atualize o clinica_id do usuário original
-    await db.none('UPDATE usuarios SET clinica_id = $1 WHERE usuario_id = $2', [clinicaIdToUse, usuario.usuario_id]);
-  }
+          // Atualize o clinica_id do usuário original
+          await db.none('UPDATE usuarios SET clinica_id = $1 WHERE usuario_id = $2', [clinicaIdToUse, usuario.usuario_id]);
+        }
 
-  console.log("Usuário inserido com sucesso");  // Log 7
+        console.log("Usuário inserido com sucesso");  // Log 7
   
         const payload = {
           user: {

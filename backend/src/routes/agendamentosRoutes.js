@@ -1,10 +1,11 @@
-const express = require('express');
-const router = express.Router();
-const db = require('../../database');
-const auth = require('../../authMiddleware');
+const ensureAuthenticated = require('../middlewares/ensureAuthenticated.js');
+
+const agendamentosRoutes = require('express').Router();
+
+const db = require('../database/database');
 
 // GET all appointments
-router.get('/', auth, (req, res) => {
+agendamentosRoutes.get('/', ensureAuthenticated, (req, res) => {
     db.any('SELECT * FROM agendamentos')
         .then(data => {
             res.json(data);
@@ -16,7 +17,7 @@ router.get('/', auth, (req, res) => {
 });
 
 // GET a specific appointment
-router.get('/:id', auth, (req, res) => {
+agendamentosRoutes.get('/:id', ensureAuthenticated, (req, res) => {
     const agendamentoId = req.params.id;
     db.oneOrNone('SELECT * FROM agendamentos WHERE agendamento_id = $1', [agendamentoId])
         .then(data => {
@@ -33,7 +34,7 @@ router.get('/:id', auth, (req, res) => {
 });
 
 // POST to create a new appointment
-router.post('/', auth, (req, res) => {
+agendamentosRoutes.post('/', ensureAuthenticated, (req, res) => {
     const allowedRoles = ['clinica', 'psicologo', 'psicologo_vinculado', 'secretario_vinculado'];
     if (!allowedRoles.includes(req.user.funcao)) {
         return res.status(403).json({ msg: 'Você não tem permissão para criar um novo agendamento.' });
@@ -51,7 +52,7 @@ router.post('/', auth, (req, res) => {
 });
 
 // PUT to update an appointment
-router.put('/:id', auth, (req, res) => {
+agendamentosRoutes.put('/:id', ensureAuthenticated, (req, res) => {
     const allowedRoles = ['clinica', 'psicologo', 'psicologo_vinculado', 'secretario_vinculado'];
     if (!allowedRoles.includes(req.user.funcao)) {
         return res.status(403).json({ msg: 'Você não tem permissão para atualizar um agendamento.' });
@@ -73,7 +74,7 @@ router.put('/:id', auth, (req, res) => {
 });
 
 // DELETE to delete an appointment
-router.delete('/:id', auth, (req, res) => {
+agendamentosRoutes.delete('/:id', ensureAuthenticated, (req, res) => {
     const allowedRoles = ['clinica', 'psicologo', 'psicologo_vinculado', 'secretario_vinculado'];
     if (!allowedRoles.includes(req.user.funcao)) {
         return res.status(403).json({ msg: 'Você não tem permissão para excluir um agendamento.' });
@@ -89,4 +90,4 @@ router.delete('/:id', auth, (req, res) => {
         });
 });
 
-module.exports = router;
+module.exports = { agendamentosRoutes };

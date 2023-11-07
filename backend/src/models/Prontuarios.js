@@ -1,4 +1,4 @@
-const db = require('../../database');
+const db = require('../database/database');
 
 const addProntuario = async (paciente_id, usuario_id, data_hora_agendamento, notas_sessao) => {
     return await db.none(

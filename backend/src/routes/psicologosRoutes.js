@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../../database');
+const db = require('../database/database');
 const auth = require('../../authMiddleware');
 
 // GET todos os psicólogos vinculados a uma clínica

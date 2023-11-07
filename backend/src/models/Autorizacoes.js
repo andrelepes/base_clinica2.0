@@ -1,4 +1,4 @@
-const db = require('../../database');
+const db = require('../database/database');
 
 exports.concederAutorizacao = async (clinica_id, usuario_id, paciente_id) => {
     return await db.none(

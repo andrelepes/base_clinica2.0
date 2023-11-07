@@ -1,15 +1,27 @@
-const express = require('express');
-const router = express.Router();
-const auth = require('../../authMiddleware');
+const  ensureAuthenticated = require('../middlewares/ensureAuthenticated.js');
+
+const autorizacoesRoutes = require('express').Router();
 const autorizacoesController = require('../controllers/autorizacoesController');
 
 // Rota para conceder autorização
-router.post('/autorizar', auth, autorizacoesController.concederAutorizacao);
+autorizacoesRoutes.post(
+  '/autorizar',
+  ensureAuthenticated,
+  autorizacoesController.concederAutorizacao
+);
 
 // Rota para retirar autorização
-router.delete('/retirarAutorizacao/:clinica_id/:usuario_id/:paciente_id', auth, autorizacoesController.retirarAutorizacao);
+autorizacoesRoutes.delete(
+  '/retirarAutorizacao/:clinica_id/:usuario_id/:paciente_id',
+  ensureAuthenticated,
+  autorizacoesController.retirarAutorizacao
+);
 
 // Rota para listar psicólogos autorizados para um paciente específico
-router.get('/autorizados/:paciente_id', auth, autorizacoesController.listarAutorizados);
+autorizacoesRoutes.get(
+  '/autorizados/:paciente_id',
+  ensureAuthenticated,
+  autorizacoesController.listarAutorizados
+);
 
-module.exports = router;
+module.exports = { autorizacoesRoutes };
