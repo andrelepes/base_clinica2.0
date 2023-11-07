@@ -12,12 +12,11 @@ module.exports = async function ensureAuthenticated(request, response, next) {
   const [, token] = authHeader.split(' ');
 
   try {
-    const { sub } = verify(token, process.env.JWT_SECRET_KEY);
-    console.log(sub);
+    const { user } = verify(token, process.env.JWT_SECRET_KEY);
     // Decodificar as informações do usuário e o tipo de usuário
-    req.user = decoded.user.usuario_id;
-    req.tipousuario = decoded.user.tipousuario;
-    req.clinicaId = decoded.user.clinica_id;
+    request.user = user.usuario_id;
+    request.tipousuario = user.tipousuario;
+    request.clinicaId = user.clinica_id;
 
     next();
   } catch (err) {
