@@ -10,11 +10,11 @@ import {
 import PacientesList from './components/Pacientes/PacientesList';
 import PacienteDetalhes from './components/Pacientes/PacienteDetalhes';
 import Agenda from './components/Agenda/Agenda';
-import RegistrationComponent from './components/Auth/RegistrationComponent';
 import ClinicasList from './components/Clinicas/ClinicasList';
 import { ClinicaProvider } from './contexts/ClinicaContext'; // Import ClinicaProvider
 import { ClinicaIdProvider } from './contexts/ClinicaIdContext'; // Import ClinicaIdProvider
 import Login from './pages/Login';
+import Register from './pages/Register';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { Theme } from './styles/theme';
@@ -79,7 +79,7 @@ function App() {
               ) : (
                 <Routes>
                   <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<RegistrationComponent />} />
+                  <Route path="/register" element={<Register />} />
                   <Route path="*" element={<Navigate to="/login" />} />
                 </Routes>
               )}
