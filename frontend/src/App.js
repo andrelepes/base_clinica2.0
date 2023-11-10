@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import Sidebar from './components/Sidebar';
 import {
   BrowserRouter as Router,
   Route,
@@ -18,6 +17,7 @@ import Register from './pages/Register';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { Theme } from './styles/theme';
+import Sidebar from './components/Sidebar.jsx';
 
 function HomePage() {
   return (
@@ -49,7 +49,7 @@ function App() {
 
   return (
     <ThemeProvider theme={Theme}>
-      <CssBaseline/>
+      <CssBaseline />
       <ClinicaIdProvider>
         {' '}
         {/* Wrap the components with ClinicaIdProvider */}
@@ -60,9 +60,7 @@ function App() {
             <div className="App">
               {token ? (
                 <>
-                  <div className="sidebar">
-                    <Sidebar />
-                  </div>
+                  <Sidebar />
                   <div className="main-content">
                     <Routes>
                       <Route
