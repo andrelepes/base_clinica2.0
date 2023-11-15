@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import 'dayjs/locale/pt-br.js'
 import './App.css';
 import {
   BrowserRouter as Router,
@@ -48,44 +51,46 @@ function App() {
   }, []);
 
   return (
-    <ThemeProvider theme={Theme}>
-      <CssBaseline />
-      <ClinicaIdProvider>
-        {' '}
-        {/* Wrap the components with ClinicaIdProvider */}
-        <ClinicaProvider>
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='pt-br'>
+      <ThemeProvider theme={Theme}>
+        <CssBaseline />
+        <ClinicaIdProvider>
           {' '}
-          {/* Wrap the components with ClinicaProvider */}
-          <Router>
-            <div className="App">
-              {token ? (
-                <>
-                  <Sidebar />
-                  <div className="main-content">
-                    <Routes>
-                      <Route
-                        path="/pacientes/:id"
-                        element={<PacienteDetalhes />}
-                      />
-                      <Route path="/pacientes" element={<PacientesList />} />
-                      <Route path="/agenda" element={<Agenda />} />
-                      <Route path="/" element={<HomePage />} />
-                      <Route path="/clinicas" element={<ClinicasList />} />
-                    </Routes>
-                  </div>
-                </>
-              ) : (
-                <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="*" element={<Navigate to="/login" />} />
-                </Routes>
-              )}
-            </div>
-          </Router>
-        </ClinicaProvider>
-      </ClinicaIdProvider>
-    </ThemeProvider>
+          {/* Wrap the components with ClinicaIdProvider */}
+          <ClinicaProvider>
+            {' '}
+            {/* Wrap the components with ClinicaProvider */}
+            <Router>
+              <div className="App">
+                {token ? (
+                  <>
+                    <Sidebar />
+                    <div className="main-content">
+                      <Routes>
+                        <Route
+                          path="/pacientes/:id"
+                          element={<PacienteDetalhes />}
+                        />
+                        <Route path="/pacientes" element={<PacientesList />} />
+                        <Route path="/agenda" element={<Agenda />} />
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/clinicas" element={<ClinicasList />} />
+                      </Routes>
+                    </div>
+                  </>
+                ) : (
+                  <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="*" element={<Navigate to="/login" />} />
+                  </Routes>
+                )}
+              </div>
+            </Router>
+          </ClinicaProvider>
+        </ClinicaIdProvider>
+      </ThemeProvider>
+    </LocalizationProvider>
   );
 }
 

@@ -1,19 +1,16 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api', // URL base do seu back-end
+  baseURL: 'http://192.168.0.104:3000/api', // URL base do seu back-end
 });
 
-// Interceptor para adicionar o token JWT ao cabeçalho 'x-auth-token'
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
-    config.headers['x-auth-token'] = token;
-    console.log('Token adicionado ao cabeçalho:', token);  // Adicionado para depuração
+    api.defaults.headers.common.Authorization = `Bearer ${token}`;
   }
   return config;
 }, (error) => {
-  console.error('Erro ao adicionar o token ao cabeçalho:', error);  // Adicionado para depuração
   return Promise.reject(error);
 });
 
