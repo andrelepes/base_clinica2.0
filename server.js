@@ -10,7 +10,11 @@ const app = express();
 
 // Middleware para CORS
 app.use(cors()); 
-
+// Middleware para definir o cabeçalho Content-Type para UTF-8
+app.use((req, res, next) => {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    next();
+});
 // Use o bodyParser.json() aqui para que ele seja aplicado a todas as rotas
 app.use(bodyParser.json());
 
@@ -22,6 +26,10 @@ const usuariosRoutes = require('./backend/routes/usuariosRoutes');
 const prontuariosRoutes = require('./backend/routes/prontuariosRoutes');
 const clinicasRoutes = require('./backend/routes/clinicasRoutes');
 const autorizacoesRoutes = require('./backend/routes/autorizacoesRoutes');
+const consultoriosRoutes = require('./backend/routes/consultoriosRoutes'); 
+const disponibilidadeRoutes = require('./backend/routes/disponibilidadeRoutes'); 
+
+
 
 // Definindo as rotas
 app.use('/api/pacientes', authMiddleware, pacientesRoutes);
@@ -29,9 +37,10 @@ app.use('/api/agendamentos', authMiddleware, agendamentosRoutes);
 app.use('/api/cursos', authMiddleware, cursosRoutes); 
 app.use('/api/usuarios', usuariosRoutes); // Sem middleware de autenticação
 app.use('/api/prontuarios', authMiddleware, prontuariosRoutes); 
-app.use('/api/clinicas', clinicasRoutes); 
-app.use('/api/autorizacoes', autorizacoesRoutes);
-
+app.use('/api/clinicas', authMiddleware, clinicasRoutes); 
+app.use('/api/autorizacoes', authMiddleware, autorizacoesRoutes);
+app.use('/api/consultorios', authMiddleware, consultoriosRoutes);
+app.use('/api/disponibilidade', authMiddleware, disponibilidadeRoutes);
 const PORT = 3000;
 
 app.listen(PORT, () => {

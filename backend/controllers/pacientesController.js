@@ -8,7 +8,7 @@ class PacientesController {
             const { nome_paciente, email_paciente, telefone_paciente } = req.body;
             const usuario_id = req.user;
             const clinica_id = req.clinicaId;
-            const tipousuario = req.tipousuario; // Supondo que o tipousuario também esteja disponível no request
+            const tipousuario = req.tipousuario; 
     
             // Verifique se usuario_id existe
             if (!usuario_id) {
@@ -50,10 +50,7 @@ static async atualizarPaciente(req, res) {
         const { paciente_id } = req.params;
         const { nome_paciente, data_nascimento_paciente, telefone_paciente, email_paciente, cep_paciente, endereco_paciente, diagnostico, historico_medico, status_paciente, cpf_paciente, ...resto } = req.body;
         
-        console.log("Corpo da solicitação:", req.body);
-        console.log("Verificando a presença de paciente_id ou clinica_id...");
         if (resto.paciente_id || resto.clinica_id) {
-            console.log("paciente_id ou clinica_id encontrado no corpo da solicitação!");
             return res.status(400).json({ success: false, message: 'Não é permitido atualizar paciente_id ou clinica_id.' });
         }
         console.log("paciente_id e clinica_id não estão presentes no corpo da solicitação.");
@@ -61,32 +58,24 @@ static async atualizarPaciente(req, res) {
         const clinica_id = req.clinicaId;
         const tipousuario = req.tipousuario;
         const usuario_id = req.user; // Extraia o usuario_id do token
-        console.log("Valor de clinica_id no controlador:", clinica_id);
-console.log("Valor de tipousuario no controlador:", tipousuario);
-console.log("Valor de usuario_id no controlador:", usuario_id);
 
 if (tipousuario === 'secretario_vinculado') {
             delete resto.diagnostico;
             delete resto.historico_medico;
         }
-
         await Pacientes.atualizarPaciente(paciente_id, nome_paciente, data_nascimento_paciente, telefone_paciente, email_paciente, cep_paciente, endereco_paciente, diagnostico, historico_medico, status_paciente, cpf_paciente, tipousuario, clinica_id, usuario_id);
         res.status(200).json({ success: true, message: 'Paciente atualizado com sucesso!' });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Erro ao atualizar paciente.', error });
     }
 }
-
 // Filtrar pacientes
 static async filtrarPacientes(req, res) {
     try {
-        const { nome, status } = req.query; // Obtenha nome e status dos parâmetros de consulta
+        const { nome, status } = req.query; 
         const usuario_id = req.user;
         const clinica_id = req.clinicaId;
         const tipousuario = req.tipousuario;
-
-        // Logs de depuração
-        console.log("Parâmetros recebidos:", nome, status, tipousuario, clinica_id, usuario_id);
 
         const pacientes = await Pacientes.filtrarPacientes(nome, status, tipousuario, clinica_id, usuario_id);
         res.status(200).json({ success: true, data: pacientes });
@@ -169,9 +158,6 @@ static async marcarComoAtivo(req, res) {
         res.status(500).json({ success: false, message: 'Erro ao reativar paciente.', error });
     }
 }
-
-
-  // ... Outros métodos conforme necessário
 
 }
 
