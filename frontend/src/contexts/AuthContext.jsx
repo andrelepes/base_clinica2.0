@@ -8,11 +8,13 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [usuarioId, setUsuarioId] = useState(null);
+  const [clinicaId, setClinicaId] = useState(null);
   const [tipousuario, setTipousuario] = useState(null);
 
   function refreshData(verifyToken) {
     if (!usuarioId || !tipousuario || !user) {
       setUsuarioId(verifyToken.user.usuario_id);
+      setClinicaId(verifyToken.user.clinica_id);
       setTipousuario(verifyToken.user.tipousuario);
       getUser(verifyToken.user.usuario_id);
     }
@@ -38,9 +40,10 @@ export function AuthProvider({ children }) {
   async function getUser(userId) {
     try {
       const response = await api.get(`/usuarios/${userId}`);
-      console.log('Deu bom, setando User');
       setUser(response.data.user);
-      toast.success(`Bem-vindo ${response.data.user.nome_usuario}`);
+      toast.success(`Bem-vindo ${response.data.user.nome_usuario}`, {
+        toastId: 'welcomeId',
+      });
     } catch (error) {}
   }
 
@@ -52,6 +55,8 @@ export function AuthProvider({ children }) {
       });
 
       const token = response.data.token;
+
+      api.defaults.headers.common.Authorization = `Bearer ${token}`;
 
       localStorage.setItem('token', token);
       refreshData(jwtDecode(token));
@@ -71,6 +76,8 @@ export function AuthProvider({ children }) {
       const response = await api.post('/usuarios/registrar', payload);
       localStorage.setItem('token', response.data.token);
       const token = response.data.token;
+
+      api.defaults.headers.common.Authorization = `Bearer ${token}`;
 
       localStorage.setItem('token', token);
       refreshData(jwtDecode(token));
@@ -94,6 +101,8 @@ export function AuthProvider({ children }) {
     logout,
     user,
     setUser,
+    clinicaId,
+    setClinicaId,
     usuarioId,
     setUsuarioId,
     tipousuario,
