@@ -109,7 +109,10 @@ static async getLinkedSecretaries(clinicaId) {
 // Método para buscar um usuário por ID
 static async buscarPorId(usuario_id) {
   try {
-    const usuario = await db.oneOrNone('SELECT * FROM usuarios WHERE usuario_id = $1', [usuario_id]);
+    const usuario = await db.oneOrNone(
+      'SELECT nome_usuario, email_usuario, cpfcnpj, data_nascimento_usuario, telefone_usuario, cep_usuario, endereco_usuario, qualificacoes, horarios_disponiveis, registro_profissional, status_usuario FROM usuarios WHERE usuario_id = $1',
+      [usuario_id]
+    );
     return usuario;
   } catch (error) {
     console.error('Erro ao buscar usuário por ID:', error);

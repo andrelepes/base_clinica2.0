@@ -12,30 +12,21 @@ import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { useState } from 'react';
-import api from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Register() {
   const [tipoUsuario, setTipoUsuario] = useState('');
+  const { register } = useAuth();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const payload = {
+    register({
       nome_usuario: data.get('nome') + ' ' + data.get('sobrenome'),
       email_usuario: data.get('email_usuario'),
       senha: data.get('senha'),
       tipousuario: tipoUsuario,
-    };
-
-    try {
-      const response = await api.post('/usuarios/registrar', payload);
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('username', payload.nome_usuario);
-      alert('Registro realizado com sucesso!');
-      window.location.reload();
-    } catch (error) {
-      alert('Erro no registro. Por favor, tente novamente.');
-    }
+    });
   };
 
   return (

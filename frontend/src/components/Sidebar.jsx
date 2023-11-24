@@ -17,6 +17,7 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MuiDrawer from '@mui/material/Drawer';
 import DrawerItem from './DrawerItem';
+import { useAuth } from '../contexts/AuthContext';
 
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -46,16 +47,10 @@ const Drawer = styled(MuiDrawer, {
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
-  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const toggleDrawer = () => {
     setOpen(!open);
-  };
-
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
-    window.location.reload();
   };
 
   return (
@@ -96,7 +91,7 @@ export default function Sidebar() {
         <DrawerItem itemLink="/configuracoes" itemText="Configurações">
           <SettingsIcon />
         </DrawerItem>
-        <DrawerItem onClick={handleLogout} itemText="Sair">
+        <DrawerItem onClick={logout} itemText="Sair">
           <LogoutIcon />
         </DrawerItem>
       </List>

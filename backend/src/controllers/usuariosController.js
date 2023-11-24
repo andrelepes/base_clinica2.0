@@ -125,11 +125,11 @@ class UserController {
   static async getUserById(req, res) {
     try {
       const id = req.params.id;
-      const user = await db.oneOrNone('SELECT * FROM usuarios WHERE usuario_id = $1', [id]);
+      const user = await Usuarios.buscarPorId(id);
       if (!user) {
         return res.status(404).json({ message: 'Usuário não encontrado' });
       }
-      res.json(user);
+      res.json({user});
     } catch (error) {
       console.error(error);
       res.status(500).send('Erro no servidor');

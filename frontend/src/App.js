@@ -1,95 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import 'dayjs/locale/pt-br.js'
 import './App.css';
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Navigate,
-} from 'react-router-dom';
-import PacientesList from './components/Pacientes/PacientesList';
-import PacienteDetalhes from './components/Pacientes/PacienteDetalhes';
-import Agenda from './components/Agenda/Agenda';
-import ClinicasList from './components/Clinicas/ClinicasList';
+import 'react-toastify/dist/ReactToastify.css';
+import 'dayjs/locale/pt-br.js';
 import { ClinicaProvider } from './contexts/ClinicaContext'; // Import ClinicaProvider
 import { ClinicaIdProvider } from './contexts/ClinicaIdContext'; // Import ClinicaIdProvider
-import Login from './pages/Login';
-import Register from './pages/Register';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { Theme } from './styles/theme';
-import Sidebar from './components/Sidebar.jsx';
-
-function HomePage() {
-  return (
-    <header className="App-header">
-      Selecione uma opção na barra lateral para exibir o conteúdo aqui.
-    </header>
-  );
-}
+import { ToastContainer } from 'react-toastify';
+import { AuthProvider } from './contexts/AuthContext.jsx';
+import AppRoutes from './routes/index.jsx';
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem('token'));
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const newToken = localStorage.getItem('token');
-      console.log('Evento de armazenamento disparado, novo token:', newToken);
-      setToken(newToken);
-    };
-
-    const initialToken = localStorage.getItem('token');
-    setToken(initialToken);
-
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
+  const token = localStorage.getItem('token');
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='pt-br'>
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
       <ThemeProvider theme={Theme}>
-        <CssBaseline />
-        <ClinicaIdProvider>
-          {' '}
-          {/* Wrap the components with ClinicaIdProvider */}
-          <ClinicaProvider>
-            {' '}
-            {/* Wrap the components with ClinicaProvider */}
-            <Router>
+        <AuthProvider>
+          <CssBaseline />
+          <ClinicaIdProvider>
+            <ClinicaProvider>
               <div className="App">
-                {token ? (
-                  <>
-                    <Sidebar />
-                    <div className="main-content">
-                      <Routes>
-                        <Route
-                          path="/pacientes/:id"
-                          element={<PacienteDetalhes />}
-                        />
-                        <Route path="/pacientes" element={<PacientesList />} />
-                        <Route path="/agenda" element={<Agenda />} />
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/clinicas" element={<ClinicasList />} />
-                      </Routes>
-                    </div>
-                  </>
-                ) : (
-                  <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="*" element={<Navigate to="/login" />} />
-                  </Routes>
-                )}
+                <AppRoutes />
               </div>
-            </Router>
-          </ClinicaProvider>
-        </ClinicaIdProvider>
+            </ClinicaProvider>
+          </ClinicaIdProvider>
+        </AuthProvider>
       </ThemeProvider>
+      <ToastContainer autoClose={3000} />
     </LocalizationProvider>
   );
 }

@@ -7,24 +7,19 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import api from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Login() {
+  const { login } = useAuth();
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
-    try {
-      const response = await api.post('/usuarios/login', {
-        email_usuario: data.get('email_usuario'),
-        senha: data.get('senha'),
-      });
-      localStorage.setItem('token', response.data.token);
 
-      window.location.reload();
-    } catch (error) {
-      alert('Falha no login. Verifique seu e-mail e senha');
-    }
+    login({
+      email_usuario: data.get('email_usuario'),
+      senha: data.get('senha'),
+    });
   };
 
   return (
