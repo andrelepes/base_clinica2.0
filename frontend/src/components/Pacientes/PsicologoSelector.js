@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import { useClinicaId } from '../../contexts/ClinicaIdContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 function PsicologoSelector({ onPsicologoSelected }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [psicologos, setPsicologos] = useState([]);
     const [filteredPsicologos, setFilteredPsicologos] = useState([]);
-    const { clinicaId } = useClinicaId();
+    const { clinicaId } = useAuth();
 
     useEffect(() => {
         const fetchPsicologos = async () => {

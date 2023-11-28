@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useClinicaId } from '../../contexts/ClinicaIdContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 function AddPatientForm({ initialData = {}, onFormSubmit }) {
-    const { clinicaId, usuarioId } = useClinicaId();
+    const { clinicaId, usuarioId } = useAuth();
 
     const defaultData = {
         nome_paciente: '',

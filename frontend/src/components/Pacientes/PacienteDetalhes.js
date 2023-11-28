@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'; // Importe useC
 import api from '../../services/api';
 import AddProntuarioForm from './AddProntuarioForm';
 import { useParams } from 'react-router-dom';
-import { useClinicaId } from '../../contexts/ClinicaIdContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 function formatDate(isoDate) {
     if (!isoDate) return 'Data não disponível'; 
@@ -16,7 +16,7 @@ function PacienteDetalhes() {
     const [prontuarios, setProntuarios] = useState([]);
     const [showProntuarioForm, setShowProntuarioForm] = useState(false);
     const [editProntuarioId, setEditProntuarioId] = useState(null);
-    const { usuarioId, clinicaId, tipousuario } = useClinicaId();
+    const { usuarioId, clinicaId, tipousuario } = useAuth();
     const { id: paciente_id } = useParams();
 
     const fetchProntuarios = useCallback(async () => { 
