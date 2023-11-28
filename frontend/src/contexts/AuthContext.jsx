@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import api from '../services/api';
 import jwtDecode from 'jwt-decode';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
@@ -11,8 +12,11 @@ export function AuthProvider({ children }) {
   const [clinicaId, setClinicaId] = useState(null);
   const [tipousuario, setTipousuario] = useState(null);
 
+  const navigate = useNavigate();
+
   function refreshData(verifyToken) {
     if (!usuarioId || !tipousuario || !user) {
+      api.defaults.headers.common.Authorization = `Bearer ${verifyToken}`;
       setUsuarioId(verifyToken.user.usuario_id);
       setClinicaId(verifyToken.user.clinica_id);
       setTipousuario(verifyToken.user.tipousuario);
@@ -20,31 +24,34 @@ export function AuthProvider({ children }) {
     }
   }
 
+  let didInit = false;
+
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      return;
+    if (!didInit) {
+      didInit = true;
+      const token = localStorage.getItem('token');
+      if (!token) {
+        return;
+      }
+      const verifyToken = jwtDecode(token);
+
+      if (verifyToken.exp < Date.now() / 1000) {
+        logout();
+        return;
+      }
+
+      refreshData(verifyToken);
     }
-    const verifyToken = jwtDecode(token);
-
-    if (verifyToken.exp < Date.now() / 1000) {
-      logout();
-      return;
-    }
-
-    api.defaults.headers.common.Authorization = `Bearer ${token}`;
-
-    refreshData(verifyToken);
   }, []);
 
   async function getUser(userId) {
     try {
       const response = await api.get(`/usuarios/${userId}`);
       setUser(response.data.user);
-      toast.success(`Bem-vindo ${response.data.user.nome_usuario}`, {
-        toastId: 'welcomeId',
-      });
-    } catch (error) {}
+      toast.success(`Bem-vindo ${response.data.user.nome_usuario}`);
+    } catch (error) {
+      toast.error('Ocorreu um erro ao resgatar suas informações');
+    }
   }
 
   async function login({ email_usuario, senha }) {
@@ -56,10 +63,10 @@ export function AuthProvider({ children }) {
 
       const token = response.data.token;
 
-      api.defaults.headers.common.Authorization = `Bearer ${token}`;
-
       localStorage.setItem('token', token);
       refreshData(jwtDecode(token));
+
+      navigate('/');
     } catch (error) {
       toast.error('Falha no login. Verifique seu e-mail e senha');
     }
@@ -77,11 +84,10 @@ export function AuthProvider({ children }) {
       localStorage.setItem('token', response.data.token);
       const token = response.data.token;
 
-      api.defaults.headers.common.Authorization = `Bearer ${token}`;
-
       localStorage.setItem('token', token);
       refreshData(jwtDecode(token));
       toast.success('Registro realizado com sucesso!');
+      navigate('/');
     } catch (error) {
       toast.error('Erro no registro. Por favor, tente novamente.');
     }
@@ -93,6 +99,7 @@ export function AuthProvider({ children }) {
     setUsuarioId(null);
     setTipousuario(null);
     toast.info('Sua sessão expirou, faça login novamente');
+    navigate('/login');
   }
 
   const values = {

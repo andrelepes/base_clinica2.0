@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material';
 
 import HomeIcon from '@mui/icons-material/Home';
@@ -10,6 +9,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MenuIcon from '@mui/icons-material/Menu';
+import BusinessIcon from '@mui/icons-material/Business';
 
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
@@ -47,7 +47,7 @@ const Drawer = styled(MuiDrawer, {
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
-  const { logout } = useAuth();
+  const { tipousuario, logout } = useAuth();
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -78,13 +78,12 @@ export default function Sidebar() {
         <DrawerItem itemLink="/pacientes" itemText="Pacientes">
           <PersonIcon />
         </DrawerItem>
-        {/* Renderização condicional baseada no tipo de usuário
-          {(tipousuario === 'clinica' ||
-            tipousuario === 'secretario_vinculado') && (
-            <DrawerItem itemLink="/clinicas" itemText="Clínica">
-              <BusinessIcon />
-            </DrawerItem>
-          )} */}
+        {(tipousuario === 'clinica' ||
+          tipousuario === 'secretario_vinculado') && (
+          <DrawerItem itemLink="/clinicas" itemText="Clínica">
+            <BusinessIcon />
+          </DrawerItem>
+        )}
         <DrawerItem itemLink="/cursos" itemText="Cursos">
           <SchoolIcon />
         </DrawerItem>

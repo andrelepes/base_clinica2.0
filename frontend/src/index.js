@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+
+import './App.css';
+import 'react-toastify/dist/ReactToastify.css';
+import 'dayjs/locale/pt-br.js';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
