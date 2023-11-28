@@ -14,11 +14,50 @@ import FormControl from '@mui/material/FormControl';
 import PhoneInput from '../../components/MaskedInputs/PhoneInput';
 import CEPInput from '../../components/MaskedInputs/CEPInput';
 import CPFInput from '../../components/MaskedInputs/CPFInput';
+import api from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
+import { toast } from 'react-toastify';
 
-export default function AddPatientForm({ open, handleClose }) {
+export default function AddPatientForm({ open, setOpen }) {
   const [phone, setPhone] = useState('');
   const [cep, setCep] = useState('');
   const [cpf, setCpf] = useState('');
+  const [birthDate, setBirthDate] = useState(null);
+  const { clinicaId: clinica_id, usuarioId: usuario_id } = useAuth();
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const data = new FormData(event.currentTarget);
+
+    const newPatientData = {
+      nome_paciente: data.get('nome_paciente'),
+      cpf_paciente: cpf,
+      email_paciente: data.get('email_paciente'),
+      telefone_paciente: phone,
+      data_nascimento_paciente: birthDate,
+      cep_paciente: cep,
+      endereco_paciente: data.get('endereco_paciente'),
+      clinica_id,
+      usuario_id,
+    };
+    try {
+      await api.post('/pacientes', newPatientData);
+      toast.success(
+        `${newPatientData.nome_paciente} foi cadastrado com sucesso!`
+      );
+      handleClose();
+    } catch (error) {
+      toast.error(
+        error.response.data.message ??
+          'Ocorreu um erro ao adicionar/atualizar o paciente.'
+      );
+    }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
     <Dialog
@@ -30,7 +69,13 @@ export default function AddPatientForm({ open, handleClose }) {
     >
       <DialogTitle>Adicionar Paciente</DialogTitle>
       <DialogContent>
-        <Grid container spacing={2} marginTop={0.5}>
+        <Grid
+          container
+          spacing={2}
+          marginTop={0.5}
+          component="form"
+          onSubmit={handleSubmit}
+        >
           <Grid item xs={12} md={8}>
             <FormControl variant="outlined" fullWidth required>
               <InputLabel>Nome</InputLabel>
@@ -80,6 +125,8 @@ export default function AddPatientForm({ open, handleClose }) {
               label="Data de Nascimento"
               id="data_nascimento_paciente"
               name="data_nascimento_paciente"
+              value={birthDate}
+              onChange={(newValue) => setBirthDate(newValue)}
               slotProps={{ textField: { fullWidth: true } }}
             />
           </Grid>
@@ -97,7 +144,6 @@ export default function AddPatientForm({ open, handleClose }) {
             <FormControl required variant="outlined" fullWidth>
               <InputLabel>Endereço</InputLabel>
               <OutlinedInput
-                margin="normal"
                 id="endereco_paciente"
                 name="endereco_paciente"
                 autoComplete="address"
@@ -105,12 +151,14 @@ export default function AddPatientForm({ open, handleClose }) {
               />
             </FormControl>
           </Grid>
+          <Grid item xs={12}>
+            <DialogActions>
+              <Button onClick={handleClose}>Cancelar</Button>
+              <Button type="submit">Adicionar</Button>
+            </DialogActions>
+          </Grid>
         </Grid>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Cancelar</Button>
-        <Button onClick={handleClose}>Adicionar</Button>
-      </DialogActions>
     </Dialog>
   );
 }

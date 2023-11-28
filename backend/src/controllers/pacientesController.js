@@ -5,7 +5,7 @@ class PacientesController {
   
     static async criarPaciente(req, res) {
         try {
-            const { nome_paciente, email_paciente, telefone_paciente } = req.body;
+            const { nome_paciente, cpf_paciente, email_paciente, telefone_paciente, data_nascimento_paciente, cep_paciente, endereco_paciente } = req.body;
             const usuario_id = req.user;
             const clinica_id = req.clinicaId;
             const tipousuario = req.tipousuario; // Supondo que o tipousuario também esteja disponível no request
@@ -29,8 +29,12 @@ class PacientesController {
             // Inserir o novo paciente
             const paciente = {
                 nome_paciente,
+                cpf_paciente,
                 email_paciente,
                 telefone_paciente,
+                data_nascimento_paciente,
+                cep_paciente,
+                endereco_paciente,
                 usuario_id,
                 clinica_id
             };

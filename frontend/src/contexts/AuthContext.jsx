@@ -14,9 +14,15 @@ export function AuthProvider({ children }) {
 
   const navigate = useNavigate();
 
-  function refreshData(verifyToken) {
+  function refreshData(token) {
+    const verifyToken = jwtDecode(token);
+
+    if (verifyToken.exp < Date.now() / 1000) {
+      logout();
+      return;
+    }
     if (!usuarioId || !tipousuario || !user) {
-      api.defaults.headers.common.Authorization = `Bearer ${verifyToken}`;
+      api.defaults.headers.common.Authorization = `Bearer ${token}`;
       setUsuarioId(verifyToken.user.usuario_id);
       setClinicaId(verifyToken.user.clinica_id);
       setTipousuario(verifyToken.user.tipousuario);
@@ -33,14 +39,8 @@ export function AuthProvider({ children }) {
       if (!token) {
         return;
       }
-      const verifyToken = jwtDecode(token);
 
-      if (verifyToken.exp < Date.now() / 1000) {
-        logout();
-        return;
-      }
-
-      refreshData(verifyToken);
+      refreshData(token);
     }
   }, []);
 
@@ -64,7 +64,7 @@ export function AuthProvider({ children }) {
       const token = response.data.token;
 
       localStorage.setItem('token', token);
-      refreshData(jwtDecode(token));
+      refreshData(token);
 
       navigate('/');
     } catch (error) {
@@ -85,7 +85,7 @@ export function AuthProvider({ children }) {
       const token = response.data.token;
 
       localStorage.setItem('token', token);
-      refreshData(jwtDecode(token));
+      refreshData(token);
       toast.success('Registro realizado com sucesso!');
       navigate('/');
     } catch (error) {

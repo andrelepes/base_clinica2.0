@@ -15,7 +15,7 @@ class Pacientes {
   // Método para inserir um novo paciente
   static async inserirPaciente(paciente) {
   try {
-    await db.none('INSERT INTO pacientes (nome_paciente, email_paciente, telefone_paciente, usuario_id, clinica_id) VALUES (${nome_paciente}, ${email_paciente}, ${telefone_paciente}, ${usuario_id}, ${clinica_id})', paciente);
+    await db.none('INSERT INTO pacientes (nome_paciente, email_paciente, telefone_paciente, usuario_id, clinica_id, cpf_paciente, data_nascimento_paciente, cep_paciente, endereco_paciente) VALUES (${nome_paciente}, ${email_paciente}, ${telefone_paciente}, ${usuario_id}, ${clinica_id}, ${cpf_paciente}, ${data_nascimento_paciente}, ${cep_paciente}, ${endereco_paciente})', paciente);
     return { success: true, message: 'Paciente registrado com sucesso!' };
   } catch (error) {
     console.error('Erro ao inserir paciente:', error);
