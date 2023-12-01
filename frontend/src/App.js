@@ -13,7 +13,7 @@ function App() {
     <ThemeProvider theme={Theme}>
       <CssBaseline />
       <RouterProvider router={router} />
-      <ToastContainer autoClose={3000} />
+      <ToastContainer autoClose={3000} limit={3}/>
     </ThemeProvider>
   );
 }

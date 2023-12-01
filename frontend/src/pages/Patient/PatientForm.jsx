@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DatePicker } from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
 
 import Dialog from '@mui/material/Dialog';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -18,35 +19,74 @@ import api from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 
-export default function AddPatientForm({ open, setOpen }) {
+export default function PatientForm({
+  open,
+  setOpen,
+  selectedPatient,
+  setSelectedPatient,
+  fetchPatients,
+}) {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
   const [cep, setCep] = useState('');
   const [cpf, setCpf] = useState('');
   const [birthDate, setBirthDate] = useState(null);
   const { clinicaId: clinica_id, usuarioId: usuario_id } = useAuth();
 
+  useEffect(() => {
+    if (!!selectedPatient.nome_paciente && !name) {
+      setName(selectedPatient.nome_paciente ?? '');
+      setCpf(selectedPatient.cpf_paciente ?? '');
+      setEmail(selectedPatient.email_paciente ?? '');
+      setPhone(selectedPatient.telefone_paciente ?? '');
+      setBirthDate(
+        selectedPatient.data_nascimento_paciente
+          ? dayjs(selectedPatient.data_nascimento_paciente)
+          : null
+      );
+      setCep(selectedPatient.cep_paciente ?? '');
+      setAddress(selectedPatient.endereco_paciente ?? '');
+    }
+  }, [open]);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
 
-    const newPatientData = {
-      nome_paciente: data.get('nome_paciente'),
+    const patientData = {
+      nome_paciente: name,
       cpf_paciente: cpf,
-      email_paciente: data.get('email_paciente'),
+      email_paciente: email,
       telefone_paciente: phone,
       data_nascimento_paciente: birthDate,
       cep_paciente: cep,
-      endereco_paciente: data.get('endereco_paciente'),
+      endereco_paciente: address,
       clinica_id,
       usuario_id,
     };
+
     try {
-      await api.post('/pacientes', newPatientData);
-      toast.success(
-        `${newPatientData.nome_paciente} foi cadastrado com sucesso!`
-      );
-      handleClose();
+      if (selectedPatient.usuario_id) {
+        await api.put(`/pacientes/${selectedPatient.usuario_id}`, patientData);
+        await api.put(`/pacientes/${selectedPatient.usuario_id}/ativo`, {
+          usuario_id,
+        });
+        toast.success(
+          `${patientData.nome_paciente} foi atualizado com sucesso!`
+        );
+        fetchPatients();
+        handleClose();
+      } else {
+        await api.post('/pacientes', patientData);
+        toast.success(
+          `${patientData.nome_paciente} foi cadastrado com sucesso!`
+        );
+        fetchPatients();
+        handleClose();
+      }
     } catch (error) {
       toast.error(
         error.response.data.message ??
@@ -57,6 +97,14 @@ export default function AddPatientForm({ open, setOpen }) {
 
   const handleClose = () => {
     setOpen(false);
+    setName('');
+    setCpf('');
+    setEmail('');
+    setPhone('');
+    setBirthDate(null);
+    setCep('');
+    setAddress('');
+    setSelectedPatient(null);
   };
 
   return (
@@ -67,7 +115,9 @@ export default function AddPatientForm({ open, setOpen }) {
       fullWidth
       maxWidth={'md'}
     >
-      <DialogTitle>Adicionar Paciente</DialogTitle>
+      <DialogTitle>
+        {selectedPatient.nome_paciente ? 'Editar' : 'Adicionar'} Paciente
+      </DialogTitle>
       <DialogContent>
         <Grid
           container
@@ -83,6 +133,8 @@ export default function AddPatientForm({ open, setOpen }) {
                 id="nome_paciente"
                 label="Nome"
                 name="nome_paciente"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
                 autoComplete="full-name"
                 autoFocus
               />
@@ -105,6 +157,8 @@ export default function AddPatientForm({ open, setOpen }) {
               <OutlinedInput
                 id="email_paciente"
                 name="email_paciente"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
                 autoComplete="email"
                 label="Email"
               />
@@ -147,6 +201,8 @@ export default function AddPatientForm({ open, setOpen }) {
                 id="endereco_paciente"
                 name="endereco_paciente"
                 autoComplete="address"
+                value={address}
+                onChange={(event) => setAddress(event.target.value)}
                 label="Endereço"
               />
             </FormControl>
@@ -154,7 +210,9 @@ export default function AddPatientForm({ open, setOpen }) {
           <Grid item xs={12}>
             <DialogActions>
               <Button onClick={handleClose}>Cancelar</Button>
-              <Button type="submit">Adicionar</Button>
+              <Button type="submit">
+                {selectedPatient.nome_paciente ? 'Editar' : 'Adicionar'}
+              </Button>
             </DialogActions>
           </Grid>
         </Grid>

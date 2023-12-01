@@ -8,12 +8,12 @@ import {
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 import PacienteDetalhes from '../components/Pacientes/PacienteDetalhes';
-import PacientesList from '../components/Pacientes/PacientesList';
 import Agenda from '../components/Agenda/Agenda';
 import ClinicasList from '../components/Clinicas/ClinicasList';
 import ErrorPage from '../pages/ErrorPage';
 import ProtectedPageLayout from './ProtectedPageLayout';
 import Providers from './Providers';
+import PatientsList from '../pages/Patient/PatientsList';
 
 function HomePage() {
   return (
@@ -49,7 +49,7 @@ export const router = createBrowserRouter(
       >
         <Route index element={<HomePage />} />
         <Route path="pacientes/:id" element={<PacienteDetalhes />} />
-        <Route path="pacientes" element={<PacientesList />} />
+        <Route path="pacientes" element={<PatientsList />} />
         <Route path="agenda" element={<Agenda />} />
         <Route path="clinicas" element={<ClinicasList />} />
       </Route>

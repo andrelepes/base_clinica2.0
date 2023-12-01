@@ -1,4 +1,5 @@
 import { createTheme } from '@mui/material/styles';
+import {ptBR} from '@mui/material/locale'
 
 export const Theme = createTheme({
   palette: {
@@ -11,4 +12,5 @@ export const Theme = createTheme({
   shape: {
     borderRadius: 6,
   },
+  ptBR
 });
