@@ -65,8 +65,6 @@ static async listarPacientes(tipousuario, clinica_id, usuario_id) {
             default:
                 throw new Error('Tipo de usuário não reconhecido.');
         }
-        console.log("Consulta SQL:", query);
-        console.log("Valores:", values);
         await db.none(query, values);
         return { success: true, message: 'Paciente atualizado com sucesso!' };
     } catch (error) {
@@ -201,7 +199,6 @@ static async marcarComoAtivo(paciente_id, clinica_id, tipousuario) {
   }
 }
 
-  // Outros métodos podem ser adicionados conforme a necessidade, como excluir paciente, buscar paciente por ID, etc.
 }
 
 module.exports = Pacientes;
