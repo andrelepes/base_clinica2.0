@@ -1,16 +1,25 @@
 const express = require('express');
-const router = express.Router();
+const consultoriosRoutes = express.Router();
+const ensureAuthenticated = require('../middlewares/ensureAuthenticated.js');
 const consultoriosController = require('../controllers/consultoriosController'); // Ajuste o caminho conforme necessário
 
-router.post('/', consultoriosController.inserirConsultorio);
+consultoriosRoutes.use(ensureAuthenticated);
 
-router.get('/', consultoriosController.listarConsultorios);
+consultoriosRoutes.post('/', consultoriosController.inserirConsultorio);
 
-router.get('/:consultorio_id', consultoriosController.buscarPorId);
+consultoriosRoutes.get('/', consultoriosController.listarConsultorios);
 
-router.put('/:consultorio_id', consultoriosController.atualizarConsultorio);
+consultoriosRoutes.get('/:consultorio_id', consultoriosController.buscarPorId);
 
-router.delete('/:consultorio_id', consultoriosController.deletarConsultorio);
+consultoriosRoutes.put(
+  '/:consultorio_id',
+  consultoriosController.atualizarConsultorio
+);
+
+consultoriosRoutes.delete(
+  '/:consultorio_id',
+  consultoriosController.deletarConsultorio
+);
 // Adicione outras rotas conforme necessário
 
-module.exports = router;
+module.exports = { consultoriosRoutes };

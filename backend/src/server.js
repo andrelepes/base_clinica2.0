@@ -3,10 +3,15 @@ const express = require('express');
 const dotenv = require('dotenv');
 const path = require('path');
 
-dotenv.config({path: path.join(__dirname, '..', '.env')});
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 const { router } = require('./routes/index.js');
 
 const app = express();
+
+app.use((req, res, next) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  next();
+});
 
 // Middleware para CORS
 app.use(cors());
