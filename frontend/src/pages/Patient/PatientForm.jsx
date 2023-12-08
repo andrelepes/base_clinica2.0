@@ -54,8 +54,6 @@ export default function PatientForm({
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const data = new FormData(event.currentTarget);
-
     const patientData = {
       nome_paciente: name,
       cpf_paciente: cpf,

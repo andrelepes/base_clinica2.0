@@ -7,6 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
 import TableFooter from '@mui/material/TableFooter';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
@@ -16,14 +17,18 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import { visuallyHidden } from '@mui/utils';
 
 import api from '../../services/api';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { getComparator, stableSort } from '../../utils/sortFunctions';
 
 export default function PatientsList() {
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('nome_paciente');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [patients, setPatients] = useState([]);
@@ -46,8 +51,12 @@ export default function PatientsList() {
   }, []);
 
   const visibleRows = useMemo(
-    () => patients.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [patients, page, rowsPerPage]
+    () =>
+      stableSort(patients, getComparator(order, orderBy)).slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+      ),
+    [patients, page, rowsPerPage, order, orderBy]
   );
 
   const emptyRows =
@@ -60,6 +69,12 @@ export default function PatientsList() {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+  };
+
+  const handleRequestSort = (property) => (event) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
   };
 
   let isMounted = false;
@@ -125,9 +140,39 @@ export default function PatientsList() {
             <TableHead>
               <TableRow>
                 <TableCell padding="normal">Ações</TableCell>
+                <TableCell sortDirection={orderBy === 'nome_paciente' ? order : false}>
+                  <TableSortLabel
+                    active={orderBy === 'nome_paciente'}
+                    direction={orderBy === 'nome_paciente' ? order : 'asc'}
+                    onClick={handleRequestSort('nome_paciente')}
+                  >
+                    Nome do Paciente
+                    {orderBy === 'nome_paciente' ? (
+                      <Box component="span" sx={visuallyHidden}>
+                        {order === 'desc'
+                          ? 'sorted descending'
+                          : 'sorted ascending'}
+                      </Box>
+                    ) : null}
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell sortDirection={orderBy === 'status_paciente' ? order : false}>
+                  <TableSortLabel
+                    active={orderBy === 'status_paciente'}
+                    direction={orderBy === 'status_paciente' ? order : 'asc'}
+                    onClick={handleRequestSort('status_paciente')}
+                  >
+                    Status do Paciente
+                    {orderBy === 'status_paciente' ? (
+                      <Box component="span" sx={visuallyHidden}>
+                        {order === 'desc'
+                          ? 'sorted descending'
+                          : 'sorted ascending'}
+                      </Box>
+                    ) : null}
+                  </TableSortLabel>
+                </TableCell>
 
-                <TableCell padding={'normal'}>Nome do Paciente</TableCell>
-                <TableCell padding={'normal'}>Status do Paciente</TableCell>
                 <TableCell padding={'normal'}>
                   Psicólogos Responsáveis
                 </TableCell>

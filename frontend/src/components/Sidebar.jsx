@@ -5,7 +5,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import PersonIcon from '@mui/icons-material/Person';
 import SchoolIcon from '@mui/icons-material/School';
-import SettingsIcon from '@mui/icons-material/Settings';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -88,7 +88,7 @@ export default function Sidebar() {
           <SchoolIcon />
         </DrawerItem>
         <DrawerItem itemLink="/configuracoes" itemText="Configurações">
-          <SettingsIcon />
+          <ManageAccountsIcon />
         </DrawerItem>
         <DrawerItem onClick={logout} itemText="Sair">
           <LogoutIcon />
