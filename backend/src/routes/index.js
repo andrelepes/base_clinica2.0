@@ -7,6 +7,7 @@ const { cursosRoutes } = require('./cursosRoutes.js');
 const { agendamentosRoutes } = require('./agendamentosRoutes.js');
 const { consultoriosRoutes } = require('./consultoriosRoutes.js');
 const { disponibilidadeRoutes } = require('./disponibilidadeRoutes.js');
+const { evolutionsRoutes } = require('./evolutionsRoutes.js');
 
 const router = require('express').Router();
 
@@ -19,5 +20,6 @@ router.use('/agendamentos', agendamentosRoutes);
 router.use('/cursos', cursosRoutes);
 router.use('/consultorios', consultoriosRoutes);
 router.use('/disponibilidade', disponibilidadeRoutes);
+router.use('/evolutions', evolutionsRoutes);
 
 module.exports = { router };

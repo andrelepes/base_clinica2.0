@@ -8,6 +8,8 @@ pacientesRoutes.use(ensureAuthenticated);
 // Rota para filtrar pacientes
 pacientesRoutes.get('/filtrar', pacientesController.filtrarPacientes);
 
+pacientesRoutes.get('/pendentes', pacientesController.filtrarPacientesEvolucoesPendentes);
+
 // Rota para listar todos os pacientes
 pacientesRoutes.get('/', pacientesController.listarPacientes);
 

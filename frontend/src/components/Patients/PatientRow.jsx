@@ -12,6 +12,7 @@ export default function PatientRow({
     paciente_id: null,
     nome_paciente: '',
     status_paciente: '',
+    pending_evolutions_count: '',
   },
   onEdit,
   onDelete,
@@ -33,7 +34,11 @@ export default function PatientRow({
             disabled={patient.status_paciente === 'inativo'}
           >
             <Tooltip title="Excluir" arrow disableInteractive>
-              <DeleteIcon color={patient.status_paciente === 'inativo' ? "disabled" :"error"} />
+              <DeleteIcon
+                color={
+                  patient.status_paciente === 'inativo' ? 'disabled' : 'error'
+                }
+              />
             </Tooltip>
           </IconButton>
           <IconButton aria-label="info" onClick={onInfo}>
@@ -46,6 +51,7 @@ export default function PatientRow({
       <TableCell>{patient.nome_paciente}</TableCell>
       <TableCell>{patient.status_paciente}</TableCell>
       <TableCell>{assignedPsychologists}</TableCell>
+      <TableCell>{patient.pending_evolutions_count}</TableCell>
     </TableRow>
   );
 }

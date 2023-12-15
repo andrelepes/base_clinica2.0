@@ -1,4 +1,4 @@
-const db = require('../../database'); // Ajuste o caminho conforme necessário
+const db = require('../database/database'); // Ajuste o caminho conforme necessário
 
 class Agendamentos {
     // Método para inserir um novo agendamento

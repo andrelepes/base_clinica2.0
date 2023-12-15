@@ -133,7 +133,6 @@ static async listarPacientesPaginados(req, res) {
       res.status(500).json({ success: false, message: 'Erro ao listar pacientes.', error: error.message });
     }
   }
-  
  // Método para marcar paciente como inativo
 static async marcarComoInativo(req, res) {
     try {
@@ -160,6 +159,21 @@ static async marcarComoAtivo(req, res) {
         res.status(200).json({ success: true, message: 'Paciente reativado com sucesso!' });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Erro ao reativar paciente.', error });
+    }
+}
+
+static async filtrarPacientesEvolucoesPendentes(req, res) {
+    try {
+        const { nome, status } = req.query; 
+        const usuario_id = req.user;
+        const clinica_id = req.clinicaId;
+        const tipousuario = req.tipousuario;
+
+        const pacientes = await Pacientes.filtrarPacientesComEvolucoesPendentes(nome, status, tipousuario, clinica_id, usuario_id);
+        res.status(200).json({ success: true, data: pacientes });
+    } catch (error) {
+        console.error('Erro ao filtrar pacientes:', error.message);
+        res.status(500).json({ success: false, message: 'Erro ao filtrar pacientes.', error: error.message });
     }
 }
 

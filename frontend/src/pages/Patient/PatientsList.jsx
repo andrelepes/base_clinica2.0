@@ -42,7 +42,7 @@ export default function PatientsList() {
 
   const fetchPatients = useCallback(async () => {
     try {
-      const response = await api.get(`/pacientes/filtrar`);
+      const response = await api.get(`/pacientes/pendentes`);
       setPatients(response.data.data);
       setSelectedPatient(null);
     } catch (error) {
@@ -175,6 +175,9 @@ export default function PatientsList() {
 
                 <TableCell padding={'normal'}>
                   Psicólogos Responsáveis
+                </TableCell>
+                <TableCell padding={'normal'}>
+                  Evoluções Pendentes
                 </TableCell>
               </TableRow>
             </TableHead>

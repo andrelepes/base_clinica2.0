@@ -963,6 +963,91 @@ ALTER TABLE ONLY public.reset_password_tokens
     ADD CONSTRAINT reset_password_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.usuarios(usuario_id);
 
 
+-- Added on 07/12/2023 by gabrielpaiv
+
+CREATE TABLE attended_options (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL
+);
+
+INSERT INTO attended_options (id, title) VALUES 
+(1, 'Sim'),
+(2, 'Não, reagendado'),
+(3, 'Não, mas cancelado antes de 24h'),
+(4, 'Não comparecimento'),
+(5, 'Desmarcado pelo psicoterapeuta'),
+(6, 'Outro');
+
+CREATE TABLE punctuality_options (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL
+);
+
+INSERT INTO punctuality_options (id, title) VALUES 
+(1, 'No horário'),
+(2, 'Antecipado'),
+(3, 'Atrasado');
+
+CREATE TABLE mood_states (
+    id SERIAL PRIMARY KEY,
+    value DECIMAL(2, 1) NOT NULL,
+    title VARCHAR(255) NOT NULL
+);
+
+INSERT INTO mood_states (id, value, title) VALUES 
+(1, 0.5, 'Muito Ruim'),
+(2, 1.0, 'Ruim'),
+(3, 1.5, 'Insatisfatório'),
+(4, 2.0, 'Abaixo da Média'),
+(5, 2.5, 'Médio'),
+(6, 3.0, 'Razoável'),
+(7, 3.5, 'Bom'),
+(8, 4.0, 'Muito Bom'),
+(9, 4.5, 'Excelente'),
+(10, 5.0, 'Fantástico');
+
+CREATE SEQUENCE public.evolutions_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE public.evolutions (
+    evolution_id integer NOT NULL DEFAULT nextval('public.evolutions_id_seq'::regclass),
+    usuario_id integer NOT NULL,
+    paciente_id integer NOT NULL,
+    attendance_status INT REFERENCES attended_options(id),
+    punctuality_status INT REFERENCES punctuality_options(id),
+    arrival_mood_state INT REFERENCES mood_states(id),
+    discussion_topic TEXT,
+    analysis_intervention TEXT,
+    next_session_plan TEXT,
+    departure_mood_state INT REFERENCES mood_states(id),
+    therapist_notes TEXT
+);
+
+ALTER SEQUENCE public.evolutions_id_seq OWNED BY public.evolutions.evolution_id;
+
+ALTER TABLE ONLY public.evolutions
+    ADD CONSTRAINT evolutions_pkey PRIMARY KEY (evolution_id);
+
+ALTER TABLE ONLY public.evolutions
+    ADD CONSTRAINT evolutions_usuario_id_fkey FOREIGN KEY (usuario_id) REFERENCES public.usuarios(usuario_id);
+
+ALTER TABLE ONLY public.evolutions
+    ADD CONSTRAINT evolutions_paciente_id_fkey FOREIGN KEY (paciente_id) REFERENCES public.pacientes(paciente_id);
+
+
+-- Added on 08/12/2023 by gabrielpaiv
+
+ALTER TABLE public.evolutions
+ADD COLUMN session_date TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+ADD COLUMN evolution_status BOOLEAN DEFAULT false;
+
+
+
 --
 -- PostgreSQL database dump complete
 --
