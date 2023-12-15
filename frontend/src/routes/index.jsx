@@ -14,6 +14,7 @@ import ErrorPage from '../pages/ErrorPage';
 import ProtectedPageLayout from './ProtectedPageLayout';
 import Providers from './Providers';
 import PatientsList from '../pages/Patient/PatientsList';
+import PatientDetails from '../pages/Patient/PatientDetails';
 
 function HomePage() {
   return (
@@ -48,7 +49,7 @@ export const router = createBrowserRouter(
         errorElement={<ErrorPage />}
       >
         <Route index element={<HomePage />} />
-        <Route path="pacientes/:id" element={<PacienteDetalhes />} />
+        <Route path="pacientes/:id" element={<PatientDetails />} />
         <Route path="pacientes" element={<PatientsList />} />
         <Route path="agenda" element={<Agenda />} />
         <Route path="clinicas" element={<ClinicasList />} />

@@ -5,7 +5,7 @@ class EvolutionsController {
     try {
       const evolutions = new Evolutions();
       const patientId = req.params.patientId;
-      const allEvolutions = await evolutions.findAllByUserId(req.user, patientId);
+      const allEvolutions = await evolutions.findAllByUserIdAndPatientId(req.user, patientId);
       res.status(200).json(allEvolutions);
     } catch (error) {
       res.status(500).json({ error: error.message });

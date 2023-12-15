@@ -5,13 +5,13 @@ const EvolutionsController = require('../controllers/evolutionsController');
 const evolutionsController = new EvolutionsController();
 
 evolutionsRoutes.post(
-  '/:patientId',
+  '/paciente/:patientId',
   ensureAuthenticated,
   evolutionsController.createEvolutionForUserIdAndPatientId
 );
 
 evolutionsRoutes.get(
-  '/:patientId',
+  '/paciente/:patientId',
   ensureAuthenticated,
   evolutionsController.getAllEvolutionsByUserIdAndPatientId
 );

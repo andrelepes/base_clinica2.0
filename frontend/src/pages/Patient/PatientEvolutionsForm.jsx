@@ -80,7 +80,7 @@ export default function PatientEvolutionsForm({
     try {
       if (selectedEvolution?.evolution_id) {
         await api.put(
-          `/evolutions/${selectedEvolution.evolution_id}`,
+          `/evolutions/paciente/${selectedEvolution.evolution_id}`,
           evolutionData
         );
         toast.success('A evolução foi enviada com sucesso');
