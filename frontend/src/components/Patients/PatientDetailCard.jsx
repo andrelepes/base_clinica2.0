@@ -23,7 +23,7 @@ export default function PatientDetailCard({
   handleChangeStatus,
 }) {
   return (
-    <Box sx={{ width: '50%', maxWidth: 420, paddingRight: 6 }}>
+    <Box sx={{ width: '100%', maxWidth: 420, paddingRight: 6 }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
         <Toolbar
           sx={{

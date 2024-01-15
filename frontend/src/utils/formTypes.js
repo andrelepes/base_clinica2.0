@@ -26,4 +26,13 @@ const moodStates = [
   { id: 10, value: 5.0, title: 'Fantástico' },
 ];
 
-export { attendedOptions, punctualityOptions, moodStates };
+const satisfactionStates = [
+  { id: 1, value: 1, title: 'Muito Insatisfatório' },
+  { id: 2, value: 2, title: 'Insatisfatório' },
+  { id: 3, value: 3, title: 'Mediano' },
+  { id: 4, value: 4, title: 'Satisfatório' },
+  { id: 5, value: 5, title: 'Muito Satisfatório' },
+];
+
+
+export { attendedOptions, punctualityOptions, moodStates, satisfactionStates };

@@ -22,6 +22,9 @@ import PatientDetailCard from '../../components/Patients/PatientDetailCard';
 import { toast } from 'react-toastify';
 import api from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
+import PatientAnamnesisForm from './PatientAnamnesisForm';
+import PatientClosureForm from './PatientClosureForm';
+import dayjs from 'dayjs';
 
 export default function PatientDetails() {
   const [order, setOrder] = useState('asc');
@@ -29,8 +32,13 @@ export default function PatientDetails() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [evolutions, setEvolutions] = useState([]);
+  const [anamnesis, setAnamnesis] = useState(null);
+  const [closure, setClosure] = useState(null);
+  const [readOnly, setReadOnly] = useState(false);
   const [selectedEvolution, setSelectedEvolution] = useState(null);
   const [isOpenPatientForm, setIsOpenPatientForm] = useState(false);
+  const [isOpenAnamnesisForm, setIsOpenAnamnesisForm] = useState(false);
+  const [isOpenClosureForm, setIsOpenClosureForm] = useState(false);
   const [isOpenConfirmation, setIsOpenConfirmation] = useState(false);
   const [paciente, setPaciente] = useState(null);
 
@@ -63,6 +71,21 @@ export default function PatientDetails() {
       setPaciente(response.data.data);
     } catch (error) {
       toast.error('Erro ao buscar detalhes do paciente');
+    }
+  };
+
+  const fetchReports = async () => {
+    try {
+      const anamnesisResponse = await api.get(
+        `/anamnesis/patient/${paciente_id}`
+      );
+      setAnamnesis(anamnesisResponse.data);
+      const closureResponse = await api.get(`/closure/patient/${paciente_id}`);
+      setClosure(closureResponse.data);
+    } catch (error) {
+      if (error.response.status !== 404) {
+        toast.error('Erro ao buscar relatórios');
+      }
     }
   };
 
@@ -104,60 +127,72 @@ export default function PatientDetails() {
     if (!paciente?.status_paciente) {
       fetchPacienteDetails();
     }
+    if (!anamnesis || !closure) {
+      fetchReports();
+    }
   }, []);
   return (
     <Box sx={{ width: '100%' }} display="flex">
-      <PatientDetailCard
-        handleChangeStatus={handleChangeStatus}
-        paciente={paciente}
-      />
-      <Paper sx={{ width: '100%', mb: 2 }}>
-        <Toolbar
-          sx={{
-            pl: { sm: 2 },
-            pr: { xs: 1, sm: 1 },
-          }}
-        >
-          <Typography
-            sx={{ flex: '1 1 100%' }}
-            variant="h"
-            id="tableTitle"
-            component="div"
-          >
-            Evoluções
-          </Typography>
-          <Tooltip title="Adicionar Anamnese" disableInteractive>
-            <IconButton onClick={() => console.log('anamnese')}>
-              <NoteAddIcon fontSize="large" />
-            </IconButton>
-          </Tooltip>
-        </Toolbar>
-        <TableContainer>
-          <Table sx={{ minWidth: 750 }} size="medium">
-            <TableHead>
-              <TableRow>
-                <TableCell></TableCell>
-                <TableCell>Data da Sessão</TableCell>
-                <TableCell>Humor do Paciente na Chegada</TableCell>
+      <Grid container>
+        <Grid item md={3} xs={12}>
+          <PatientDetailCard
+            handleChangeStatus={handleChangeStatus}
+            patient={paciente}
+          />
+        </Grid>
+        <Grid item md={9} xs={12}>
+          <Paper sx={{ width: '100%', mb: 2, height: '97.5%' }}>
+            <Toolbar
+              sx={{
+                pl: { sm: 2 },
+                pr: { xs: 1, sm: 1 },
+              }}
+            >
+              <Typography
+                sx={{ flex: '1 1 100%' }}
+                variant="h"
+                id="tableTitle"
+                component="div"
+              >
+                Evoluções
+              </Typography>
+              <Tooltip title="Adicionar Anamnese" disableInteractive>
+                <IconButton onClick={() => setIsOpenAnamnesisForm(true)}>
+                  <NoteAddIcon fontSize="large" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Adicionar Formulário de Alta" disableInteractive>
+                <IconButton onClick={() => setIsOpenClosureForm(true)}>
+                  <TaskIcon fontSize="large" />
+                </IconButton>
+              </Tooltip>
+            </Toolbar>
+            <TableContainer>
+              <Table size="medium">
+                <TableHead>
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell>Data da Sessão</TableCell>
+                    <TableCell>Humor do Paciente na Chegada</TableCell>
 
-                <TableCell>Humor do Paciente na Saída</TableCell>
-                <TableCell>Evoluções Pendentes</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {visibleRows?.map((evolution) => (
-                <EvolutionDetailsRow
-                  evolution={evolution}
-                  key={evolution.evolution_id}
-                />
-              ))}
-              {emptyRows > 0 && (
-                <TableRow style={{ height: 73 * emptyRows }}>
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-            {/* <TableFooter>
+                    <TableCell>Humor do Paciente na Saída</TableCell>
+                    <TableCell>Evoluções Pendentes</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {visibleRows?.map((evolution) => (
+                    <EvolutionDetailsRow
+                      evolution={evolution}
+                      key={evolution.evolution_id}
+                    />
+                  ))}
+                  {emptyRows > 0 && (
+                    <TableRow style={{ height: 73 * emptyRows }}>
+                      <TableCell colSpan={6} />
+                    </TableRow>
+                  )}
+                </TableBody>
+                {/* <TableFooter>
               <TableRow>
                 <TablePagination
                   rowsPerPageOptions={[
@@ -174,9 +209,64 @@ export default function PatientDetails() {
                 />
               </TableRow>
             </TableFooter> */}
-          </Table>
-        </TableContainer>
-      </Paper>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Grid>
+
+        <Paper sx={{ width: '100%', mb: 2 }}>
+          <TableContainer>
+            <Table sx={{ minWidth: 750 }} size="medium">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Ações</TableCell>
+                  <TableCell>Tipo</TableCell>
+                  <TableCell>Data de Preenchimento</TableCell>
+                  <TableCell>Responsável</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell></TableCell>
+                  <TableCell>Anamnese</TableCell>
+                  <TableCell>
+                    {dayjs(anamnesis?.created_at).format('DD/MM/YYYY')}
+                  </TableCell>
+                  <TableCell>{anamnesis?.nome_usuario}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell></TableCell>
+                  <TableCell>Alta do Paciente</TableCell>
+                  <TableCell>
+                    {closure
+                      ? dayjs(closure.created_at).format('DD/MM/YYYY')
+                      : '-'}
+                  </TableCell>
+                  <TableCell>{closure ? closure.nome_usuario : '-'}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+      </Grid>
+      <PatientAnamnesisForm
+        open={isOpenAnamnesisForm}
+        setOpen={setIsOpenAnamnesisForm}
+        anamnesis={anamnesis}
+        isRead={readOnly}
+        setIsRead={setReadOnly}
+        fetchEvolutions={fetchEvolutions}
+      />
+      <PatientClosureForm
+        open={isOpenClosureForm}
+        setOpen={setIsOpenClosureForm}
+        closure={closure}
+        isRead={readOnly}
+        setIsRead={setReadOnly}
+        fetchEvolutions={fetchEvolutions}
+        sessions={evolutions}
+        expectationsAnamneseOptions={anamnesis}
+      />
     </Box>
   );
 }
