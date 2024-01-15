@@ -1046,6 +1046,82 @@ ALTER TABLE public.evolutions
 ADD COLUMN session_date TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
 ADD COLUMN evolution_status BOOLEAN DEFAULT false;
 
+-- Added on 15/12/2023 by gabrielpaiv
+
+CREATE SEQUENCE public.anamnesis_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE public.anamnesis (
+    anamnesis_id integer NOT NULL DEFAULT nextval('public.anamnesis_id_seq'::regclass),
+    usuario_id integer NOT NULL,
+    paciente_id integer NOT NULL,
+    marital_status VARCHAR(20),
+    care_modality VARCHAR(10),
+    gender VARCHAR(10),
+    occupation VARCHAR(255),
+    education_level VARCHAR(30),
+    socioeconomic_level VARCHAR(60),
+    special_needs VARCHAR(15),
+    referred_by VARCHAR(50),
+    undergoing_treatment TEXT,
+    treatment_expectation TEXT,
+    diagnosis TEXT),
+    healthy_life_habits TEXT,
+    relevant_information TEXT
+);
+
+ALTER SEQUENCE public.anamnesis_id_seq OWNED BY public.anamnesis.anamnesis_id;
+
+ALTER TABLE ONLY public.anamnesis
+    ADD CONSTRAINT anamnesis_pkey PRIMARY KEY (anamnesis_id);
+
+ALTER TABLE ONLY public.anamnesis
+    ADD CONSTRAINT anamnesis_usuario_id_fkey FOREIGN KEY (usuario_id) REFERENCES public.usuarios(usuario_id);
+
+ALTER TABLE ONLY public.anamnesis
+    ADD CONSTRAINT anamnesis_paciente_id_fkey FOREIGN KEY (paciente_id) REFERENCES public.pacientes(paciente_id);
+
+ALTER TABLE public.anamnesis
+    ADD COLUMN created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now();
+
+-- Added on 21/12/2023 by gabrielpaiv
+
+CREATE SEQUENCE public.patient_closure_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE public.patient_closure (
+    patient_closure_id integer NOT NULL DEFAULT nextval('public.patient_closure_id_seq'::regclass),
+    usuario_id integer NOT NULL,
+    paciente_id integer NOT NULL,
+    case_status VARCHAR(100),
+    overall_results_evaluation INTEGER,
+    initial_expectations_met TEXT,
+    treatment_duration_sessions INTEGER,
+    healthy_life_habits_acquired TEXT,
+    additional_relevant_information TEXT,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now()
+);
+
+ALTER SEQUENCE public.patient_closure_id_seq OWNED BY public.patient_closure.patient_closure_id;
+
+ALTER TABLE ONLY public.patient_closure
+    ADD CONSTRAINT patient_closure_pkey PRIMARY KEY (patient_closure_id);
+
+ALTER TABLE ONLY public.patient_closure
+    ADD CONSTRAINT patient_closure_usuario_id_fkey FOREIGN KEY (usuario_id) REFERENCES public.usuarios(usuario_id);
+
+ALTER TABLE ONLY public.patient_closure
+    ADD CONSTRAINT patient_closure_paciente_id_fkey FOREIGN KEY (paciente_id) REFERENCES public.pacientes(paciente_id);
 
 
 --
