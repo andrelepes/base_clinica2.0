@@ -94,5 +94,15 @@ static async deletarConsultorio(req, res) {
     }
 }
 
+    static async getConsultoriosByClinica(req,res){
+        const { clinicaId } = req.params;
+        try {
+            const consultorios = await Consultorios.getConsultorioByClinicaId(clinicaId);
+            res.status(200).send(consultorios);
+        } catch (error) {
+            res.status(500).send({ message: 'Erro ao listar consultórios' });
+        }
+    }
+
 }
 module.exports = ConsultorioController;

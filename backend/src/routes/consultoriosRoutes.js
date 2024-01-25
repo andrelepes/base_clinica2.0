@@ -20,6 +20,11 @@ consultoriosRoutes.delete(
   '/:consultorio_id',
   consultoriosController.deletarConsultorio
 );
+
+consultoriosRoutes.get(
+  '/clinica/:clinicaId',
+  consultoriosController.getConsultoriosByClinica
+);
 // Adicione outras rotas conforme necessário
 
 module.exports = { consultoriosRoutes };

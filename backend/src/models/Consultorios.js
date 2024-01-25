@@ -79,6 +79,15 @@ static async deletarConsultorio(consultorio_id) {
     }
 }
 
+    static async getConsultorioByClinicaId(clinicaId){
+        try {
+            const consultorios = await db.any('SELECT consultorio_id, nome_consultorio, descricao FROM consultorios where clinica_id = ${clinicaId}', {clinicaId});
+            return consultorios;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     // Outros métodos, como atualizarConsultorio, listarConsultorios, obterConsultorioPorId, etc.
 }
 

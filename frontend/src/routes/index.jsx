@@ -8,13 +8,13 @@ import {
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Agenda from '../components/Agenda/Agenda';
-import ClinicasList from '../components/Clinicas/ClinicasList';
 import ErrorPage from '../pages/ErrorPage';
 import ProtectedPageLayout from './ProtectedPageLayout';
 import Providers from './Providers';
 import PatientsList from '../pages/Patient/PatientsList';
 import PatientDetails from '../pages/Patient/PatientDetails';
 import FirstAccess from '../pages/FirstAccess';
+import ClinicDashboard from '../pages/Clinic/ClinicDashboard';
 
 function HomePage() {
   return (
@@ -50,7 +50,7 @@ export const router = createBrowserRouter(
         <Route path="pacientes/:id" element={<PatientDetails />} />
         <Route path="pacientes" element={<PatientsList />} />
         <Route path="agenda" element={<Agenda />} />
-        <Route path="clinicas" element={<ClinicasList />} />
+        <Route path="clinicas" element={<ClinicDashboard />} />
       </Route>
     </Route>
   )
