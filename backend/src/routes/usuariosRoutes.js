@@ -23,5 +23,12 @@ usuariosRoutes.get(
   '/linked-secretaries/:clinicaId',
   UserController.getLinkedSecretaries
 ); // Obter secretários vinculados a uma clínica específica
-
+usuariosRoutes.get(
+  '/first-access/:firstAccessToken',
+  UserController.getFirstAccessInfo
+);
+usuariosRoutes.post(
+  '/first-access/:firstAccessToken',
+  UserController.createFromFirstAccess
+);
 module.exports = { usuariosRoutes };

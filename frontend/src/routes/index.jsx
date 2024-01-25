@@ -7,7 +7,6 @@ import {
 } from 'react-router-dom';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
-import PacienteDetalhes from '../components/Pacientes/PacienteDetalhes';
 import Agenda from '../components/Agenda/Agenda';
 import ClinicasList from '../components/Clinicas/ClinicasList';
 import ErrorPage from '../pages/ErrorPage';
@@ -15,6 +14,7 @@ import ProtectedPageLayout from './ProtectedPageLayout';
 import Providers from './Providers';
 import PatientsList from '../pages/Patient/PatientsList';
 import PatientDetails from '../pages/Patient/PatientDetails';
+import FirstAccess from '../pages/FirstAccess';
 
 function HomePage() {
   return (
@@ -34,12 +34,10 @@ function IsAuthenticated({ redirectPath }) {
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route element={<Providers />}errorElement={<ErrorPage />}>
-      <Route
-        element={<IsAuthenticated redirectPath="/" />}
-        
-      >
+    <Route element={<Providers />} errorElement={<ErrorPage />}>
+      <Route element={<IsAuthenticated redirectPath="/" />}>
         <Route path="/login" element={<Login />} />
+        <Route path="/primeiro-acesso/:hash" element={<FirstAccess />} />
         <Route path="/register" element={<Register />} />
       </Route>
 

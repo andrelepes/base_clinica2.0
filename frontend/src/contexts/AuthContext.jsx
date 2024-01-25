@@ -102,6 +102,46 @@ export function AuthProvider({ children }) {
     navigate('/login');
   }
 
+  async function getFirstAccessUserInformation({ firstAccessToken }) {
+    try {
+      const response = await api.get(
+        `/usuarios/first-access/${firstAccessToken}`
+      );
+
+      return response.data;
+    } catch (error) {
+      toast.error('Erro ao recuperar informações');
+    }
+  }
+
+  async function firstAccessRegister({
+    nome_usuario,
+    email_auxiliar,
+    senha,
+    firstAccessToken,
+  }) {
+    const payload = {
+      nome_usuario,
+      email_auxiliar,
+      senha,
+    };
+    try {
+      const response = await api.post(
+        `/usuarios/first-access/${firstAccessToken}`,
+        payload
+      );
+      localStorage.setItem('token', response.data.token);
+      const token = response.data.token;
+
+      localStorage.setItem('token', token);
+      refreshData(token);
+      toast.success('Primeiro acesso realizado com sucesso!');
+      navigate('/');
+    } catch (error) {
+      toast.error('Erro no registro. Por favor, tente novamente.');
+    }
+  }
+
   const values = {
     login,
     register,
@@ -114,6 +154,8 @@ export function AuthProvider({ children }) {
     setUsuarioId,
     tipousuario,
     setTipousuario,
+    getFirstAccessUserInformation,
+    firstAccessRegister,
   };
 
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;

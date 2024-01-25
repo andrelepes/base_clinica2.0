@@ -21,7 +21,8 @@
     "moment": "^2.29.4",
     "nodemailer": "^6.9.4",
     "pg": "^8.11.2",
-    "pg-promise": "^11.5.3"
+    "pg-promise": "^11.5.3",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "eslint": "^8.47.0",

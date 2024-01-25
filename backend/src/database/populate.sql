@@ -1123,6 +1123,15 @@ ALTER TABLE ONLY public.patient_closure
 ALTER TABLE ONLY public.patient_closure
     ADD CONSTRAINT patient_closure_paciente_id_fkey FOREIGN KEY (paciente_id) REFERENCES public.pacientes(paciente_id);
 
+-- Added on 23/01/2024 by gabrielpaiv
+
+ALTER TABLE public.usuarios
+    ADD COLUMN first_access UUID;
+
+-- Added on 24/01/2024 by gabrielpaiv
+
+ALTER TABLE public.usuarios
+    ADD COLUMN email_auxiliar character varying(255);
 
 --
 -- PostgreSQL database dump complete
