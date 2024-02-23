@@ -2,7 +2,10 @@ const db = require('../database/database');
 
 class Evolutions {
   async findAllByUserIdAndPatientId(userId, patientId) {
-    return db.any('SELECT * FROM evolutions WHERE usuario_id = ${userId} and paciente_id = ${patientId}', {userId, patientId});
+    return db.any(
+      "SELECT evolution_id, usuario_id, paciente_id, attendance_status, punctuality_status, arrival_mood_state, discussion_topic, analysis_intervention, next_session_plan, departure_mood_state, therapist_notes, evolution_status, (session_date AT TIME ZONE 'UTC' AT TIME ZONE 'America/Sao_Paulo') AS session_date FROM evolutions WHERE usuario_id = ${userId} and paciente_id = ${patientId}",
+      { userId, patientId }
+    );
   }
 
   async findByIdAndUserId(evolutionId, userId) {
@@ -15,6 +18,13 @@ class Evolutions {
   async createForUserIdAndPatientId(evolution) {
     return db.none(
       'INSERT INTO evolutions (usuario_id, paciente_id, attendance_status, punctuality_status, arrival_mood_state, discussion_topic, analysis_intervention, next_session_plan, departure_mood_state, therapist_notes, session_date, evolution_status) VALUES (${usuario_id}, ${paciente_id}, ${attendance_status}, ${punctuality_status}, ${arrival_mood_state}, ${discussion_topic}, ${analysis_intervention}, ${next_session_plan}, ${departure_mood_state}, ${therapist_notes}, ${appointment_id}, ${evolution_status})',
+      evolution
+    );
+  }
+
+  async simpleCreateForUserIdAndPatientId(evolution) {
+    return db.none(
+      'INSERT INTO evolutions (usuario_id, paciente_id, session_date) VALUES (${usuario_id}, ${paciente_id}, ${session_date})',
       evolution
     );
   }

@@ -17,48 +17,78 @@ import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import Rating from '@mui/material/Rating';
+import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
 import dayjs from 'dayjs';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditIcon from '@mui/icons-material/Edit';
+import { useAuth } from '../../contexts/AuthContext';
 
-export default function EvolutionDetailsRow({ evolution }) {
+export default function EvolutionDetailsRow({ evolution, onEdit, onInfo }) {
   const {
-    attendance_status,
-    punctuality_status,
     arrival_mood_state,
     session_date,
+    departure_mood_state,
+    evolution_status,
+    attendance_status,
+    punctuality_status,
     analysis_intervention,
     next_session_plan,
-    departure_mood_state,
     therapist_notes,
-    evolution_status
+    usuario_id,
   } = evolution;
 
-  const [open, setOpen] = useState(false);
+  const { usuarioId } = useAuth();
+
+  // const [open, setOpen] = useState(false);
 
   return (
     <>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
         <TableCell>
-          <IconButton
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
+          <Stack direction="row" spacing={1}>
+            {usuarioId === usuario_id && (
+              <IconButton aria-label="edit" onClick={onEdit}>
+                <Tooltip title="Editar Evolução" arrow disableInteractive>
+                  <EditIcon />
+                </Tooltip>
+              </IconButton>
+            )}
+            <IconButton aria-label="info" onClick={onInfo}>
+              <Tooltip title="Ver Evolução" arrow disableInteractive>
+                <VisibilityIcon color="primary" />
+              </Tooltip>
+            </IconButton>
+          </Stack>
         </TableCell>
         <TableCell component="th" scope="row">
           {dayjs(session_date).format('DD/MM/YYYY')}
         </TableCell>
         <TableCell align="left">
-          <Rating value={moodStates[arrival_mood_state].value} readOnly />{' '}
-          {moodStates[arrival_mood_state].title}
+          <Rating
+            value={
+              arrival_mood_state &&
+              moodStates.find((mood) => mood.id === arrival_mood_state)?.value
+            }
+            readOnly
+          />{' '}
+          {arrival_mood_state &&
+            moodStates.find((mood) => mood.id === arrival_mood_state)?.title}
         </TableCell>
         <TableCell align="left">
-          <Rating value={moodStates[departure_mood_state].value} readOnly />{' '}
-          {moodStates[departure_mood_state].title}
+          <Rating
+            value={
+              departure_mood_state &&
+              moodStates.find((mood) => mood.id === departure_mood_state)?.value
+            }
+            readOnly
+          />{' '}
+          {departure_mood_state &&
+            moodStates.find((mood) => mood.id === departure_mood_state)?.title}
         </TableCell>
         <TableCell>{evolution_status ? 'Feita' : 'Pendente'}</TableCell>
       </TableRow>
-      <TableRow>
+      {/* <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
@@ -77,8 +107,10 @@ export default function EvolutionDetailsRow({ evolution }) {
                 <TableBody>
                   <TableRow>
                     <TableCell component="th" scope="row">
-                      {attendedOptions[attendance_status].title}{' '}
-                      {punctualityOptions[punctuality_status].title}
+                      {attendance_status &&
+                        attendedOptions[attendance_status].title}{' '}
+                      {punctuality_status &&
+                        punctualityOptions[punctuality_status].title}
                     </TableCell>
                     <TableCell>{analysis_intervention}</TableCell>
                     <TableCell>{next_session_plan}</TableCell>
@@ -89,7 +121,7 @@ export default function EvolutionDetailsRow({ evolution }) {
             </Box>
           </Collapse>
         </TableCell>
-      </TableRow>
+      </TableRow> */}
     </>
   );
 }

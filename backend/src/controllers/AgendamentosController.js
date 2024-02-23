@@ -1,4 +1,5 @@
 const Agendamentos = require('../models/Agendamentos');
+const Evolutions = require('../models/Evolutions');
 
 class AgendamentoController {
 
@@ -41,15 +42,17 @@ class AgendamentoController {
                 data_hora_fim: req.body.data_hora_fim,
                 historico: req.body.historico,
                 tipo_sessao: req.body.tipo_sessao,
-                recorrencia: req.body.recorrencia
+                recorrencia: req.body.recorrencia,
+                session_date: req.body.data_hora_inicio
             };
 
             // Verifique a permissão antes de inserir o agendamento
             if (!(await AgendamentoController.checkPermission(req, agendamento.paciente_id, req.user))) {
                 return res.status(403).json({ message: 'Permissão negada.' });
             }
-
             const result = await Agendamentos.inserirAgendamento(agendamento);
+            const evolutions = new Evolutions();
+            await evolutions.simpleCreateForUserIdAndPatientId(agendamento);
             if (result.success) {
                 res.status(201).send({ message: result.message });
             } else {
@@ -141,6 +144,62 @@ class AgendamentoController {
             res.status(200).json({ message: 'Agendamento deletado com sucesso.' });
         } catch (error) {
             console.error('Erro ao deletar agendamento:', error);
+            res.status(500).send({ message: 'Erro interno do servidor' });
+        }
+    }
+
+    static async getNextAppointment(req,res){
+        try {
+            const { paciente_id } = req.params;
+            const result = await Agendamentos.getNextAppointmentByPatientId(paciente_id);
+
+            if (!result) {
+                return res.status(404).send({ message: 'Agendamento não encontrado.' });
+            }
+
+            if (!(await AgendamentoController.checkPermission(req, paciente_id, req.user))) {
+                return res.status(403).json({ message: 'Permissão negada.' });
+            }
+
+            res.json(result);
+        } catch (error) {
+            res.status(500).send({ message: 'Erro interno do servidor' });
+        }
+    }
+    static async getAppointmentsByOffice(req,res){
+        try {
+            const { consultorio_id } = req.params;
+            const result = await Agendamentos.getAppointmentsByOfficeId(consultorio_id);
+            
+            res.json(result);
+        } catch (error) {
+            console.log(error)
+            res.status(500).send({ message: 'Erro interno do servidor' });
+        }
+    }
+    static async getAppointmentsGroupedByOfficeByUserId(req,res){
+        try {
+            const userId = req.user;
+            const appointments = await Agendamentos.getAppointmentsByUserId(userId);
+
+            const result = [];
+            const appointmentsByOffice = {};
+
+            appointments.forEach(appointment => {
+                if (!appointmentsByOffice[appointment.consultorio_id]) {
+                    appointmentsByOffice[appointment.consultorio_id] = [];
+                }
+                appointmentsByOffice[appointment.consultorio_id].push(appointment);
+            });
+
+            for (const consultorioId in appointmentsByOffice) {
+                result.push(appointmentsByOffice[consultorioId]);
+            }
+
+            
+            res.json(result);
+        } catch (error) {
+            console.log(error)
             res.status(500).send({ message: 'Erro interno do servidor' });
         }
     }

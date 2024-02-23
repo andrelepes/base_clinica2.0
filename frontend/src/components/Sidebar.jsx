@@ -10,8 +10,14 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MenuIcon from '@mui/icons-material/Menu';
 import BusinessIcon from '@mui/icons-material/Business';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import EventNoteIcon from '@mui/icons-material/EventNote';
 
 import Toolbar from '@mui/material/Toolbar';
+import Collapse from '@mui/material/Collapse';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -47,6 +53,7 @@ const Drawer = styled(MuiDrawer, {
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
+  const [isOpenSchedule, setIsOpenSchedule] = useState(false);
   const { tipousuario, logout } = useAuth();
 
   const toggleDrawer = () => {
@@ -72,9 +79,38 @@ export default function Sidebar() {
         <DrawerItem itemLink="/" itemText="Iniciar">
           <HomeIcon />
         </DrawerItem>
-        <DrawerItem itemLink="/agenda" itemText="Agenda">
+        <DrawerItem
+          onClick={() => {
+            setIsOpenSchedule(!isOpenSchedule);
+          }}
+          itemText="Agenda"
+          afterText={isOpenSchedule ? <ExpandLess /> : <ExpandMore />}
+        >
           <CalendarTodayIcon />
         </DrawerItem>
+        <Collapse in={isOpenSchedule} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding sx={{ pl: 1 }}>
+            <Divider />
+            <DrawerItem itemText="Meus agendamentos">
+              <EventNoteIcon />
+            </DrawerItem>
+            <DrawerItem
+              itemText="Por consultório"
+              itemLink="/agenda/consultorios"
+            >
+              <MeetingRoomIcon />
+            </DrawerItem>
+            {tipousuario === 'clinica' && (
+              <DrawerItem itemText="Por psicólogo">
+                <SupervisorAccountIcon />
+              </DrawerItem>
+            )}
+            <DrawerItem itemText="Por paciente">
+              <PersonIcon />
+            </DrawerItem>
+          </List>
+          <Divider />
+        </Collapse>
         <DrawerItem itemLink="/pacientes" itemText="Pacientes">
           <PersonIcon />
         </DrawerItem>

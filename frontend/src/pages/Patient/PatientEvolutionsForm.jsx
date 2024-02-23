@@ -27,40 +27,53 @@ import { useParams } from 'react-router-dom';
 import api from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
+import dayjs from 'dayjs';
 
 export default function PatientEvolutionsForm({
   open,
   setOpen,
+  isRead,
+  setIsRead,
+  fetchEvolutions,
   selectedEvolution,
   setSelectedEvolution,
-  fetchEvolutions,
 }) {
   const [attended, setAttended] = useState('');
   const [punctuality, setPunctuality] = useState('');
   const [arrivalMood, setArrivalMood] = useState(-1);
-  const [arrivalMoodHover, setArrivalMoodHover] = useState(-1);
   const [discussedSubject, setDiscussedSubject] = useState('');
   const [interventionAnalysis, setInterventionAnalysis] = useState('');
   const [nextSession, setNextSession] = useState('');
   const [departureMood, setDepartureMood] = useState(-1);
-  const [departureMoodHover, setDepartureMoodHover] = useState(-1);
   const [notesComments, setNotesComments] = useState('');
+
+  const [arrivalMoodHover, setArrivalMoodHover] = useState(-1);
+  const [departureMoodHover, setDepartureMoodHover] = useState(-1);
   const { usuarioId: usuario_id } = useAuth();
 
   const { id: paciente_id } = useParams();
 
   useEffect(() => {
+    console.log(selectedEvolution);
     if (!!selectedEvolution?.attendance_status && !attended) {
       setAttended(selectedEvolution.attendance_status ?? '');
       setPunctuality(selectedEvolution.punctuality_status ?? '');
-      setArrivalMood(selectedEvolution.arrival_mood_state ?? -1);
+      setArrivalMood(
+        moodStates.find(
+          (mood) => mood.id === selectedEvolution.arrival_mood_state
+        )?.value ?? -1
+      );
       setDiscussedSubject(selectedEvolution.discussion_topic ?? '');
       setInterventionAnalysis(selectedEvolution.analysis_intervention ?? '');
       setNextSession(selectedEvolution.next_session_plan ?? '');
-      setDepartureMood(selectedEvolution.departure_mood_state ?? -1);
+      setDepartureMood(
+        moodStates.find(
+          (mood) => mood.id === selectedEvolution.departure_mood_state
+        )?.value ?? -1
+      );
       setNotesComments(selectedEvolution.therapist_notes ?? '');
     }
-  }, [open]);
+  }, [selectedEvolution]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -69,18 +82,21 @@ export default function PatientEvolutionsForm({
       paciente_id,
       attendance_status: attended,
       punctuality_status: punctuality,
-      arrival_mood_state: arrivalMood,
+      arrival_mood_state: moodStates.find((mood) => mood.value === arrivalMood)
+        ?.id,
       discussion_topic: discussedSubject,
       analysis_intervention: interventionAnalysis,
       next_session_plan: nextSession,
-      departure_mood_state: departureMood,
+      departure_mood_state: moodStates.find(
+        (mood) => mood.value === departureMood
+      )?.id,
       therapist_notes: notesComments,
       evolution_status: true,
     };
     try {
       if (selectedEvolution?.evolution_id) {
         await api.put(
-          `/evolutions/paciente/${selectedEvolution.evolution_id}`,
+          `/evolutions/${selectedEvolution.evolution_id}`,
           evolutionData
         );
         toast.success('A evolução foi enviada com sucesso');
@@ -109,6 +125,7 @@ export default function PatientEvolutionsForm({
     setNotesComments('');
     setSelectedEvolution(null);
     setOpen(false);
+    setIsRead(false);
   };
 
   return (
@@ -125,11 +142,15 @@ export default function PatientEvolutionsForm({
           </IconButton>
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
             Evolução de Paciente, Data da Sessão:{' '}
-            {selectedEvolution?.appointment?.session_date}
+            {dayjs(selectedEvolution?.session_date).format(
+              'DD/MM/YYYY [às] HH:mm'
+            )}
           </Typography>
-          <Button autoFocus color="inherit" onClick={handleSubmit}>
-            Adicionar
-          </Button>
+          {!isRead && (
+            <Button autoFocus color="inherit" onClick={handleSubmit}>
+              Enviar
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
 
@@ -148,6 +169,7 @@ export default function PatientEvolutionsForm({
                     value={option.id}
                     control={<Radio />}
                     label={option.title}
+                    disabled={isRead}
                   />
                 ))}
               </RadioGroup>
@@ -165,6 +187,7 @@ export default function PatientEvolutionsForm({
                 }}
               >
                 <Rating
+                  disabled={isRead}
                   value={arrivalMood}
                   precision={0.5}
                   onChange={(_, newMood) => {
@@ -200,6 +223,7 @@ export default function PatientEvolutionsForm({
                 }}
               >
                 <Rating
+                  disabled={isRead}
                   value={departureMood}
                   precision={0.5}
                   onChange={(_, newMood) => {
@@ -235,6 +259,7 @@ export default function PatientEvolutionsForm({
               >
                 {punctualityOptions.map((option) => (
                   <FormControlLabel
+                    disabled={isRead}
                     key={option.id}
                     value={option.id}
                     control={<Radio />}
@@ -246,6 +271,7 @@ export default function PatientEvolutionsForm({
           </Grid>
           <Grid item xs={12} md={8}>
             <TextField
+              disabled={isRead}
               id="subject"
               value={discussedSubject}
               onChange={(event) => setDiscussedSubject(event.target.value)}
@@ -255,6 +281,7 @@ export default function PatientEvolutionsForm({
           </Grid>
           <Grid item xs={12} md={8}>
             <TextField
+              disabled={isRead}
               id="analysis"
               value={interventionAnalysis}
               onChange={(event) => setInterventionAnalysis(event.target.value)}
@@ -265,6 +292,7 @@ export default function PatientEvolutionsForm({
           </Grid>
           <Grid item xs={12} md={8}>
             <TextField
+              disabled={isRead}
               id="next_session"
               value={nextSession}
               onChange={(event) => setNextSession(event.target.value)}
@@ -275,6 +303,7 @@ export default function PatientEvolutionsForm({
           </Grid>
           <Grid item xs={12} md={8}>
             <TextField
+              disabled={isRead}
               id="notes"
               value={notesComments}
               onChange={(event) => setNotesComments(event.target.value)}

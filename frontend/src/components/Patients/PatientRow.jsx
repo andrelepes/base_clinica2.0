@@ -6,6 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
 import Tooltip from '@mui/material/Tooltip';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 export default function PatientRow({
   patient = {
@@ -17,6 +18,7 @@ export default function PatientRow({
   onEdit,
   onDelete,
   onInfo,
+  onSchedule,
   assignedPsychologists = 'Nenhum psicólogo autorizado',
 }) {
   return (
@@ -44,6 +46,11 @@ export default function PatientRow({
           <IconButton aria-label="info" onClick={onInfo}>
             <Tooltip title="Informações do paciente" arrow disableInteractive>
               <InfoIcon color="primary" />
+            </Tooltip>
+          </IconButton>
+          <IconButton aria-label="schedule" onClick={onSchedule}>
+            <Tooltip title="Agendar horário" arrow disableInteractive>
+              <CalendarMonthIcon color="success" />
             </Tooltip>
           </IconButton>
         </Stack>

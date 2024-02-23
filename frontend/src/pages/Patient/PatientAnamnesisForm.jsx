@@ -46,7 +46,6 @@ export default function PatientAnamnesisForm({
   setIsRead,
   fetchEvolutions,
   anamnesis,
-  setAnamnesis,
 }) {
   const [maritalStatus, setMaritalStatus] = useState('');
   const [careModality, setCareModality] = useState('');
@@ -66,7 +65,7 @@ export default function PatientAnamnesisForm({
   const { id: paciente_id } = useParams();
 
   useEffect(() => {
-    if (anamnesis && isRead) {
+    if (anamnesis && !maritalStatus) {
       setMaritalStatus(anamnesis?.marital_status);
       setCareModality(anamnesis?.care_modality);
       setGender(anamnesis?.gender);
@@ -81,7 +80,7 @@ export default function PatientAnamnesisForm({
       setHealthyLifeHabits(anamnesis?.healthy_life_habits.split(','));
       setRelevantInformation(anamnesis?.relevant_information);
     }
-  }, [anamnesis]);
+  }, [open]);
 
   const handleClose = () => {
     setMaritalStatus('');
@@ -151,7 +150,7 @@ export default function PatientAnamnesisForm({
           </Typography>
           {!isRead && (
             <Button autoFocus color="inherit" onClick={handleSubmit}>
-              Adicionar
+              Enviar
             </Button>
           )}
         </Toolbar>

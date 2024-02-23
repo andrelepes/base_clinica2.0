@@ -25,6 +25,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { getComparator, stableSort } from '../../utils/sortFunctions';
+import ScheduleForm from '../Appointment/ScheduleForm';
 
 export default function PatientsList() {
   const [order, setOrder] = useState('asc');
@@ -34,6 +35,7 @@ export default function PatientsList() {
   const [patients, setPatients] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [isOpenPatientForm, setIsOpenPatientForm] = useState(false);
+  const [isOpenScheduleForm, setIsOpenScheduleForm] = useState(false);
   const [isOpenConfirmation, setIsOpenConfirmation] = useState(false);
 
   const { usuarioId: usuario_id } = useAuth();
@@ -92,6 +94,10 @@ export default function PatientsList() {
     setSelectedPatient(patient);
     setIsOpenPatientForm(true);
   };
+  const handleSchedule = (patient) => {
+    setSelectedPatient(patient);
+    setIsOpenScheduleForm(true);
+  };
   const handleConfirmDelete = (patient) => {
     setSelectedPatient(patient);
     setIsOpenConfirmation(true);
@@ -140,7 +146,9 @@ export default function PatientsList() {
             <TableHead>
               <TableRow>
                 <TableCell padding="normal">Ações</TableCell>
-                <TableCell sortDirection={orderBy === 'nome_paciente' ? order : false}>
+                <TableCell
+                  sortDirection={orderBy === 'nome_paciente' ? order : false}
+                >
                   <TableSortLabel
                     active={orderBy === 'nome_paciente'}
                     direction={orderBy === 'nome_paciente' ? order : 'asc'}
@@ -156,7 +164,9 @@ export default function PatientsList() {
                     ) : null}
                   </TableSortLabel>
                 </TableCell>
-                <TableCell sortDirection={orderBy === 'status_paciente' ? order : false}>
+                <TableCell
+                  sortDirection={orderBy === 'status_paciente' ? order : false}
+                >
                   <TableSortLabel
                     active={orderBy === 'status_paciente'}
                     direction={orderBy === 'status_paciente' ? order : 'asc'}
@@ -176,9 +186,7 @@ export default function PatientsList() {
                 <TableCell padding={'normal'}>
                   Psicólogos Responsáveis
                 </TableCell>
-                <TableCell padding={'normal'}>
-                  Evoluções Pendentes
-                </TableCell>
+                <TableCell padding={'normal'}>Evoluções Pendentes</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -189,6 +197,7 @@ export default function PatientsList() {
                   onDelete={() => handleConfirmDelete(patient)}
                   onEdit={() => handleEdit(patient)}
                   onInfo={() => navigate(`/pacientes/${patient.paciente_id}`)}
+                  onSchedule={() => handleSchedule(patient)}
                   //   assignedPsychologists={
                   //     psicologosVinculados[patient.paciente_id]?.length > 0
                   //       ? psicologosVinculados[patient.paciente_id].join(', ')
@@ -228,6 +237,12 @@ export default function PatientsList() {
         selectedPatient={selectedPatient ?? {}}
         setSelectedPatient={setSelectedPatient}
         fetchPatients={fetchPatients}
+      />
+      <ScheduleForm
+        open={isOpenScheduleForm}
+        setIsOpen={setIsOpenScheduleForm}
+        selectedPatient={selectedPatient ?? {}}
+        setSelectedPatient={setSelectedPatient}
       />
       <ConfirmationDialog
         open={isOpenConfirmation}

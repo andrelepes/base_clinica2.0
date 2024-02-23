@@ -6,6 +6,20 @@ import 'react-toastify/dist/ReactToastify.css';
 import 'dayjs/locale/pt-br.js';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { registerLicense, loadCldr, setCulture } from '@syncfusion/ej2-base';
+
+loadCldr(
+  require('cldr-data/supplemental/numberingSystems.json'),
+  require('cldr-data/main/pt/ca-gregorian.json'),
+  require('cldr-data/main/pt/numbers.json'),
+  require('cldr-data/main/pt/timeZoneNames.json')
+);
+
+setCulture('pt');
+
+registerLicense(
+  process.env.REACT_APP_SYNCFUSION_LICENSE_KEY
+);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

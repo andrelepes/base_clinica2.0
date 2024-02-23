@@ -24,7 +24,20 @@ import api from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import PatientAnamnesisForm from './PatientAnamnesisForm';
 import PatientClosureForm from './PatientClosureForm';
+import PatientEvolutionsForm from './PatientEvolutionsForm';
 import dayjs from 'dayjs';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+
+import Stack from '@mui/material/Stack';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 
 export default function PatientDetails() {
   const [order, setOrder] = useState('asc');
@@ -36,11 +49,12 @@ export default function PatientDetails() {
   const [closure, setClosure] = useState(null);
   const [readOnly, setReadOnly] = useState(false);
   const [selectedEvolution, setSelectedEvolution] = useState(null);
-  const [isOpenPatientForm, setIsOpenPatientForm] = useState(false);
+  const [isOpenEvolutionForm, setIsOpenEvolutionForm] = useState(false);
   const [isOpenAnamnesisForm, setIsOpenAnamnesisForm] = useState(false);
   const [isOpenClosureForm, setIsOpenClosureForm] = useState(false);
   const [isOpenConfirmation, setIsOpenConfirmation] = useState(false);
   const [paciente, setPaciente] = useState(null);
+  const [nextAppointment, setNextAppointment] = useState(null);
 
   const { usuarioId: usuario_id } = useAuth();
 
@@ -64,6 +78,17 @@ export default function PatientDetails() {
       toast.error('Erro ao buscar todas as evoluções');
     }
   }, []);
+
+  const fetchNextAppointment = async () => {
+    try {
+      const response = await api.get(`/agendamentos/next/${paciente_id}`);
+      setNextAppointment(response.data);
+    } catch (error) {
+      if (error.response.status !== 404) {
+        toast.error('Ocorreu um erro ao buscar os agendamentos');
+      }
+    }
+  };
 
   const fetchPacienteDetails = async () => {
     try {
@@ -130,6 +155,9 @@ export default function PatientDetails() {
     if (!anamnesis || !closure) {
       fetchReports();
     }
+    if (!nextAppointment) {
+      fetchNextAppointment();
+    }
   }, []);
   return (
     <Box sx={{ width: '100%' }} display="flex">
@@ -171,7 +199,7 @@ export default function PatientDetails() {
               <Table size="medium">
                 <TableHead>
                   <TableRow>
-                    <TableCell></TableCell>
+                    <TableCell>Ações</TableCell>
                     <TableCell>Data da Sessão</TableCell>
                     <TableCell>Humor do Paciente na Chegada</TableCell>
 
@@ -184,6 +212,15 @@ export default function PatientDetails() {
                     <EvolutionDetailsRow
                       evolution={evolution}
                       key={evolution.evolution_id}
+                      onEdit={() => {
+                        setSelectedEvolution(evolution);
+                        setIsOpenEvolutionForm(true);
+                      }}
+                      onInfo={() => {
+                        setReadOnly(true);
+                        setSelectedEvolution(evolution);
+                        setIsOpenEvolutionForm(true);
+                      }}
                     />
                   ))}
                   {emptyRows > 0 && (
@@ -213,42 +250,210 @@ export default function PatientDetails() {
             </TableContainer>
           </Paper>
         </Grid>
-
-        <Paper sx={{ width: '100%', mb: 2 }}>
-          <TableContainer>
-            <Table sx={{ minWidth: 750 }} size="medium">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Ações</TableCell>
-                  <TableCell>Tipo</TableCell>
-                  <TableCell>Data de Preenchimento</TableCell>
-                  <TableCell>Responsável</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell></TableCell>
-                  <TableCell>Anamnese</TableCell>
-                  <TableCell>
-                    {dayjs(anamnesis?.created_at).format('DD/MM/YYYY')}
-                  </TableCell>
-                  <TableCell>{anamnesis?.nome_usuario}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell></TableCell>
-                  <TableCell>Alta do Paciente</TableCell>
-                  <TableCell>
-                    {closure
-                      ? dayjs(closure.created_at).format('DD/MM/YYYY')
-                      : '-'}
-                  </TableCell>
-                  <TableCell>{closure ? closure.nome_usuario : '-'}</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
+        {nextAppointment && (
+          <Grid item xs={12} md={3}>
+            <Box
+              sx={{
+                maxWidth: 420,
+                maxHeight: 164,
+                paddingRight: 6,
+              }}
+            >
+              <Paper sx={{ mb: 2 }}>
+                <List>
+                  <ListItem sx={{ py: 0, minHeight: 32 }}>
+                    <Typography variant="h6">Próxima Sessão</Typography>
+                  </ListItem>
+                  <ListItem sx={{ py: 0, minHeight: 32 }}>
+                    <ListItemIcon>
+                      <CalendarMonthIcon />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={dayjs(nextAppointment.data_hora_inicio).format(
+                        'DD/MM/YYYY [às] HH:mm'
+                      )}
+                      secondary="Horário"
+                    />
+                  </ListItem>
+                  <ListItem sx={{ py: 0, minHeight: 32 }}>
+                    <ListItemIcon>
+                      <MeetingRoomIcon />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={nextAppointment.nome_consultorio}
+                      secondary="Consultório"
+                    />
+                  </ListItem>
+                  <ListItem sx={{ py: 0, minHeight: 32 }}>
+                    <ListItemIcon>
+                      <EventRepeatIcon />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={nextAppointment.recorrencia}
+                      secondary="Recorrência"
+                    />
+                  </ListItem>
+                </List>
+              </Paper>
+            </Box>
+          </Grid>
+        )}
+        <Grid item xs={12} md={nextAppointment ? 9 : 12}>
+          <Paper sx={{ width: '100%', mb: 2 }}>
+            <Toolbar
+              sx={{
+                pl: { sm: 2 },
+                pr: { xs: 1, sm: 1 },
+              }}
+            >
+              <Typography
+                sx={{ flex: '1 1 100%' }}
+                variant="h6"
+                component="div"
+              >
+                Formulários Especiais
+              </Typography>
+            </Toolbar>
+            <TableContainer>
+              <Table sx={{ minWidth: 750 }} size="medium">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Ações</TableCell>
+                    <TableCell>Tipo</TableCell>
+                    <TableCell>Data de Preenchimento</TableCell>
+                    <TableCell>Responsável</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>
+                      <Stack direction="row" spacing={1}>
+                        {anamnesis ? (
+                          <IconButton
+                            aria-label="edit"
+                            onClick={() => setIsOpenAnamnesisForm(true)}
+                          >
+                            <Tooltip
+                              title="Editar Anamnese"
+                              arrow
+                              disableInteractive
+                            >
+                              <EditIcon />
+                            </Tooltip>
+                          </IconButton>
+                        ) : (
+                          <Tooltip
+                            title="Adicionar Anamnese"
+                            disableInteractive
+                          >
+                            <IconButton
+                              onClick={() => setIsOpenAnamnesisForm(true)}
+                            >
+                              <NoteAddIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                        {anamnesis && (
+                          <IconButton
+                            aria-label="info"
+                            onClick={() => {
+                              setReadOnly(true);
+                              setIsOpenAnamnesisForm(true);
+                            }}
+                          >
+                            <Tooltip
+                              title="Ver Anamnese"
+                              arrow
+                              disableInteractive
+                            >
+                              <VisibilityIcon color="primary" />
+                            </Tooltip>
+                          </IconButton>
+                        )}
+                      </Stack>
+                    </TableCell>
+                    <TableCell>Anamnese</TableCell>
+                    <TableCell>
+                      {anamnesis
+                        ? dayjs(anamnesis.created_at).format('DD/MM/YYYY')
+                        : '-'}
+                    </TableCell>
+                    <TableCell>
+                      {anamnesis ? anamnesis.nome_usuario : '-'}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>
+                      <Stack direction="row" spacing={1}>
+                        {closure ? (
+                          <IconButton
+                            aria-label="edit"
+                            onClick={() => setIsOpenClosureForm(true)}
+                          >
+                            <Tooltip
+                              title="Editar Formulário de Alta"
+                              arrow
+                              disableInteractive
+                            >
+                              <EditIcon />
+                            </Tooltip>
+                          </IconButton>
+                        ) : (
+                          <Tooltip
+                            title="Adicionar Formulário de Alta"
+                            disableInteractive
+                          >
+                            <IconButton
+                              onClick={() => setIsOpenClosureForm(true)}
+                            >
+                              <TaskIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                        {closure && (
+                          <IconButton
+                            aria-label="info"
+                            onClick={() => {
+                              setReadOnly(true);
+                              setIsOpenClosureForm(true);
+                            }}
+                          >
+                            <Tooltip
+                              title="Ver Formulário de Alta"
+                              arrow
+                              disableInteractive
+                            >
+                              <VisibilityIcon color="primary" />
+                            </Tooltip>
+                          </IconButton>
+                        )}
+                      </Stack>
+                    </TableCell>
+                    <TableCell>Alta do Paciente</TableCell>
+                    <TableCell>
+                      {closure
+                        ? dayjs(closure.created_at).format('DD/MM/YYYY')
+                        : '-'}
+                    </TableCell>
+                    <TableCell>
+                      {closure ? closure.nome_usuario : '-'}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Grid>
       </Grid>
+      <PatientEvolutionsForm
+        open={isOpenEvolutionForm}
+        setOpen={setIsOpenEvolutionForm}
+        selectedEvolution={selectedEvolution}
+        isRead={readOnly}
+        setIsRead={setReadOnly}
+        fetchEvolutions={fetchEvolutions}
+        setSelectedEvolution={setSelectedEvolution}
+      />
       <PatientAnamnesisForm
         open={isOpenAnamnesisForm}
         setOpen={setIsOpenAnamnesisForm}

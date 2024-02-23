@@ -1133,6 +1133,45 @@ ALTER TABLE public.usuarios
 ALTER TABLE public.usuarios
     ADD COLUMN email_auxiliar character varying(255);
 
+-- Added on 02/02/2024 by gabrielpaiv
+
+ALTER TABLE
+  public.agendamentos
+DROP
+  CONSTRAINT agendamentos_tipo_sessao_check;
+
+ALTER TABLE
+  public.agendamentos
+ADD COLUMN
+  tipo_sessao_temp integer;
+
+UPDATE
+  public.agendamentos
+SET
+  tipo_sessao_temp = CASE
+    WHEN tipo_sessao = '30min' THEN 30
+    WHEN tipo_sessao = '1h' THEN 60
+    WHEN tipo_sessao = '1h30min' THEN 90
+    WHEN tipo_sessao = '2h' THEN 120
+  END;
+
+ALTER TABLE
+  public.agendamentos
+DROP COLUMN
+  tipo_sessao;
+
+ALTER TABLE
+  public.agendamentos
+RENAME COLUMN
+  tipo_sessao_temp TO tipo_sessao;
+
+ALTER TABLE
+  public.agendamentos
+ALTER COLUMN
+  tipo_sessao
+TYPE
+  integer USING tipo_sessao::integer;
+
 --
 -- PostgreSQL database dump complete
 --

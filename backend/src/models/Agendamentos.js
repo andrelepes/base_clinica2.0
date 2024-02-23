@@ -143,6 +143,96 @@ class Agendamentos {
             }
         }
 
+        static async getAppointmentsByPatientId(pacienteId) {
+            try {
+                return await db.any('SELECT * FROM agendamentos WHERE paciente_id = ${pacienteId}', pacienteId);
+            } catch (error) {
+                throw error;
+            }
+        }
+        static async getNextAppointmentByPatientId(pacienteId) {
+            try {
+                return await db.oneOrNone(`
+                    SELECT 
+                        agendamentos.agendamento_id,                     
+                        consultorios.nome_consultorio,
+                        (agendamentos.data_hora_inicio AT TIME ZONE 'UTC' AT TIME ZONE 'America/Sao_Paulo') as data_hora_inicio,
+                        (agendamentos.data_hora_fim AT TIME ZONE 'UTC' AT TIME ZONE 'America/Sao_Paulo') as data_hora_fim,
+                        agendamentos.recorrencia,
+                        agendamentos.status,
+                        agendamentos.tipo_sessao,
+                        agendamentos.usuario_id
+                    FROM 
+                        agendamentos
+                    INNER JOIN consultorios
+                        ON agendamentos.consultorio_id = consultorios.consultorio_id
+                    WHERE 
+                        agendamentos.paciente_id = $1 AND 
+                        agendamentos.data_hora_inicio > NOW()
+                    ORDER BY 
+                        agendamentos.data_hora_inicio ASC
+                    LIMIT 1
+                `, [pacienteId]);
+            } catch (error) {
+                throw error;
+            }
+        }
+        
+        static async getAppointmentsByOfficeId(consultorio_id){
+            try {
+                const query = `
+                    SELECT 
+                        a.agendamento_id,
+                        p.nome_paciente AS nome_paciente,
+                        u.nome_usuario AS nome_usuario,
+                        a.data_hora_inicio,
+                        a.status,
+                        a.consultorio_id,
+                        c.nome_consultorio,
+                        a.data_hora_fim,
+                        a.recorrencia,
+                        a.tipo_sessao
+                    FROM 
+                        agendamentos a
+                    INNER JOIN pacientes p ON a.paciente_id = p.paciente_id
+                    INNER JOIN usuarios u ON a.usuario_id = u.usuario_id
+                    INNER JOIN consultorios c ON a.consultorio_id = c.consultorio_id
+                    WHERE a.consultorio_id = ${consultorio_id}
+                    ORDER BY a.consultorio_id
+                `;
+                return await db.any(query);
+            } catch (error) {
+                throw error;
+            }
+        }
+        static async getAppointmentsByUserId(userId){
+            try {
+                const query = `
+                    SELECT 
+                        a.agendamento_id,
+                        p.nome_paciente AS nome_paciente,
+                        u.nome_usuario AS nome_usuario,
+                        a.data_hora_inicio,
+                        a.status,
+                        a.consultorio_id,
+                        c.nome_consultorio,
+                        a.data_hora_fim,
+                        a.recorrencia,
+                        a.tipo_sessao
+                    FROM 
+                        agendamentos a
+                    INNER JOIN pacientes p ON a.paciente_id = p.paciente_id
+                    INNER JOIN usuarios u ON a.usuario_id = u.usuario_id
+                    INNER JOIN consultorios c ON a.consultorio_id = c.consultorio_id
+                    WHERE a.usuario_id = ${userId}
+                    ORDER BY a.consultorio_id
+                `;
+                return await db.any(query);
+            } catch (error) {
+                throw error;
+            }
+        }
+
 }
 
 module.exports = Agendamentos;

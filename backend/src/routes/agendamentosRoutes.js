@@ -12,8 +12,14 @@ agendamentosRoutes.post('/', AgendamentoController.criarAgendamento);
 // Rota para listar todos os agendamentos
 agendamentosRoutes.get('/', AgendamentoController.listarAgendamentos);
 
-// Rota para obter um agendamento específico por ID
+agendamentosRoutes.get('/consultorios/', AgendamentoController.getAppointmentsGroupedByOfficeByUserId);
+
 agendamentosRoutes.get('/:id', AgendamentoController.obterAgendamentoPorId);
+
+agendamentosRoutes.get('/consultorio/:consultorio_id', AgendamentoController.getAppointmentsByOffice);
+
+
+agendamentosRoutes.get('/next/:paciente_id', AgendamentoController.getNextAppointment);
 
 // Rota para atualizar um agendamento específico por ID
 agendamentosRoutes.put('/:id', AgendamentoController.atualizarAgendamento);

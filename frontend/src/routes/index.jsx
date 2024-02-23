@@ -15,6 +15,7 @@ import PatientsList from '../pages/Patient/PatientsList';
 import PatientDetails from '../pages/Patient/PatientDetails';
 import FirstAccess from '../pages/FirstAccess';
 import ClinicDashboard from '../pages/Clinic/ClinicDashboard';
+import OfficeAppointmentSchedule from '../pages/Appointment/OfficeAppointmentSchedule';
 
 function HomePage() {
   return (
@@ -49,7 +50,9 @@ export const router = createBrowserRouter(
         <Route index element={<HomePage />} />
         <Route path="pacientes/:id" element={<PatientDetails />} />
         <Route path="pacientes" element={<PatientsList />} />
-        <Route path="agenda" element={<Agenda />} />
+        <Route path="agenda">
+          <Route path="consultorios" element={<OfficeAppointmentSchedule />} />
+        </Route>
         <Route path="clinicas" element={<ClinicDashboard />} />
       </Route>
     </Route>

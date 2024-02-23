@@ -47,7 +47,7 @@ export default function PatientClosureForm({
   const [sessionsNumber, setSessionsNumber] = useState(0);
   const [healthyHabitsAcquired, setHealthyHabitsAcquired] = useState([]);
   const [relevantInformation, setRelevantInformation] = useState('');
-  const [expectationsOptions, setExpectationsOptions] = useState([])
+  const [expectationsOptions, setExpectationsOptions] = useState([]);
 
   const { usuarioId: usuario_id } = useAuth();
   const { id: paciente_id } = useParams();
@@ -56,17 +56,21 @@ export default function PatientClosureForm({
     if (sessions) {
       setSessionsNumber(sessions?.length);
     }
-    if (expectationsAnamneseOptions){
-      setExpectationsOptions(expectationsAnamneseOptions?.treatment_expectation.split(','))
+    console.log(expectationsOptions);
+    console.log(expectationsAnamneseOptions?.treatment_expectation.split(','));
+    if (expectationsAnamneseOptions) {
+      setExpectationsOptions(
+        expectationsAnamneseOptions?.treatment_expectation.split(',')
+      );
     }
-    if (closure && isRead) {
+    if (closure) {
       setCaseStatus(closure?.case_status);
       setOverallResultsEvaluation(closure?.overall_results_evaluation);
-      setInitialExpectationsMet(closure?.initial_expectations_met);
-      setHealthyHabitsAcquired(closure?.healthy_life_habits_acquired);
+      setInitialExpectationsMet(closure?.initial_expectations_met.split(','));
+      setHealthyHabitsAcquired(closure?.healthy_life_habits_acquired.split(','));
       setRelevantInformation(closure?.additional_relevant_information);
     }
-  }, [closure, expectationsOptions, sessions,open]);
+  }, [open]);
 
   const handleClose = () => {
     setCaseStatus('');
@@ -122,7 +126,7 @@ export default function PatientClosureForm({
           </Typography>
           {!isRead && (
             <Button autoFocus color="inherit" onClick={handleSubmit}>
-              Adicionar
+              Enviar
             </Button>
           )}
         </Toolbar>
@@ -155,7 +159,7 @@ export default function PatientClosureForm({
               </RadioGroup>
             </FormControl>
           </Grid>
-          <Grid container direction='column' xs={12} md={7}>
+          <Grid container spacing={4} direction="column">
             <Grid item xs={12} md={3}>
               <Autocomplete
                 disabled={isRead}
@@ -175,7 +179,7 @@ export default function PatientClosureForm({
                 disabled={isRead}
                 id="treatment-expectations-met"
                 freeSolo
-                multiple
+                multiple={expectationsOptions.length > 1}
                 value={initialExpectationsMet}
                 onChange={(event, newValue) =>
                   setInitialExpectationsMet(newValue)
