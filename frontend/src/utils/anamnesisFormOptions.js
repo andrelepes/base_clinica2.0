@@ -1,0 +1,130 @@
+const maritalStatusOptions = [
+  'Casado(a)',
+  'Solteiro(a)',
+  'Companheiro(a)',
+  'Divorciado(a)',
+  'Viúvo(a)',
+];
+const careModalityOptions = ['Remoto', 'Presencial'];
+const genderOptions = ['Masculino', 'Feminino', 'Intersexo'];
+const educationLevelOptions = [
+  'Educação infantil',
+  'Fundamental',
+  'Médio',
+  'Superior (Graduação)',
+  'Pós-graduação',
+  'Mestrado',
+  'Doutorado',
+];
+const socioeconomicLevelOptions = [
+  'A1 (20 salários mínimos ou mais)',
+  'A2 (entre 10 a 20 salários mínimos)',
+  'B1 (entre 5 a 10 salários mínimos)',
+  'B2 (entre 3 a 5 salários mínimos)',
+  'C1 (entre 2 a 3 salários mínimos)',
+  'C2 (entre 1 a 2 salários mínimos)',
+  'D e E (abaixo de 1 salário mínimo)',
+];
+const specialNeedsOptions = [
+  'Não',
+  'Física',
+  'Visual',
+  'Auditiva',
+  'Intelectual',
+  'Psicossocial',
+  'Múltipla',
+];
+const referredByOptions = [
+  'Iniciativa própria',
+  'Iniciativa dos pais',
+  'Iniciativa do(a) cônjuge',
+  'Iniciativa dos(as) amigo(s)',
+  'Médico',
+  'Escola',
+  'Faculdade',
+  'Trabalho',
+  'Justiça',
+];
+const undergoingTreatmentOptions = [
+  'Psiquiátrico',
+  'Nutricional',
+  'Fisioterapêutico',
+  'Endócrino',
+  'Oncológico',
+];
+const treatmentExpectationOptions = [
+  'Se conhecer',
+  'Conhecer a psicoterapia',
+  'Melhorar as relações familiares',
+  'Melhorar as relações sociais',
+  'Melhorar as relações afetivas (íntimas/amorosas)',
+  'Definir a carreira profissional',
+  'Melhorar a carreira profissional',
+  'Melhorar a saúde (mental e/ou física)',
+  'Melhorar o sono',
+  'Melhorar a organização financeira',
+  'Organizar a vida (geral)',
+  'Aprender a descansar',
+];
+const diagnosisOptions = [
+  'Desconhecido',
+  'Anorexia Nervosa (F50.0)',
+  'Transtorno de Déficit de Atenção e Hiperatividade (Adulto) (F90)',
+  'Transtorno de Compulsão Alimentar (F50)',
+  'Transtorno Bipolar (F31)',
+  'Transtorno de Personalidade Bordeline (F60.3)',
+  'Bulimia Nervosa (F50.2)',
+  'Dor de cabeça crônica (G43)',
+  'Dor lombar crônica (M54.5)',
+  'Dor crônica ou persistente (R52.0-9)',
+  'Depressão (F32)',
+  'Fibromialgia (M79.7)',
+  'Transtorno de Ansiedade Generalizada (F41.1)',
+  'Insônia (G47)',
+  'Síndrome do Cólon (Intestino) Irritado (K58)',
+  'Condições Mistas de Ansiedade (F41.2)',
+  'Abuso/Dependência de Substâncias mistas (F19)',
+  'Obesidade ou Sobrepeso (E66)',
+  'Transtorno Obsessivo Compulsivo (F42)',
+  'Transtorno de Pânico (F41.0)',
+  'Transtorno de Estresse Pós-traumático (F43.1)',
+  'Angustia no relacionamento com o cônjuge ou parceiro íntimo (Z63.0)',
+  'Dor Reumatológica (M79.0)',
+  'Esquizofrenia e outras doenças mentais graves (F20)',
+  'Transtorno de ansiedade social e ansiedade de falar em público (F40.1)',
+  'Fobias Específicas (F40.2)',
+  'Transtornos por uso de substâncias e álcool (F10)',
+];
+const healthyLifeHabitsOptions = [
+  'Atividade Física',
+  'Alimentação Saudável',
+  'Alimentação Regulada',
+  'Sono noturno Regulado',
+  'Vida social ativa',
+  'Vida sexual/afetiva ativa',
+  'Uso moderado de redes sociais',
+];
+const caseStatusOptions = [
+  'Recebeu alta do terapeuta',
+  'Sem notícias',
+  'Pediu encerramento por desistir da terapia',
+  'Pediu encerramento em consenso com o terapeuta',
+  'Pediu para trocar de terapeuta',
+  'Continuará no semestre que vêm',
+  'Outro',
+];
+
+export {
+  maritalStatusOptions,
+  careModalityOptions,
+  genderOptions,
+  educationLevelOptions,
+  socioeconomicLevelOptions,
+  specialNeedsOptions,
+  referredByOptions,
+  undergoingTreatmentOptions,
+  treatmentExpectationOptions,
+  diagnosisOptions,
+  healthyLifeHabitsOptions,
+  caseStatusOptions,
+};

@@ -125,11 +125,11 @@ class UserController {
   static async getUserById(req, res) {
     try {
       const id = req.params.id;
-      const user = await db.oneOrNone('SELECT * FROM usuarios WHERE usuario_id = $1', [id]);
+      const user = await Usuarios.buscarPorId(id);
       if (!user) {
         return res.status(404).json({ message: 'Usuário não encontrado' });
       }
-      res.json(user);
+      res.json({user});
     } catch (error) {
       console.error(error);
       res.status(500).send('Erro no servidor');
@@ -228,5 +228,62 @@ static async getLinkedSecretaries(req, res) {
     res.status(500).json({ error: 'Erro ao buscar secretários vinculados' });
   }
 };
+
+  static async getFirstAccessInfo(req,res){
+    try{
+      const {firstAccessToken} = req.params;
+      const user = await Usuarios.getUserByFirstAccessToken(firstAccessToken);
+      res.status(200).json(user);
+    }catch(error){
+      res.status(500).json({ error: 'Erro ao buscar usuário' });
+    }
+  }
+
+  static async createFromFirstAccess(req, res) {
+    try {
+      const { nome_usuario, email_auxiliar, senha } = req.body;
+      const { firstAccessToken } = req.params;
+
+      if (!nome_usuario || !email_auxiliar || !senha) {
+        return res
+          .status(400)
+          .json({ message: 'Campos obrigatórios faltando' });
+      }
+
+      const hasToken = await Usuarios.getUserByFirstAccessToken(
+        firstAccessToken
+      );
+      if (!hasToken) {
+        return res.status(400).json({ message: 'Usuário já registrado' });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const senhaCriptografada = await bcrypt.hash(senha, salt);
+
+      const resultado = await Usuarios.firstAccess(
+        nome_usuario,
+        email_auxiliar,
+        senhaCriptografada,
+        firstAccessToken
+      );
+
+      if (resultado.user) {
+        // Busque o usuário recém-criado para obter o ID
+
+        const payload = {
+          user: resultado.user,
+        };
+        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
+          expiresIn: '1h',
+        });
+
+        res.json({ message: resultado.message, token: token });
+      } else {
+        res.status(500).json({ message: resultado.message });
+      }
+    } catch (error) {
+      res.status(500).send('Erro no servidor');
+    }
+  }
 }
 module.exports = UserController;

@@ -15,7 +15,7 @@ class Pacientes {
   // Método para inserir um novo paciente
   static async inserirPaciente(paciente) {
   try {
-    await db.none('INSERT INTO pacientes (nome_paciente, email_paciente, telefone_paciente, usuario_id, clinica_id) VALUES (${nome_paciente}, ${email_paciente}, ${telefone_paciente}, ${usuario_id}, ${clinica_id})', paciente);
+    await db.none('INSERT INTO pacientes (nome_paciente, email_paciente, telefone_paciente, usuario_id, clinica_id, cpf_paciente, data_nascimento_paciente, cep_paciente, endereco_paciente) VALUES (${nome_paciente}, ${email_paciente}, ${telefone_paciente}, ${usuario_id}, ${clinica_id}, ${cpf_paciente}, ${data_nascimento_paciente}, ${cep_paciente}, ${endereco_paciente})', paciente);
     return { success: true, message: 'Paciente registrado com sucesso!' };
   } catch (error) {
     console.error('Erro ao inserir paciente:', error);
@@ -65,8 +65,6 @@ static async listarPacientes(tipousuario, clinica_id, usuario_id) {
             default:
                 throw new Error('Tipo de usuário não reconhecido.');
         }
-        console.log("Consulta SQL:", query);
-        console.log("Valores:", values);
         await db.none(query, values);
         return { success: true, message: 'Paciente atualizado com sucesso!' };
     } catch (error) {
@@ -201,7 +199,46 @@ static async marcarComoAtivo(paciente_id, clinica_id, tipousuario) {
   }
 }
 
-  // Outros métodos podem ser adicionados conforme a necessidade, como excluir paciente, buscar paciente por ID, etc.
+static async filtrarPacientesComEvolucoesPendentes(nome, status, tipousuario, clinica_id, usuario_id) {
+  try {
+    const nomeBusca = nome ? `%${nome}%` : null; // Formato para busca parcial com LIKE no SQL
+    let query = 'SELECT p.*, (SELECT COUNT(*) FROM evolutions e WHERE e.paciente_id = p.paciente_id AND e.evolution_status = false) AS pending_evolutions_count FROM pacientes p WHERE 1=1'; // Base da consulta
+    const values = [];
+
+    if (nomeBusca) {
+      query += ` AND LOWER(nome_paciente) LIKE LOWER($${values.length + 1})`; // Tornando a busca insensível ao caso
+      values.push(nomeBusca);
+    }
+
+    if (status) {
+      query += ` AND status_paciente = $${values.length + 1}`;
+      values.push(status);
+    }
+
+    switch (tipousuario) {
+      case 'psicologo':
+        query += ` AND usuario_id = $${values.length + 1}`;
+        values.push(usuario_id);
+        break;
+      case 'clinica':
+      case 'secretario_vinculado':
+      case 'psicologo_vinculado':
+        query += ` AND clinica_id = $${values.length + 1}`;
+        values.push(clinica_id);
+        break;
+      default:
+        throw new Error('Tipo de usuário não reconhecido.');
+    }
+
+    const pacientes = await db.any(query, values);
+    return pacientes;
+
+  } catch (error) {
+    console.error('Erro ao filtrar pacientes:', error);
+    throw error;
+  }
+}
+
 }
 
 module.exports = Pacientes;

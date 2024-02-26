@@ -963,6 +963,215 @@ ALTER TABLE ONLY public.reset_password_tokens
     ADD CONSTRAINT reset_password_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.usuarios(usuario_id);
 
 
+-- Added on 07/12/2023 by gabrielpaiv
+
+CREATE TABLE attended_options (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL
+);
+
+INSERT INTO attended_options (id, title) VALUES 
+(1, 'Sim'),
+(2, 'Não, reagendado'),
+(3, 'Não, mas cancelado antes de 24h'),
+(4, 'Não comparecimento'),
+(5, 'Desmarcado pelo psicoterapeuta'),
+(6, 'Outro');
+
+CREATE TABLE punctuality_options (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL
+);
+
+INSERT INTO punctuality_options (id, title) VALUES 
+(1, 'No horário'),
+(2, 'Antecipado'),
+(3, 'Atrasado');
+
+CREATE TABLE mood_states (
+    id SERIAL PRIMARY KEY,
+    value DECIMAL(2, 1) NOT NULL,
+    title VARCHAR(255) NOT NULL
+);
+
+INSERT INTO mood_states (id, value, title) VALUES 
+(1, 0.5, 'Muito Ruim'),
+(2, 1.0, 'Ruim'),
+(3, 1.5, 'Insatisfatório'),
+(4, 2.0, 'Abaixo da Média'),
+(5, 2.5, 'Médio'),
+(6, 3.0, 'Razoável'),
+(7, 3.5, 'Bom'),
+(8, 4.0, 'Muito Bom'),
+(9, 4.5, 'Excelente'),
+(10, 5.0, 'Fantástico');
+
+CREATE SEQUENCE public.evolutions_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE public.evolutions (
+    evolution_id integer NOT NULL DEFAULT nextval('public.evolutions_id_seq'::regclass),
+    usuario_id integer NOT NULL,
+    paciente_id integer NOT NULL,
+    attendance_status INT REFERENCES attended_options(id),
+    punctuality_status INT REFERENCES punctuality_options(id),
+    arrival_mood_state INT REFERENCES mood_states(id),
+    discussion_topic TEXT,
+    analysis_intervention TEXT,
+    next_session_plan TEXT,
+    departure_mood_state INT REFERENCES mood_states(id),
+    therapist_notes TEXT
+);
+
+ALTER SEQUENCE public.evolutions_id_seq OWNED BY public.evolutions.evolution_id;
+
+ALTER TABLE ONLY public.evolutions
+    ADD CONSTRAINT evolutions_pkey PRIMARY KEY (evolution_id);
+
+ALTER TABLE ONLY public.evolutions
+    ADD CONSTRAINT evolutions_usuario_id_fkey FOREIGN KEY (usuario_id) REFERENCES public.usuarios(usuario_id);
+
+ALTER TABLE ONLY public.evolutions
+    ADD CONSTRAINT evolutions_paciente_id_fkey FOREIGN KEY (paciente_id) REFERENCES public.pacientes(paciente_id);
+
+
+-- Added on 08/12/2023 by gabrielpaiv
+
+ALTER TABLE public.evolutions
+ADD COLUMN session_date TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+ADD COLUMN evolution_status BOOLEAN DEFAULT false;
+
+-- Added on 15/12/2023 by gabrielpaiv
+
+CREATE SEQUENCE public.anamnesis_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE public.anamnesis (
+    anamnesis_id integer NOT NULL DEFAULT nextval('public.anamnesis_id_seq'::regclass),
+    usuario_id integer NOT NULL,
+    paciente_id integer NOT NULL,
+    marital_status VARCHAR(20),
+    care_modality VARCHAR(10),
+    gender VARCHAR(10),
+    occupation VARCHAR(255),
+    education_level VARCHAR(30),
+    socioeconomic_level VARCHAR(60),
+    special_needs VARCHAR(15),
+    referred_by VARCHAR(50),
+    undergoing_treatment TEXT,
+    treatment_expectation TEXT,
+    diagnosis TEXT),
+    healthy_life_habits TEXT,
+    relevant_information TEXT
+);
+
+ALTER SEQUENCE public.anamnesis_id_seq OWNED BY public.anamnesis.anamnesis_id;
+
+ALTER TABLE ONLY public.anamnesis
+    ADD CONSTRAINT anamnesis_pkey PRIMARY KEY (anamnesis_id);
+
+ALTER TABLE ONLY public.anamnesis
+    ADD CONSTRAINT anamnesis_usuario_id_fkey FOREIGN KEY (usuario_id) REFERENCES public.usuarios(usuario_id);
+
+ALTER TABLE ONLY public.anamnesis
+    ADD CONSTRAINT anamnesis_paciente_id_fkey FOREIGN KEY (paciente_id) REFERENCES public.pacientes(paciente_id);
+
+ALTER TABLE public.anamnesis
+    ADD COLUMN created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now();
+
+-- Added on 21/12/2023 by gabrielpaiv
+
+CREATE SEQUENCE public.patient_closure_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE public.patient_closure (
+    patient_closure_id integer NOT NULL DEFAULT nextval('public.patient_closure_id_seq'::regclass),
+    usuario_id integer NOT NULL,
+    paciente_id integer NOT NULL,
+    case_status VARCHAR(100),
+    overall_results_evaluation INTEGER,
+    initial_expectations_met TEXT,
+    treatment_duration_sessions INTEGER,
+    healthy_life_habits_acquired TEXT,
+    additional_relevant_information TEXT,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now()
+);
+
+ALTER SEQUENCE public.patient_closure_id_seq OWNED BY public.patient_closure.patient_closure_id;
+
+ALTER TABLE ONLY public.patient_closure
+    ADD CONSTRAINT patient_closure_pkey PRIMARY KEY (patient_closure_id);
+
+ALTER TABLE ONLY public.patient_closure
+    ADD CONSTRAINT patient_closure_usuario_id_fkey FOREIGN KEY (usuario_id) REFERENCES public.usuarios(usuario_id);
+
+ALTER TABLE ONLY public.patient_closure
+    ADD CONSTRAINT patient_closure_paciente_id_fkey FOREIGN KEY (paciente_id) REFERENCES public.pacientes(paciente_id);
+
+-- Added on 23/01/2024 by gabrielpaiv
+
+ALTER TABLE public.usuarios
+    ADD COLUMN first_access UUID;
+
+-- Added on 24/01/2024 by gabrielpaiv
+
+ALTER TABLE public.usuarios
+    ADD COLUMN email_auxiliar character varying(255);
+
+-- Added on 02/02/2024 by gabrielpaiv
+
+ALTER TABLE
+  public.agendamentos
+DROP
+  CONSTRAINT agendamentos_tipo_sessao_check;
+
+ALTER TABLE
+  public.agendamentos
+ADD COLUMN
+  tipo_sessao_temp integer;
+
+UPDATE
+  public.agendamentos
+SET
+  tipo_sessao_temp = CASE
+    WHEN tipo_sessao = '30min' THEN 30
+    WHEN tipo_sessao = '1h' THEN 60
+    WHEN tipo_sessao = '1h30min' THEN 90
+    WHEN tipo_sessao = '2h' THEN 120
+  END;
+
+ALTER TABLE
+  public.agendamentos
+DROP COLUMN
+  tipo_sessao;
+
+ALTER TABLE
+  public.agendamentos
+RENAME COLUMN
+  tipo_sessao_temp TO tipo_sessao;
+
+ALTER TABLE
+  public.agendamentos
+ALTER COLUMN
+  tipo_sessao
+TYPE
+  integer USING tipo_sessao::integer;
+
 --
 -- PostgreSQL database dump complete
 --

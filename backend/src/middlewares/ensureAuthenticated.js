@@ -4,7 +4,7 @@ module.exports = async function ensureAuthenticated(request, response, next) {
   const authHeader = request.headers.authorization;
 
   if (!authHeader) {
-    return res
+    return response
       .status(401)
       .json({ msg: 'Token não fornecido. Autorização negada.' });
   }
@@ -20,6 +20,6 @@ module.exports = async function ensureAuthenticated(request, response, next) {
 
     next();
   } catch (err) {
-    res.status(401).json({ msg: 'Token inválido.' });
+    response.status(401).json({ msg: 'Token inválido.' });
   }
 }

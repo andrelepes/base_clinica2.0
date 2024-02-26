@@ -1,93 +1,33 @@
+const express = require('express');
+const agendamentosRoutes = express.Router();
+const AgendamentoController = require('../controllers/AgendamentosController'); // Ajuste o caminho conforme necessário
+
 const ensureAuthenticated = require('../middlewares/ensureAuthenticated.js');
 
-const agendamentosRoutes = require('express').Router();
+agendamentosRoutes.use(ensureAuthenticated);
 
-const db = require('../database/database');
+// Rota para criar um novo agendamento
+agendamentosRoutes.post('/', AgendamentoController.criarAgendamento);
 
-// GET all appointments
-agendamentosRoutes.get('/', ensureAuthenticated, (req, res) => {
-    db.any('SELECT * FROM agendamentos')
-        .then(data => {
-            res.json(data);
-        })
-        .catch(error => {
-            console.log(error);
-            res.status(500).json({ error });
-        });
-});
+// Rota para listar todos os agendamentos
+agendamentosRoutes.get('/', AgendamentoController.listarAgendamentos);
 
-// GET a specific appointment
-agendamentosRoutes.get('/:id', ensureAuthenticated, (req, res) => {
-    const agendamentoId = req.params.id;
-    db.oneOrNone('SELECT * FROM agendamentos WHERE agendamento_id = $1', [agendamentoId])
-        .then(data => {
-            if (data) {
-                res.json(data);
-            } else {
-                res.status(404).json({ message: 'Agendamento não encontrado.' });
-            }
-        })
-        .catch(error => {
-            console.log(error);
-            res.status(500).json({ error });
-        });
-});
+agendamentosRoutes.get('/consultorios', AgendamentoController.getAppointmentsGroupedByOfficeByClinicId);
 
-// POST to create a new appointment
-agendamentosRoutes.post('/', ensureAuthenticated, (req, res) => {
-    const allowedRoles = ['clinica', 'psicologo', 'psicologo_vinculado', 'secretario_vinculado'];
-    if (!allowedRoles.includes(req.user.funcao)) {
-        return res.status(403).json({ msg: 'Você não tem permissão para criar um novo agendamento.' });
-    }
-    const { data_hora_agendamento, paciente_id, usuario_id } = req.body;
-    const status_agendamento = 'agendado';
-    db.none('INSERT INTO agendamentos (data_hora_agendamento, paciente_id, usuario_id, status_agendamento) VALUES ($1, $2, $3, $4)', [data_hora_agendamento, paciente_id, usuario_id, status_agendamento])
-        .then(() => {
-            res.json({ message: 'Agendamento adicionado com sucesso!' });
-        })
-        .catch(error => {
-            console.log(error);
-            res.status(500).json({ error });
-        });
-});
+agendamentosRoutes.get('/pacientes', AgendamentoController.getAppointmentsGroupedByPatientByClinicId);
 
-// PUT to update an appointment
-agendamentosRoutes.put('/:id', ensureAuthenticated, (req, res) => {
-    const allowedRoles = ['clinica', 'psicologo', 'psicologo_vinculado', 'secretario_vinculado'];
-    if (!allowedRoles.includes(req.user.funcao)) {
-        return res.status(403).json({ msg: 'Você não tem permissão para atualizar um agendamento.' });
-    }
-    const agendamentoId = req.params.id;
-    const { data_hora_agendamento, paciente_id, usuario_id, status_agendamento } = req.body;
+agendamentosRoutes.get('/meus', AgendamentoController.getAppointmentsByUserId);
 
-    const query = 'UPDATE agendamentos SET data_hora_agendamento = $1, paciente_id = $2, usuario_id = $3, status_agendamento = $4 WHERE agendamento_id = $5';
-    const values = [data_hora_agendamento, paciente_id, usuario_id, status_agendamento || 'agendado', agendamentoId];
+agendamentosRoutes.get('/:id', AgendamentoController.obterAgendamentoPorId);
 
-    db.none(query, values)
-        .then(() => {
-            res.json({ message: 'Agendamento atualizado com sucesso!' });
-        })
-        .catch(error => {
-            console.log(error);
-            res.status(500).json({ error });
-        });
-});
+agendamentosRoutes.get('/consultorio/:consultorio_id', AgendamentoController.getAppointmentsByOffice);
 
-// DELETE to delete an appointment
-agendamentosRoutes.delete('/:id', ensureAuthenticated, (req, res) => {
-    const allowedRoles = ['clinica', 'psicologo', 'psicologo_vinculado', 'secretario_vinculado'];
-    if (!allowedRoles.includes(req.user.funcao)) {
-        return res.status(403).json({ msg: 'Você não tem permissão para excluir um agendamento.' });
-    }
-    const agendamentoId = req.params.id;
-    db.none('DELETE FROM agendamentos WHERE agendamento_id = $1', [agendamentoId])
-        .then(() => {
-            res.json({ message: 'Agendamento deletado com sucesso!' });
-        })
-        .catch(error => {
-            console.log(error);
-            res.status(500).json({ error });
-        });
-});
+agendamentosRoutes.get('/next/:paciente_id', AgendamentoController.getNextAppointment);
+
+// Rota para atualizar um agendamento específico por ID
+agendamentosRoutes.put('/:id', AgendamentoController.atualizarAgendamento);
+
+// Rota para deletar um agendamento específico por ID
+agendamentosRoutes.delete('/:id', AgendamentoController.deletarAgendamento);
 
 module.exports = { agendamentosRoutes };
