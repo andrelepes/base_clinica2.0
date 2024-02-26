@@ -17,13 +17,13 @@ import {
 } from '@syncfusion/ej2-react-schedule';
 import dayjs from 'dayjs';
 
-export default function OfficeAppointmentSchedule() {
+export default function PatientAppointmentSchedule() {
   const [appointments, setAppointments] = useState([]);
   const [selectedDate, setSelectedDate] = useState(dayjs());
 
   const fetchAppointments = async () => {
     try {
-      const { data } = await api.get('/agendamentos/consultorios/');
+      const { data } = await api.get('/agendamentos/pacientes/');
 
       const result = data.map((item) => {
         return item.map((subItem) => {
@@ -32,14 +32,14 @@ export default function OfficeAppointmentSchedule() {
             Subject: `${subItem.nome_paciente} | ${subItem.nome_usuario} | ${subItem.nome_consultorio}`,
             StartTime: new Date(subItem.data_hora_inicio),
             EndTime: new Date(subItem.data_hora_fim),
-            nome_consultorio: subItem.nome_consultorio,
+            nome_paciente: subItem.nome_paciente,
           };
         });
       });
 
       setAppointments(result);
     } catch (error) {
-      toast.error('Erro ao buscar agendamentos');
+      toast.error('Ocorreu um erro ao buscar os agendamentos');
     }
   };
 
@@ -49,13 +49,13 @@ export default function OfficeAppointmentSchedule() {
 
   let isMounted = false;
   useEffect(() => {
+    console.log(isMounted)
     if (!isMounted) {
       isMounted = true;
       return;
     }
     fetchAppointments();
   }, []);
-
   return (
     <Box>
       <Paper sx={{ width: '100%', mb: 2, height: '97.5%' }}>
@@ -71,7 +71,7 @@ export default function OfficeAppointmentSchedule() {
             id="tableTitle"
             component="div"
           >
-            Agenda por Consultório
+            Agenda por Pacientes
           </Typography>
           <Box sx={{ pt: 2 }}>
             <DatePicker
@@ -92,7 +92,7 @@ export default function OfficeAppointmentSchedule() {
                 <Box
                   key={agendamento[0].nome_consultorio}
                   sx={{
-                    minWidth: 200, // Define uma largura mínima para cada item
+                    minWidth: 450, // Define uma largura mínima para cada item
                     height: '100%',
                     m: 1, // Margem ao redor de cada item
                     backgroundColor: 'primary.main',
@@ -113,7 +113,7 @@ export default function OfficeAppointmentSchedule() {
                       id="tableTitle"
                       component="div"
                     >
-                      {agendamento[0]?.nome_consultorio}
+                      {agendamento[0]?.nome_paciente}
                     </Typography>
                   </Toolbar>
                   <ScheduleComponent

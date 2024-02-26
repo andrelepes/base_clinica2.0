@@ -177,10 +177,10 @@ class AgendamentoController {
             res.status(500).send({ message: 'Erro interno do servidor' });
         }
     }
-    static async getAppointmentsGroupedByOfficeByUserId(req,res){
+    static async getAppointmentsGroupedByOfficeByClinicId(req,res){
         try {
-            const userId = req.user;
-            const appointments = await Agendamentos.getAppointmentsByUserId(userId);
+            const clinicId = req.clinicaId;
+            const appointments = await Agendamentos.getAppointmentsByClinicId(clinicId);
 
             const result = [];
             const appointmentsByOffice = {};
@@ -201,6 +201,45 @@ class AgendamentoController {
         } catch (error) {
             console.log(error)
             res.status(500).send({ message: 'Erro interno do servidor' });
+        }
+    }
+
+    static async getAppointmentsGroupedByPatientByClinicId(req,res){
+        try {
+            const clinicId = req.clinicaId;
+            const appointments = await Agendamentos.getAppointmentsByClinicId(clinicId);
+
+            const result = [];
+            const appointmentsByPatient = {};
+
+            appointments.forEach(appointment => {
+                if (!appointmentsByPatient[appointment.paciente_id]) {
+                    appointmentsByPatient[appointment.paciente_id] = [];
+                }
+                appointmentsByPatient[appointment.paciente_id].push(appointment);
+            });
+
+            for (const pacienteId in appointmentsByPatient) {
+                result.push(appointmentsByPatient[pacienteId]);
+            }
+
+            
+            res.json(result);
+        } catch (error) {
+            console.log(error)
+            res.status(500).send({ message: 'Erro interno do servidor' });
+        }
+    }
+
+    static async getAppointmentsByUserId(req,res){
+        try {
+            const userId = req.user;
+            const appointments = await Agendamentos.getAppointmentsByUserId(userId);
+
+            res.json(appointments);
+        } catch (error) {
+            console.log(error)
+            res.status(500).send({ message: 'Erro interno do servidor' })
         }
     }
 

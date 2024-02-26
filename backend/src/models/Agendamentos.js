@@ -225,6 +225,34 @@ class Agendamentos {
                     INNER JOIN usuarios u ON a.usuario_id = u.usuario_id
                     INNER JOIN consultorios c ON a.consultorio_id = c.consultorio_id
                     WHERE a.usuario_id = ${userId}
+                    ORDER BY a.data_hora_inicio
+                `;
+                return await db.any(query);
+            } catch (error) {
+                throw error;
+            }
+        }
+        static async getAppointmentsByClinicId(clinicId){
+            try {
+                const query = `
+                    SELECT 
+                        a.agendamento_id,
+                        p.paciente_id,
+                        p.nome_paciente AS nome_paciente,
+                        u.nome_usuario AS nome_usuario,
+                        a.data_hora_inicio,
+                        a.status,
+                        a.consultorio_id,
+                        c.nome_consultorio,
+                        a.data_hora_fim,
+                        a.recorrencia,
+                        a.tipo_sessao
+                    FROM 
+                        agendamentos a
+                    INNER JOIN pacientes p ON a.paciente_id = p.paciente_id
+                    INNER JOIN usuarios u ON a.usuario_id = u.usuario_id
+                    INNER JOIN consultorios c ON a.consultorio_id = c.consultorio_id
+                    WHERE u.clinica_id  = ${clinicId}
                     ORDER BY a.consultorio_id
                 `;
                 return await db.any(query);

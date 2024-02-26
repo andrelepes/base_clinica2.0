@@ -91,7 +91,7 @@ export default function Sidebar() {
         <Collapse in={isOpenSchedule} timeout="auto" unmountOnExit>
           <List component="div" disablePadding sx={{ pl: 1 }}>
             <Divider />
-            <DrawerItem itemText="Meus agendamentos">
+            <DrawerItem itemText="Meus agendamentos" itemLink="/agenda/minha">
               <EventNoteIcon />
             </DrawerItem>
             <DrawerItem
@@ -105,7 +105,7 @@ export default function Sidebar() {
                 <SupervisorAccountIcon />
               </DrawerItem>
             )}
-            <DrawerItem itemText="Por paciente">
+            <DrawerItem itemText="Por paciente" itemLink="/agenda/pacientes">
               <PersonIcon />
             </DrawerItem>
           </List>

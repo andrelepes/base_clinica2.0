@@ -12,12 +12,15 @@ agendamentosRoutes.post('/', AgendamentoController.criarAgendamento);
 // Rota para listar todos os agendamentos
 agendamentosRoutes.get('/', AgendamentoController.listarAgendamentos);
 
-agendamentosRoutes.get('/consultorios/', AgendamentoController.getAppointmentsGroupedByOfficeByUserId);
+agendamentosRoutes.get('/consultorios', AgendamentoController.getAppointmentsGroupedByOfficeByClinicId);
+
+agendamentosRoutes.get('/pacientes', AgendamentoController.getAppointmentsGroupedByPatientByClinicId);
+
+agendamentosRoutes.get('/meus', AgendamentoController.getAppointmentsByUserId);
 
 agendamentosRoutes.get('/:id', AgendamentoController.obterAgendamentoPorId);
 
 agendamentosRoutes.get('/consultorio/:consultorio_id', AgendamentoController.getAppointmentsByOffice);
-
 
 agendamentosRoutes.get('/next/:paciente_id', AgendamentoController.getNextAppointment);
 

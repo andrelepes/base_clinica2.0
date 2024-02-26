@@ -16,6 +16,8 @@ import PatientDetails from '../pages/Patient/PatientDetails';
 import FirstAccess from '../pages/FirstAccess';
 import ClinicDashboard from '../pages/Clinic/ClinicDashboard';
 import OfficeAppointmentSchedule from '../pages/Appointment/OfficeAppointmentSchedule';
+import MyAppointments from '../pages/Appointment/MyAppointments';
+import PatientAppointmentSchedule from '../pages/Appointment/PatientAppointmentSchedule';
 
 function HomePage() {
   return (
@@ -52,6 +54,8 @@ export const router = createBrowserRouter(
         <Route path="pacientes" element={<PatientsList />} />
         <Route path="agenda">
           <Route path="consultorios" element={<OfficeAppointmentSchedule />} />
+          <Route path="minha" element={<MyAppointments />} />
+          <Route path="pacientes" element={<PatientAppointmentSchedule />} />
         </Route>
         <Route path="clinicas" element={<ClinicDashboard />} />
       </Route>
