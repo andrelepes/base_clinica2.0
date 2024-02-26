@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'; // Importe useCallback
-import api from 'C:/Users/andre/base_clinica/frontend/src/services/api';
+import api from '../../services/api';
 import AddProntuarioForm from './AddProntuarioForm';
 import { useParams } from 'react-router-dom';
 import { useClinicaId } from '../../contexts/ClinicaIdContext';
