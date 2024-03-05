@@ -9,6 +9,8 @@ agendamentosRoutes.use(ensureAuthenticated);
 // Rota para criar um novo agendamento
 agendamentosRoutes.post('/', AgendamentoController.criarAgendamento);
 
+agendamentosRoutes.post('/recurrence', AgendamentoController.createRecurrentSchedule)
+
 // Rota para listar todos os agendamentos
 agendamentosRoutes.get('/', AgendamentoController.listarAgendamentos);
 
@@ -17,6 +19,8 @@ agendamentosRoutes.get('/consultorios', AgendamentoController.getAppointmentsGro
 agendamentosRoutes.get('/pacientes', AgendamentoController.getAppointmentsGroupedByPatientByClinicId);
 
 agendamentosRoutes.get('/meus', AgendamentoController.getAppointmentsByUserId);
+
+agendamentosRoutes.get('/next', AgendamentoController.getAllNextAppointmentsByClinicId)
 
 agendamentosRoutes.get('/:id', AgendamentoController.obterAgendamentoPorId);
 

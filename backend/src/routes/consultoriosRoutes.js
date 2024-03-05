@@ -9,6 +9,11 @@ consultoriosRoutes.post('/', consultoriosController.inserirConsultorio);
 
 consultoriosRoutes.get('/', consultoriosController.listarConsultorios);
 
+consultoriosRoutes.get(
+  '/clinica/',
+  consultoriosController.getConsultoriosByClinica
+);
+
 consultoriosRoutes.get('/:consultorio_id', consultoriosController.buscarPorId);
 
 consultoriosRoutes.put(
@@ -21,10 +26,6 @@ consultoriosRoutes.delete(
   consultoriosController.deletarConsultorio
 );
 
-consultoriosRoutes.get(
-  '/clinica/:clinicaId',
-  consultoriosController.getConsultoriosByClinica
-);
 // Adicione outras rotas conforme necessário
 
 module.exports = { consultoriosRoutes };

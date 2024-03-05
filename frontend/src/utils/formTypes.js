@@ -35,10 +35,16 @@ const satisfactionStates = [
 ];
 
 const recurrenceOptions = [
-  { id: 1, title: 'Nenhuma' },
-  { id: 2, title: 'Semanal' },
-  { id: 3, title: 'Quinzenal' },
-  { id: 4, title: 'Mensal' },
+  { id: 1, title: 'Nenhuma', intervals: [0] },
+  { id: 2, title: 'Semanal', intervals: [7, 14, 21, 28, 35] },
+  { id: 3, title: 'Quinzenal', intervals: [14, 28, 42] },
+  { id: 4, title: 'Mensal', intervals: [28, 56] },
 ];
 
-export { attendedOptions, punctualityOptions, moodStates, satisfactionStates, recurrenceOptions };
+export {
+  attendedOptions,
+  punctualityOptions,
+  moodStates,
+  satisfactionStates,
+  recurrenceOptions,
+};

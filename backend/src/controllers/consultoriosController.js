@@ -95,7 +95,7 @@ static async deletarConsultorio(req, res) {
 }
 
     static async getConsultoriosByClinica(req,res){
-        const { clinicaId } = req.params;
+        const clinicaId = req.clinicaId;;
         try {
             const consultorios = await Consultorios.getConsultorioByClinicaId(clinicaId);
             res.status(200).send(consultorios);

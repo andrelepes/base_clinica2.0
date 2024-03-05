@@ -163,6 +163,26 @@ static async buscarPorId(usuario_id) {
       };
     }
   }
+
+  static async getAllPsychologistsByClinicId(clinica_id) {
+    try {
+      const query = `
+          SELECT 
+             usuario_id,
+             nome_usuario
+          FROM 
+              usuarios
+          WHERE 
+              clinica_id  = ${clinica_id} AND
+              tipousuario = 'psicologo_vinculado'
+          ORDER BY 
+              nome_usuario
+      `;
+      return await db.any(query);
+    } catch (error) {
+        throw error;
+    }
+  }
 }
 
 module.exports = Usuarios;

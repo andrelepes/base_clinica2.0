@@ -1,5 +1,6 @@
 const usuariosRoutes = require('express').Router();
 const UserController = require('../controllers/usuariosController'); // Importando o controller
+const ensureAuthenticated = require('../middlewares/ensureAuthenticated.js');
 
 // Rotas
 usuariosRoutes.post('/login', UserController.login); // Utilizando a função login do controller
@@ -30,5 +31,11 @@ usuariosRoutes.get(
 usuariosRoutes.post(
   '/first-access/:firstAccessToken',
   UserController.createFromFirstAccess
+);
+
+usuariosRoutes.get(
+  '/psychologists/from/clinic',
+  ensureAuthenticated,
+  UserController.getAllPsychologistsFromClinic
 );
 module.exports = { usuariosRoutes };

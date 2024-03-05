@@ -239,6 +239,25 @@ static async filtrarPacientesComEvolucoesPendentes(nome, status, tipousuario, cl
   }
 }
 
+static async getAllByClinicId(clinica_id){
+  try {
+    const query = `
+        SELECT 
+            paciente_id,
+            nome_paciente
+        FROM 
+            pacientes
+        WHERE 
+            clinica_id  = ${clinica_id} 
+        ORDER BY 
+            nome_paciente
+    `;
+    return await db.any(query);
+} catch (error) {
+    throw error;
+}
+}
+
 }
 
 module.exports = Pacientes;

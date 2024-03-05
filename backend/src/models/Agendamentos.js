@@ -261,6 +261,72 @@ class Agendamentos {
             }
         }
 
+        static async getNextAppointmentByClinicId(clinicId){
+            try {
+                const query = `
+                    SELECT 
+                        a.agendamento_id,                        
+                        a.data_hora_inicio,                        
+                        a.consultorio_id,
+                        c.nome_consultorio,
+                        a.data_hora_fim,
+                        u.usuario_id,
+                        p.paciente_id
+                    FROM 
+                        agendamentos a
+                    INNER JOIN pacientes p ON a.paciente_id = p.paciente_id
+                    INNER JOIN usuarios u ON a.usuario_id = u.usuario_id
+                    INNER JOIN consultorios c ON a.consultorio_id = c.consultorio_id
+                    WHERE 
+                        u.clinica_id  = ${clinicId} AND
+                        a.data_hora_inicio > NOW()
+                    ORDER BY 
+                        a.consultorio_id,
+                        a.data_hora_inicio ASC
+                `;
+                return await db.any(query);
+            } catch (error) {
+                throw error;
+            }
+        }
+        static async createWithRecurrency({paciente_id, usuario_id, data_hora_inicio, status, consultorio_id, weekInterval, tipo_sessao, recorrencia}){
+            try {
+                const query = `
+                    INSERT INTO
+                        agendamentos (
+                            paciente_id,
+                            usuario_id,
+                            data_hora_inicio,
+                            status,
+                            consultorio_id,
+                            data_hora_fim,
+                            tipo_sessao,
+                            recorrencia
+                        )
+                    SELECT
+                        ${paciente_id},
+                        ${usuario_id},
+                        gs,
+                        '${status}',
+                        ${consultorio_id},
+                        gs + interval '${tipo_sessao} minutes',
+                        ${tipo_sessao},
+                        '${recorrencia}'
+                    FROM
+                        generate_series(
+                            '${data_hora_inicio}'::timestamp,
+                        (
+                            date_trunc('year', current_date) + interval '1 year' - interval '1 day'
+                        )::timestamp,
+                            '${weekInterval} days'::interval
+                        ) AS gs;
+                `;
+                return await db.none(query);
+            } catch (error) {
+                throw error;
+            }
+        }
+
 }
 
 module.exports = Agendamentos;

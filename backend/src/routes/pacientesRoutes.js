@@ -13,6 +13,8 @@ pacientesRoutes.get('/pendentes', pacientesController.filtrarPacientesEvolucoesP
 // Rota para listar todos os pacientes
 pacientesRoutes.get('/', pacientesController.listarPacientes);
 
+pacientesRoutes.get('/clinica', pacientesController.getAllByClinic)
+
 // Rota para listar todos os pacientes
 pacientesRoutes.get('/paginados', pacientesController.listarPacientesPaginados);
 

@@ -17,6 +17,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { visuallyHidden } from '@mui/utils';
 
 import api from '../../services/api';
@@ -135,6 +136,11 @@ export default function PatientsList() {
             Pacientes
           </Typography>
 
+          <Tooltip title="Agendar Horário" disableInteractive>
+            <IconButton onClick={() => setIsOpenScheduleForm(true)}>
+              <CalendarMonthIcon color='success' fontSize="large" />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Adicionar Paciente" disableInteractive>
             <IconButton onClick={() => setIsOpenPatientForm(true)}>
               <PersonAddIcon fontSize="large" />
@@ -240,9 +246,9 @@ export default function PatientsList() {
       />
       <ScheduleForm
         open={isOpenScheduleForm}
-        setIsOpen={setIsOpenScheduleForm}
-        selectedPatient={selectedPatient ?? {}}
-        setSelectedPatient={setSelectedPatient}
+        setOpen={setIsOpenScheduleForm}
+        // selectedPatient={selectedPatient ?? {}}
+        // setSelectedPatient={setSelectedPatient}
       />
       <ConfirmationDialog
         open={isOpenConfirmation}

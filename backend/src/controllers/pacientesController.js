@@ -177,6 +177,18 @@ static async filtrarPacientesEvolucoesPendentes(req, res) {
     }
 }
 
+static async getAllByClinic(req,res){
+    try {
+        const clinica_id = req.clinicaId;
+
+        const pacientes = await Pacientes.getAllByClinicId(clinica_id)
+
+        res.status(200).json(pacientes)
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Erro ao filtrar pacientes.', error: error.message });
+    }
+}
+
 }
 
 module.exports = PacientesController;

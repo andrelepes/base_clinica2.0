@@ -54,7 +54,7 @@ export default function ClinicDashboard() {
   };
   const fetchOffices = async () => {
     try {
-      const response = await api.get(`/consultorios/clinica/${clinicaId}`);
+      const response = await api.get(`/consultorios/clinica/`);
       setOffices(response.data);
     } catch (error) {
       toast.error('Erro ao buscar consultórios');

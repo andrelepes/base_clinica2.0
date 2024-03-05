@@ -285,5 +285,14 @@ static async getLinkedSecretaries(req, res) {
       res.status(500).send('Erro no servidor');
     }
   }
+  static async getAllPsychologistsFromClinic(req,res){
+    try{
+      const clinica_id = req.clinicaId;
+      const psychologists = await Usuarios.getAllPsychologistsByClinicId(clinica_id);
+      res.status(200).json(psychologists);
+    }catch(error){
+      res.status(500).json({ error: 'Erro ao buscar usuário' });
+    }
+  }
 }
 module.exports = UserController;

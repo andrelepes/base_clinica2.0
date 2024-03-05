@@ -6,7 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
 import Tooltip from '@mui/material/Tooltip';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+// import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 export default function PatientRow({
   patient = {
@@ -48,11 +48,11 @@ export default function PatientRow({
               <InfoIcon color="primary" />
             </Tooltip>
           </IconButton>
-          <IconButton aria-label="schedule" onClick={onSchedule}>
+          {/* <IconButton aria-label="schedule" onClick={onSchedule}>
             <Tooltip title="Agendar horário" arrow disableInteractive>
               <CalendarMonthIcon color="success" />
             </Tooltip>
-          </IconButton>
+          </IconButton> */}
         </Stack>
       </TableCell>
       <TableCell>{patient.nome_paciente}</TableCell>

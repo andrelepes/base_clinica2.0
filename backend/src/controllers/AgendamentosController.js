@@ -243,6 +243,42 @@ class AgendamentoController {
         }
     }
 
+    static async getAllNextAppointmentsByClinicId(req,res){
+        try {
+            const clinicId = req.clinicaId;
+            const nextAppointments = await Agendamentos.getNextAppointmentByClinicId(clinicId);
+
+            res.json(nextAppointments);
+        } catch (error) {
+            
+        }
+    }
+
+    static async createRecurrentSchedule(req,res){
+        try {
+            const {
+                paciente_id,
+                usuario_id,
+                data_hora_inicio,
+                status,
+                consultorio_id,
+                data_hora_fim,
+                tipo_sessao,
+                recorrencia,
+                weekInterval
+            } =  req.body;
+            
+            await Agendamentos.createWithRecurrency({paciente_id,usuario_id,data_hora_inicio,status,consultorio_id,data_hora_fim,tipo_sessao,recorrencia,weekInterval});
+            const evolutions = new Evolutions();
+            await evolutions.simpleCreateForUserIdAndPatientId({usuario_id, paciente_id, session_date:data_hora_inicio});
+            
+            res.status(201).send('Appointments created successfully');          
+
+        } catch (error) {
+            console.error('Erro ao criar agendamento:', error);
+            res.status(500).send({ message: 'Erro interno do servidor' });
+        }
+    }
 }
 
 module.exports = AgendamentoController;

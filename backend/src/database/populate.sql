@@ -1070,7 +1070,7 @@ CREATE TABLE public.anamnesis (
     referred_by VARCHAR(50),
     undergoing_treatment TEXT,
     treatment_expectation TEXT,
-    diagnosis TEXT),
+    diagnosis TEXT,
     healthy_life_habits TEXT,
     relevant_information TEXT
 );
