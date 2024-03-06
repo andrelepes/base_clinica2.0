@@ -78,6 +78,7 @@ export default function PatientDetailCard({
             </ListItemIcon>
             <ListItemText
               primary={patient?.email_paciente}
+              sx={{overflowX:'hidden'}}
               secondary="E-mail do Paciente"
             />
           </ListItem>

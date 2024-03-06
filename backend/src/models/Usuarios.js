@@ -49,7 +49,7 @@ static async addLinkedPsychologist({ nome_usuario, email_usuario, tipousuario, c
       'INSERT INTO usuarios (nome_usuario, email_usuario, senha, tipousuario, clinica_id, status_usuario, first_access) VALUES ($1, $2, $3, $4, $5, $6, $7)',
       [nome_usuario, email_usuario, senhaTemporaria, tipousuario, clinica_id, status_usuario, firstAccess]
     );
-    return { success: true, message: 'Usuário registrado com sucesso!' };
+    return { success: true, message: 'Usuário registrado com sucesso!', firstAccess };
   } catch (error) {
     console.error('Erro ao inserir usuário:', error);
     return { success: false, message: 'Erro ao inserir usuário' };
@@ -92,7 +92,7 @@ static async addLinkedSecretary({ nome_usuario, email_usuario, tipousuario, clin
       'INSERT INTO usuarios (nome_usuario, email_usuario, senha, tipousuario, clinica_id, status_usuario, first_access) VALUES ($1, $2, $3, $4, $5, $6, $7)',
       [nome_usuario, email_usuario, senhaTemporaria, tipousuario, clinica_id, status_usuario, firstAccess]
     );
-    return { success: true, message: 'Usuário registrado com sucesso!' };
+    return { success: true, message: 'Usuário registrado com sucesso!', firstAccess };
   } catch (error) {
     console.error('Erro ao inserir usuário:', error);
     return { success: false, message: 'Erro ao inserir usuário' };

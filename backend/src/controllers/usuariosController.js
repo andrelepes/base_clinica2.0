@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const db = require('../database/database');
+const { sendMail } = require('../utils/mailService')
+const { resolve } = require('path')
 require('dotenv').config();
 
 // Middleware para autorização baseada em tipo de usuário
@@ -159,6 +161,21 @@ class UserController {
         status_usuario: 'aguardando confirmacao'
       });
       if (resultado.success) {
+
+        const templatePath = resolve(__dirname, '..', 'views', 'emails', 'firstAccessMail.hbs')
+
+        const variables = {
+          name: nome_usuario,
+          link: `${process.env.FIRST_ACCESS_MAIL_URL}${resultado.firstAccess}`
+        }
+        
+        await sendMail({
+          to: email_usuario, 
+          subject: 'Primeiro Acesso - Base Clínica', 
+          variables, 
+          path: templatePath
+        })
+
         res.status(201).json({ message: 'Psicólogo vinculado adicionado com sucesso!' });
       } else {
         res.status(500).json({ erro: 'Erro ao adicionar psicólogo vinculado.' });
@@ -207,6 +224,22 @@ static async addLinkedSecretary(req, res) {
       status_usuario: 'aguardando confirmacao'
     });
     if (resultado.success) {
+
+      const templatePath = resolve(__dirname, '..', 'views', 'emails', 'firstAccessMail.hbs')
+
+      const variables = {
+        name: nome_usuario,
+        link: `${process.env.FIRST_ACCESS_MAIL_URL}${resultado.firstAccess}`
+      }
+      
+      await sendMail({
+        to: email_usuario, 
+        subject: 'Primeiro Acesso - Base Clínica', 
+        variables, 
+        path: templatePath
+      })
+
+
       res.status(201).json({ message: 'Secretário vinculado adicionado com sucesso!' });
     } else {
       res.status(500).json({ erro: 'Erro ao adicionar secretário vinculado.' });
