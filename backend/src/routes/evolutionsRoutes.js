@@ -17,6 +17,12 @@ evolutionsRoutes.get(
 );
 
 evolutionsRoutes.get(
+  '/generate',
+  ensureAuthenticated,
+  evolutionsController.generatePendingEvolution
+);
+
+evolutionsRoutes.get(
   '/:evolutionId',
   ensureAuthenticated,
   evolutionsController.getEvolutionByIdAndUserId

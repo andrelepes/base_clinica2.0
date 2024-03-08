@@ -43,7 +43,6 @@ class AgendamentoController {
                 historico: req.body.historico,
                 tipo_sessao: req.body.tipo_sessao,
                 recorrencia: req.body.recorrencia,
-                session_date: req.body.data_hora_inicio
             };
 
             // Verifique a permissão antes de inserir o agendamento
@@ -51,8 +50,14 @@ class AgendamentoController {
                 return res.status(403).json({ message: 'Permissão negada.' });
             }
             const result = await Agendamentos.inserirAgendamento(agendamento);
+            
             const evolutions = new Evolutions();
-            await evolutions.simpleCreateForUserIdAndPatientId(agendamento);
+            const evolution = {
+                usuario_id: req.body.usuario_id,
+                paciente_id: req.body.paciente_id,
+                agendamento_id: result.agendamento_id
+            }
+            await evolutions.simpleCreateForUserIdAndPatientId(evolution);
             if (result.success) {
                 res.status(201).send({ message: result.message });
             } else {
@@ -269,8 +274,6 @@ class AgendamentoController {
             } =  req.body;
             
             await Agendamentos.createWithRecurrency({paciente_id,usuario_id,data_hora_inicio,status,consultorio_id,data_hora_fim,tipo_sessao,recorrencia,weekInterval});
-            const evolutions = new Evolutions();
-            await evolutions.simpleCreateForUserIdAndPatientId({usuario_id, paciente_id, session_date:data_hora_inicio});
             
             res.status(201).send('Appointments created successfully');          
 

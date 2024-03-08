@@ -45,6 +45,7 @@ export default function PatientsList() {
 
   const fetchPatients = useCallback(async () => {
     try {
+      await api.get('/evolutions/generate');
       const response = await api.get(`/pacientes/pendentes`);
       setPatients(response.data.data);
       setSelectedPatient(null);

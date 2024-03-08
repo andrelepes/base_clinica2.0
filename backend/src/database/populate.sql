@@ -1172,6 +1172,24 @@ ALTER COLUMN
 TYPE
   integer USING tipo_sessao::integer;
 
+-- Added on 08/03/2024 by gabrielpaiv
+
+ALTER TABLE public.evolutions
+ADD COLUMN agendamento_id integer;
+
+
+ALTER TABLE public.evolutions
+ADD CONSTRAINT fk_agendamento
+FOREIGN KEY (agendamento_id) 
+REFERENCES public.agendamentos(agendamento_id);
+
+
+ALTER TABLE public.evolutions
+ADD CONSTRAINT unique_agendamento_id UNIQUE (agendamento_id);
+
+ALTER TABLE public.evolutions
+DROP COLUMN session_date;
+
 --
 -- PostgreSQL database dump complete
 --

@@ -15,11 +15,12 @@ class Agendamentos {
                 historico, 
                 tipo_sessao, 
                 recorrencia
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+            RETURNING agendamento_id
         `;
 
         try {
-            await db.none(query, [
+            const agendamento_id = await db.query(query, [
                 agendamento.paciente_id,
                 agendamento.usuario_id,
                 agendamento.data_hora_inicio,
@@ -31,7 +32,7 @@ class Agendamentos {
                 agendamento.tipo_sessao,
                 agendamento.recorrencia
             ]);
-            return { success: true, message: 'Agendamento registrado com sucesso!' };
+            return { success: true, message: 'Agendamento registrado com sucesso!', agendamento_id };
         } catch (error) {
             console.error('Erro ao inserir agendamento:', error);
             return { success: false, message: 'Erro ao inserir agendamento' };

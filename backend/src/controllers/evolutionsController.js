@@ -1,11 +1,15 @@
 const Evolutions = require('../models/Evolutions');
+const Agendamentos = require('../models/Agendamentos');
 
 class EvolutionsController {
   async getAllEvolutionsByUserIdAndPatientId(req, res) {
     try {
       const evolutions = new Evolutions();
       const patientId = req.params.patientId;
-      const allEvolutions = await evolutions.findAllByUserIdAndPatientId(req.user, patientId);
+      const allEvolutions = await evolutions.findAllByUserIdAndPatientId(
+        req.user,
+        patientId
+      );
       res.status(200).json(allEvolutions);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -104,6 +108,25 @@ class EvolutionsController {
       res.status(200).send('Evolution deleted successfully');
     } catch (error) {
       res.status(500).json({ error: error.message });
+    }
+  }
+
+  async generatePendingEvolution(req, res) {
+    const pacienteId = req.query.paciente_id;
+    const { user, tipousuario, clinicaId } = req;
+
+    try {
+      const evolutions = new Evolutions();
+      await evolutions.generatePendingAppointments({
+        pacienteId,
+        user,
+        tipousuario,
+        clinicaId
+      });
+
+      res.status(200).send('Pending Evolutions Generated');;
+    } catch (error) {
+      res.status(500).send('Erro interno do servidor');
     }
   }
 }
