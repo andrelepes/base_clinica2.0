@@ -184,6 +184,7 @@ class Agendamentos {
                 const query = `
                     SELECT 
                         a.agendamento_id,
+                        p.paciente_id,
                         p.nome_paciente AS nome_paciente,
                         u.nome_usuario AS nome_usuario,
                         a.data_hora_inicio,
@@ -211,6 +212,7 @@ class Agendamentos {
                 const query = `
                     SELECT 
                         a.agendamento_id,
+                        p.paciente_id,
                         p.nome_paciente AS nome_paciente,
                         u.nome_usuario AS nome_usuario,
                         a.data_hora_inicio,
@@ -323,6 +325,74 @@ class Agendamentos {
                         ) AS gs;
                 `;
                 return await db.none(query);
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        static async isAppointmentWithinDeadline(agendamento_id){
+            const query = `
+            SELECT
+                (
+                a.data_hora_inicio >= CURRENT_TIMESTAMP + INTERVAL '24 hours'
+                )
+            FROM
+                agendamentos a
+            WHERE
+                a.agendamento_id = ${agendamento_id};
+           `
+           try {
+            return db.query(query);
+           } catch (error) {
+            throw error;
+           }
+        }
+
+        static async changeStatus({agendamento_id, status}){
+            const query=`
+            UPDATE 
+                agendamentos 
+            SET 
+                status = ${status}
+            WHERE 
+                agendamento_id = ${agendamento_id}
+            `
+            try {
+                return db.query(query);
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        static async changeInfo({agendamento_id, data_hora_inicio, data_hora_fim, tipo_sessao, consultorio_id}){
+            const query=`
+            UPDATE 
+                agendamentos 
+            SET 
+                data_hora_inicio = '${data_hora_inicio}', 
+                data_hora_fim = '${data_hora_fim}', 
+                tipo_sessao = ${tipo_sessao}, 
+                consultorio_id = ${consultorio_id}
+            WHERE 
+                agendamento_id = ${agendamento_id}
+            `
+            try {
+                return db.query(query);
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        static async cascadeByPatientId({paciente_id}){
+            const query=`
+            DELETE FROM
+                agendamentos a
+            WHERE
+                a.paciente_id = ${paciente_id}
+                AND a.data_hora_inicio > CURRENT_TIMESTAMP;
+            `
+            try {
+                return db.query(query);
             } catch (error) {
                 throw error;
             }

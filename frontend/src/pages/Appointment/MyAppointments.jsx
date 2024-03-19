@@ -6,7 +6,7 @@ import {
   Agenda,
   Day,
   Inject,
-  Month,
+  MonthAgenda,
   ScheduleComponent,
   ViewDirective,
   ViewsDirective,
@@ -15,9 +15,20 @@ import {
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import api from '../../services/api';
+import dayjs from 'dayjs';
+import EventTemplate from '../../components/Appointments/EventTemplate';
+import RescheduleForm from './RescheduleForm';
+import ConfirmationDialog from '../../components/ConfirmationDialog';
+import { cancelSchedule, cascadeSchedule } from '../../utils/apiFunctions';
 
 export default function MyAppointments() {
   const [appointments, setAppointments] = useState([]);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [isOpenRescheduleForm, setIsOpenRescheduleForm] = useState(false);
+  const [isOpenDeleteConfirmation, setIsOpenDeleteConfirmation] =
+    useState(false);
+  const [isOpenCascadeConfirmation, setIsOpenCascadeConfirmation] =
+    useState(false);
 
   const fetchAppointments = async () => {
     try {
@@ -26,10 +37,25 @@ export default function MyAppointments() {
       const result = data.map((item) => {
         return {
           Id: item.agendamento_id,
-          Subject: `${item.nome_paciente} | ${item.nome_usuario} | ${item.nome_consultorio}`,
+          nome_paciente: item.nome_paciente,
+          nome_usuario: item.nome_usuario,
+          nome_consultorio: item.nome_consultorio,
           StartTime: new Date(item.data_hora_inicio),
           EndTime: new Date(item.data_hora_fim),
-          nome_consultorio: item.nome_consultorio,
+          start: dayjs(item.data_hora_inicio).format('HH:mm'),
+          end: dayjs(item.data_hora_fim).format('HH:mm'),
+          onReschedule: () => {
+            setSelectedAppointment(item);
+            setIsOpenRescheduleForm(true);
+          },
+          onDelete: () => {
+            setSelectedAppointment(item);
+            setIsOpenDeleteConfirmation(true);
+          },
+          onCascade: () => {
+            setSelectedAppointment(item);
+            setIsOpenCascadeConfirmation(true);
+          },
         };
       });
 
@@ -37,6 +63,27 @@ export default function MyAppointments() {
     } catch (error) {
       toast.error('Erro ao buscar agendamentos');
     }
+  };
+
+  const handleDelete = () => {
+    cancelSchedule({
+      agendamento_id: selectedAppointment.agendamento_id,
+      closeFunction: () => {
+        setSelectedAppointment(null);
+        setIsOpenDeleteConfirmation(false);
+        fetchAppointments();
+      },
+    });
+  };
+  const handleCascade = () => {
+    cascadeSchedule({
+      paciente_id: selectedAppointment.paciente_id,
+      closeFunction: () => {
+        setSelectedAppointment(null);
+        setIsOpenCascadeConfirmation(false);
+        fetchAppointments();
+      },
+    });
   };
 
   const onPopupOpen = (args) => {
@@ -71,8 +118,9 @@ export default function MyAppointments() {
         </Toolbar>
         <ScheduleComponent
           agendaDaysCount={30}
-          eventSettings={{ dataSource: appointments }}
+          eventSettings={{ dataSource: appointments, template: EventTemplate }}
           popupOpen={onPopupOpen}
+          timeScale={{ enable: true, interval: 60, slotCount: 4 }}
         >
           <ViewsDirective>
             <ViewDirective option="Day" startHour="07:00" endHour="22:00" />
@@ -81,12 +129,35 @@ export default function MyAppointments() {
               startHour="07:00"
               endHour="22:00"
             />
-            <ViewDirective option="Month" />
+            <ViewDirective option="MonthAgenda" />
             <ViewDirective option="Agenda" />
           </ViewsDirective>
-          <Inject services={[Day, WorkWeek, Month, Agenda]} />
+          <Inject services={[Day, WorkWeek, MonthAgenda, Agenda]} />
         </ScheduleComponent>
       </Paper>
+      <RescheduleForm
+        open={isOpenRescheduleForm}
+        setOpen={setIsOpenRescheduleForm}
+        selectedAppointment={selectedAppointment}
+        setSelectedAppointment={setSelectedAppointment}
+        updateAppointments={fetchAppointments}
+      />
+      <ConfirmationDialog
+        open={isOpenDeleteConfirmation}
+        handleClose={setIsOpenDeleteConfirmation}
+        confirmAction={handleDelete}
+        message={'Deseja realmente cancelar o agendamento?'}
+        title={'Cancelar agendamento'}
+      />
+      <ConfirmationDialog
+        open={isOpenCascadeConfirmation}
+        handleClose={setIsOpenCascadeConfirmation}
+        confirmAction={handleCascade}
+        message={
+          'Deseja realmente excluir todos os próxmos agendamentos desse paciente?'
+        }
+        title={'Excluir todos gendamentos'}
+      />
     </Box>
   );
 }

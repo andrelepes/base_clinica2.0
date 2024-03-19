@@ -255,7 +255,8 @@ class AgendamentoController {
 
             res.json(nextAppointments);
         } catch (error) {
-            
+            console.log(error)
+            res.status(500).send({ message: 'Erro interno do servidor' })
         }
     }
 
@@ -282,6 +283,78 @@ class AgendamentoController {
             res.status(500).send({ message: 'Erro interno do servidor' });
         }
     }
+
+    static async rescheduleAppointment(req,res){
+        try {
+            const {
+                paciente_id,
+                usuario_id,
+                data_hora_inicio,
+                consultorio_id,
+                data_hora_fim,
+                tipo_sessao
+            } =  req.body;
+
+            const { agendamento_id } = req.params;
+
+            const agendamento = {
+                agendamento_id,
+                paciente_id, 
+                usuario_id, 
+                data_hora_inicio, 
+                status: 'agendado',                 
+                consultorio_id, 
+                data_hora_fim, 
+                tipo_sessao, 
+                recorrencia: 'Nenhuma'
+            };
+            const isWithinDeadline = await Agendamentos.isAppointmentWithinDeadline(agendamento_id);
+
+            if(!isWithinDeadline){
+                await Agendamentos.changeStatus({agendamento_id, status: 'remarcado'});
+                await Agendamentos.inserirAgendamento(agendamento);
+            }else{
+                await Agendamentos.changeInfo({...agendamento});
+            }
+            
+            res.status(200).send('Appointment rescheduled successfully');          
+
+        } catch (error) {
+            console.error('Erro ao criar agendamento:', error);
+            res.status(500).send({ message: 'Erro interno do servidor' });
+        }
+    }
+    static async cancelAppointment(req,res){
+        try {
+            const { agendamento_id } = req.params;
+            const isWithinDeadline = await Agendamentos.isAppointmentWithinDeadline(agendamento_id);
+
+            if(!isWithinDeadline){
+                await Agendamentos.changeStatus({agendamento_id, status:'cancelado'})
+            }else{
+                await Agendamentos.deletarAgendamento(agendamento_id);
+            }
+            
+            res.status(200).send('Appointment canceled successfully');          
+
+        } catch (error) {
+            console.error('Erro ao cancelar agendamento:', error);
+            res.status(500).send({ message: 'Erro interno do servidor' });
+        }
+    }
+    static async cascadeAppointment(req,res){
+        try {
+            const { paciente_id } = req.params;
+
+            await Agendamentos.cascadeByPatientId({paciente_id})
+    
+            res.status(200).send('Appointments deleted successfully');          
+
+        } catch (error) {
+            console.error('Erro ao criar agendamento:', error);
+            res.status(500).send({ message: 'Erro interno do servidor' });
+        }
+    }        
 }
 
 module.exports = AgendamentoController;

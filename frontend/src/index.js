@@ -27,6 +27,7 @@ L10n.load({
       week: 'Semana',
       workWeek: 'Dias Úteis',
       month: 'Mês',
+      monthAgenda: 'Mês',
       agenda: 'Próximos Agendamentos',
       today: 'Hoje',
       noEvents: 'Sem agendamentos',

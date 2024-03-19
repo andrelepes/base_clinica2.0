@@ -32,6 +32,10 @@ agendamentosRoutes.get('/next/:paciente_id', AgendamentoController.getNextAppoin
 agendamentosRoutes.put('/:id', AgendamentoController.atualizarAgendamento);
 
 // Rota para deletar um agendamento específico por ID
-agendamentosRoutes.delete('/:id', AgendamentoController.deletarAgendamento);
+agendamentosRoutes.delete('/:agendamento_id', AgendamentoController.cancelAppointment);
+
+agendamentosRoutes.delete('/cascade/:paciente_id', AgendamentoController.cascadeAppointment);
+
+agendamentosRoutes.post('/reschedule/:agendamento_id', AgendamentoController.rescheduleAppointment);
 
 module.exports = { agendamentosRoutes };
