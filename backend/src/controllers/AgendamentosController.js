@@ -236,6 +236,33 @@ class AgendamentoController {
         }
     }
 
+    static async getAppointmentsGroupedByPsychologistByClinicId(req,res){
+        try {
+            const clinicId = req.clinicaId;
+            const appointments = await Agendamentos.getAppointmentsByClinicId(clinicId);
+
+            const result = [];
+            const appointmentsByPsychologist = {};
+
+            appointments.forEach(appointment => {
+                if (!appointmentsByPsychologist[appointment.usuario_id]) {
+                    appointmentsByPsychologist[appointment.usuario_id] = [];
+                }
+                appointmentsByPsychologist[appointment.usuario_id].push(appointment);
+            });
+
+            for (const usuarioId in appointmentsByPsychologist) {
+                result.push(appointmentsByPsychologist[usuarioId]);
+            }
+
+            
+            res.json(result);
+        } catch (error) {
+            console.log(error)
+            res.status(500).send({ message: 'Erro interno do servidor' });
+        }
+    }
+
     static async getAppointmentsByUserId(req,res){
         try {
             const userId = req.user;

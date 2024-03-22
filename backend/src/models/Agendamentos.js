@@ -241,6 +241,7 @@ class Agendamentos {
                     SELECT 
                         a.agendamento_id,
                         p.paciente_id,
+                        u.usuario_id,
                         p.nome_paciente AS nome_paciente,
                         u.nome_usuario AS nome_usuario,
                         a.data_hora_inicio,

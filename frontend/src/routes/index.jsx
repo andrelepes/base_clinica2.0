@@ -18,6 +18,7 @@ import ClinicDashboard from '../pages/Clinic/ClinicDashboard';
 import OfficeAppointmentSchedule from '../pages/Appointment/OfficeAppointmentSchedule';
 import MyAppointments from '../pages/Appointment/MyAppointments';
 import PatientAppointmentSchedule from '../pages/Appointment/PatientAppointmentSchedule';
+import PsychologistAppointmentSchedule from '../pages/Appointment/PsychologistAppointmentSchedule';
 
 function HomePage() {
   return (
@@ -56,6 +57,7 @@ export const router = createBrowserRouter(
           <Route path="consultorios" element={<OfficeAppointmentSchedule />} />
           <Route path="minha" element={<MyAppointments />} />
           <Route path="pacientes" element={<PatientAppointmentSchedule />} />
+          <Route path="psicologos" element={<PsychologistAppointmentSchedule />} />
         </Route>
         <Route path="clinicas" element={<ClinicDashboard />} />
       </Route>

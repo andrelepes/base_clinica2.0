@@ -18,6 +18,8 @@ agendamentosRoutes.get('/consultorios', AgendamentoController.getAppointmentsGro
 
 agendamentosRoutes.get('/pacientes', AgendamentoController.getAppointmentsGroupedByPatientByClinicId);
 
+agendamentosRoutes.get('/psicologos', AgendamentoController.getAppointmentsGroupedByPsychologistByClinicId);
+
 agendamentosRoutes.get('/meus', AgendamentoController.getAppointmentsByUserId);
 
 agendamentosRoutes.get('/next', AgendamentoController.getAllNextAppointmentsByClinicId)

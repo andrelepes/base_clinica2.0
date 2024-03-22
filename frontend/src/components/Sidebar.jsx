@@ -91,9 +91,11 @@ export default function Sidebar() {
         <Collapse in={isOpenSchedule} timeout="auto" unmountOnExit>
           <List component="div" disablePadding sx={{ pl: 1 }}>
             <Divider />
-            <DrawerItem itemText="Meus agendamentos" itemLink="/agenda/minha">
-              <EventNoteIcon />
-            </DrawerItem>
+            {tipousuario !== 'clinica' && (
+              <DrawerItem itemText="Meus agendamentos" itemLink="/agenda/minha">
+                <EventNoteIcon />
+              </DrawerItem>
+            )}
             <DrawerItem
               itemText="Por consultório"
               itemLink="/agenda/consultorios"
@@ -101,7 +103,7 @@ export default function Sidebar() {
               <MeetingRoomIcon />
             </DrawerItem>
             {tipousuario === 'clinica' && (
-              <DrawerItem itemText="Por psicólogo">
+              <DrawerItem itemText="Por psicólogo" itemLink='/agenda/psicologos'>
                 <SupervisorAccountIcon />
               </DrawerItem>
             )}

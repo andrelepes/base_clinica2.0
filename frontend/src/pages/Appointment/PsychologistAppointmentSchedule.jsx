@@ -22,7 +22,7 @@ import ConfirmationDialog from '../../components/ConfirmationDialog';
 import EventTemplate from '../../components/Appointments/EventTemplate';
 import { cancelSchedule, cascadeSchedule } from '../../utils/apiFunctions';
 
-export default function PatientAppointmentSchedule() {
+export default function PsychologistAppointmentSchedule() {
   const [appointments, setAppointments] = useState([]);
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [selectedAppointment, setSelectedAppointment] = useState(null);
@@ -35,7 +35,7 @@ export default function PatientAppointmentSchedule() {
 
   const fetchAppointments = async () => {
     try {
-      const { data } = await api.get('/agendamentos/pacientes/');
+      const { data } = await api.get('/agendamentos/psicologos/');
 
       const result = data.map((item) => {
         return item.map((subItem) => {
@@ -70,6 +70,7 @@ export default function PatientAppointmentSchedule() {
       toast.error('Ocorreu um erro ao buscar os agendamentos');
     }
   };
+
   const handleDelete = () => {
     cancelSchedule({
       agendamento_id: selectedAppointment.agendamento_id,
@@ -118,7 +119,7 @@ export default function PatientAppointmentSchedule() {
             id="tableTitle"
             component="div"
           >
-            Agenda por Pacientes
+            Agenda por Psicólogos
           </Typography>
           <Box sx={{ pt: 2 }}>
             <DatePicker
@@ -137,7 +138,7 @@ export default function PatientAppointmentSchedule() {
             {appointments.map((agendamento) => {
               return (
                 <Box
-                  key={agendamento[0].nome_paciente}
+                  key={agendamento[0].nome_usuario}
                   sx={{
                     minWidth: 450, // Define uma largura mínima para cada item
                     height: '100%',
@@ -163,7 +164,7 @@ export default function PatientAppointmentSchedule() {
                       id="tableTitle"
                       component="div"
                     >
-                      {agendamento[0]?.nome_paciente}
+                      {agendamento[0]?.nome_usuario}
                     </Typography>
                   </Toolbar>
                   <ScheduleComponent

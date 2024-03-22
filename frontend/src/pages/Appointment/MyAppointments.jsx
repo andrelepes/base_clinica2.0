@@ -137,26 +137,26 @@ export default function MyAppointments() {
       </Paper>
       <RescheduleForm
         open={isOpenRescheduleForm}
-        setOpen={setIsOpenRescheduleForm}
+        setOpen={()=>setIsOpenRescheduleForm(false)}
         selectedAppointment={selectedAppointment}
         setSelectedAppointment={setSelectedAppointment}
         updateAppointments={fetchAppointments}
       />
       <ConfirmationDialog
         open={isOpenDeleteConfirmation}
-        handleClose={setIsOpenDeleteConfirmation}
+        handleClose={()=>setIsOpenDeleteConfirmation(false)}
         confirmAction={handleDelete}
         message={'Deseja realmente cancelar o agendamento?'}
         title={'Cancelar agendamento'}
       />
       <ConfirmationDialog
         open={isOpenCascadeConfirmation}
-        handleClose={setIsOpenCascadeConfirmation}
+        handleClose={()=>setIsOpenCascadeConfirmation(false)}
         confirmAction={handleCascade}
         message={
           'Deseja realmente excluir todos os próxmos agendamentos desse paciente?'
         }
-        title={'Excluir todos gendamentos'}
+        title={'Excluir todos Agendamentos'}
       />
     </Box>
   );
