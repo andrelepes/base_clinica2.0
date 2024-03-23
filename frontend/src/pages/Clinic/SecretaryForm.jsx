@@ -10,12 +10,15 @@ import Button from '@mui/material/Button';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 import api from '../../services/api';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { updateUsernameAndEmail } from '../../utils/apiFunctions';
 
 export default function SecretaryForm({
   open,
   setOpen,
   fetchSecretaries,
+  selectedSecretary,
+  setSelectedSecretary,
 }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -24,6 +27,7 @@ export default function SecretaryForm({
   const handleClose = () => {
     setEmail('');
     setName('');
+    setSelectedSecretary(null);
     setOpen(false);
   };
 
@@ -35,14 +39,29 @@ export default function SecretaryForm({
       clinicaId,
     };
     try {
-      await api.post('/usuarios/add-linked-secretary', formData);
-      toast.success('Secretário adicionado com sucesso!');
+      if (selectedSecretary) {
+        updateUsernameAndEmail({
+          usuario_id: selectedSecretary.usuario_id,
+          nome_usuario: name,
+          email_usuario: email,
+          closeFunction: handleClose,
+        });
+      } else {
+        await api.post('/usuarios/add-linked-secretary', formData);
+        toast.success('Secretário adicionado com sucesso!');
+      }
       fetchSecretaries();
       handleClose();
     } catch (error) {
       toast.error('Ocorreu um erro ao adicionar o secretário');
     }
   };
+  useEffect(() => {
+    if (selectedSecretary) {
+      setEmail(selectedSecretary.email_usuario);
+      setName(selectedSecretary.nome_usuario);
+    }
+  }, [open]);
   return (
     <Dialog
       open={open}
@@ -51,7 +70,9 @@ export default function SecretaryForm({
       fullWidth
       maxWidth={'md'}
     >
-      <DialogTitle>Adicionar Secretário</DialogTitle>
+      <DialogTitle>
+        {setSelectedSecretary ? 'Editar' : 'Adicionar'} Secretário
+      </DialogTitle>
       <DialogContent>
         <Grid
           container
@@ -90,7 +111,9 @@ export default function SecretaryForm({
           <Grid item xs={12}>
             <DialogActions>
               <Button onClick={handleClose}>Cancelar</Button>
-              <Button type="submit">Adicionar</Button>
+              <Button type="submit">
+                {setSelectedSecretary ? 'Editar' : 'Adicionar'}
+              </Button>
             </DialogActions>
           </Grid>
         </Grid>

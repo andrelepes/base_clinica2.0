@@ -95,12 +95,23 @@ static async deletarConsultorio(req, res) {
 }
 
     static async getConsultoriosByClinica(req,res){
-        const clinicaId = req.clinicaId;;
+        const clinicaId = req.clinicaId;
         try {
             const consultorios = await Consultorios.getConsultorioByClinicaId(clinicaId);
             res.status(200).send(consultorios);
         } catch (error) {
             res.status(500).send({ message: 'Erro ao listar consultórios' });
+        }
+    }
+
+    static async updateOffice(req,res){
+        const { consultorio_id } = req.params
+        const {descricao, nome_consultorio} = req.body
+        try {
+            const consultorios = await Consultorios.updateOfficeById({consultorio_id,nome_consultorio,descricao});
+            res.status(200).send({ message: 'Consultório atualizado com sucesso!' });
+        } catch (error) {
+            res.status(500).send({ message: 'Erro ao atualizar consultório' });
         }
     }
 

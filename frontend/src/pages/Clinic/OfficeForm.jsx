@@ -10,12 +10,15 @@ import Button from '@mui/material/Button';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 import api from '../../services/api';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { updateOffice } from '../../utils/apiFunctions';
 
 export default function OfficeForm({
   open,
   setOpen,
   fetchOffices,
+  selectedOffice,
+  setSelectedOffice,
 }) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -24,6 +27,7 @@ export default function OfficeForm({
   const handleClose = () => {
     setDescription('');
     setName('');
+    setSelectedOffice(null);
     setOpen(false);
   };
 
@@ -35,14 +39,30 @@ export default function OfficeForm({
       clinica_id,
     };
     try {
-      await api.post('/consultorios', formData);
-      toast.success('Consultório adicionado com sucesso!');
+      if (selectedOffice) {
+        updateOffice({
+          consultorio_id: selectedOffice.consultorio_id,
+          nome_consultorio: name,
+          descricao: description,
+          closeFunction: handleClose,
+        });
+      }else{
+        await api.post('/consultorios', formData);
+        toast.success('Consultório adicionado com sucesso!');
+      }
       fetchOffices();
       handleClose();
     } catch (error) {
       toast.error('Ocorreu um erro ao adicionar o consultório');
     }
   };
+
+  useEffect(() => {
+    if (selectedOffice) {
+      setDescription(selectedOffice.descricao);
+      setName(selectedOffice.nome_consultorio);
+    }
+  }, [open]);
   return (
     <Dialog
       open={open}
@@ -51,7 +71,7 @@ export default function OfficeForm({
       fullWidth
       maxWidth={'md'}
     >
-      <DialogTitle>Adicionar Consultório</DialogTitle>
+      <DialogTitle>{selectedOffice ? 'Editar' : 'Adicionar'} Consultório</DialogTitle>
       <DialogContent>
         <Grid
           container
@@ -88,7 +108,7 @@ export default function OfficeForm({
           <Grid item xs={12}>
             <DialogActions>
               <Button onClick={handleClose}>Cancelar</Button>
-              <Button type="submit">Adicionar</Button>
+              <Button type="submit">{selectedOffice ? 'Editar' : 'Adicionar'}</Button>
             </DialogActions>
           </Grid>
         </Grid>

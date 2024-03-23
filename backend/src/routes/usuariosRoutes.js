@@ -38,4 +38,10 @@ usuariosRoutes.get(
   ensureAuthenticated,
   UserController.getAllPsychologistsFromClinic
 );
+
+usuariosRoutes.put(
+  '/update/:usuario_id',
+  ensureAuthenticated,
+  UserController.updateUserByUserId
+);
 module.exports = { usuariosRoutes };

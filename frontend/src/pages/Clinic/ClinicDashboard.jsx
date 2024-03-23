@@ -12,6 +12,7 @@ import Grid from '@mui/material/Grid';
 import PsychologistForm from './PsychologistForm';
 import SecretaryForm from './SecretaryForm';
 import OfficeForm from './OfficeForm';
+import { useNavigate } from 'react-router-dom';
 
 export default function ClinicDashboard() {
   const [psychologists, setPsychologists] = useState([]);
@@ -20,7 +21,13 @@ export default function ClinicDashboard() {
   const [isOpenPsychologistForm, setIsOpenPsychologistForm] = useState(false);
   const [isOpenSecretaryForm, setIsOpenSecretaryForm] = useState(false);
   const [isOpenOfficeForm, setIsOpenOfficeForm] = useState(false);
+  const [selectedPsychologist, setSelectedPsychologist] = useState(false);
+  const [selectedSecretary, setSelectedSecretary] = useState(false);
+  const [selectedOffice, setSelectedOffice] = useState(false);
   const { clinicaId } = useAuth();
+
+  const navigate = useNavigate();
+
   const fetchPsychologists = async () => {
     try {
       const response = await api.get(
@@ -94,71 +101,104 @@ export default function ClinicDashboard() {
           </Typography>
         </Toolbar>
         <Grid container spacing={2}>
-          <Grid item md={4.5} xs={12}>
+          <Grid item md={6} xs={12}>
             <TableWithActions
               title="Responsáveis Vinculados"
               data={psychologists}
               addFunction={() => setIsOpenPsychologistForm(true)}
+              editFunction={(psychologist) => {
+                setSelectedPsychologist(psychologist);
+                setIsOpenPsychologistForm(true);
+              }}
+              infoFunction={psychologist => navigate(`/psicologo/${psychologist.usuario_id}`)}
               fields={[
+                {
+                  title: 'Ações',
+                  dataTitle: 'acoes',
+                },
                 {
                   title: 'Nome',
                   dataTitle: 'nome_usuario',
                   maxWidth: 100,
                   overflow: 'hidden',
+                  filterable: true,
                 },
                 {
                   title: 'Email',
                   dataTitle: 'email_usuario',
                   maxWidth: 220,
                   overflow: 'hidden',
+                  filterable: true,
                 },
                 {
                   title: 'Status',
                   dataTitle: 'status_usuario',
                   maxWidth: 80,
                   overflow: 'hidden',
+                  filterable: true,
                 },
               ]}
             />
           </Grid>
-          <Grid item md={4.5} xs={12}>
+          <Grid item md={6} xs={12}>
             <TableWithActions
               title="Secretários Vinculados"
               data={secretaries}
               addFunction={() => setIsOpenSecretaryForm(true)}
+              editFunction={(secretary) => {
+                setSelectedSecretary(secretary);
+                setIsOpenSecretaryForm(true);
+              }}
+              infoFunction={secretary => navigate(`/secretario/${secretary.usuario_id}`)}
               fields={[
+                {
+                  title: 'Ações',
+                  dataTitle: 'acoes',
+                },
                 {
                   title: 'Nome',
                   dataTitle: 'nome_usuario',
                   maxWidth: 100,
                   overflow: 'hidden',
+                  filterable: true,
                 },
                 {
                   title: 'Email',
                   dataTitle: 'email_usuario',
                   maxWidth: 220,
                   overflow: 'hidden',
+                  filterable: true,
                 },
                 {
                   title: 'Status',
                   dataTitle: 'status_usuario',
                   maxWidth: 80,
                   overflow: 'hidden',
+                  filterable: true,
                 },
               ]}
             />
           </Grid>
-          <Grid item md={3} xs={12}>
+          <Grid item md={4} xs={12}>
             <TableWithActions
               title="Consultórios"
               data={offices}
               addFunction={() => setIsOpenOfficeForm(true)}
+              editFunction={(office) => {
+                setSelectedOffice(office);
+                setIsOpenOfficeForm(true);
+              }}
               fields={[
+                {
+                  title: 'Ações',
+                  dataTitle: 'acoes',
+                },
                 {
                   title: 'Nome',
                   dataTitle: 'nome_consultorio',
                   maxWidth: 200,
                   overflow: 'hidden',
+                  filterable: true,
                 },
                 {
                   title: 'Descrição',
@@ -175,16 +215,22 @@ export default function ClinicDashboard() {
         open={isOpenPsychologistForm}
         setOpen={setIsOpenPsychologistForm}
         fetchPsychologists={fetchPsychologists}
+        selectedPsychologist={selectedPsychologist}
+        setSelectedPsychologist={setSelectedPsychologist}
       />
       <SecretaryForm
         open={isOpenSecretaryForm}
         setOpen={setIsOpenSecretaryForm}
         fetchSecretaries={fetchSecretaries}
+        selectedSecretary={selectedSecretary}
+        setSelectedSecretary={setSelectedSecretary}
       />
       <OfficeForm
         open={isOpenOfficeForm}
         setOpen={setIsOpenOfficeForm}
         fetchOffices={fetchOffices}
+        selectedOffice={selectedOffice}
+        setSelectedOffice={setSelectedOffice}
       />
     </Box>
   );

@@ -18,7 +18,7 @@ consultoriosRoutes.get('/:consultorio_id', consultoriosController.buscarPorId);
 
 consultoriosRoutes.put(
   '/:consultorio_id',
-  consultoriosController.atualizarConsultorio
+  consultoriosController.updateOffice
 );
 
 consultoriosRoutes.delete(

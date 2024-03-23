@@ -183,6 +183,17 @@ static async buscarPorId(usuario_id) {
         throw error;
     }
   }
+
+  static async updateUserById({user_id, user}){
+    try {
+      return await db.oneOrNone(
+        'UPDATE usuarios SET nome_usuario = ${nome_usuario}, email_usuario = ${email_usuario} WHERE usuario_id=${usuario_id}',
+        { ...user }
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 module.exports = Usuarios;

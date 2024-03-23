@@ -327,5 +327,17 @@ static async getLinkedSecretaries(req, res) {
       res.status(500).json({ error: 'Erro ao buscar usuário' });
     }
   }
+  static async updateUserByUserId(req,res){
+    try {
+      const user_id = req.params.usuario_id;
+      const {nome_usuario, email_usuario, usuario_id} = req.body
+      await Usuarios.updateUserById({user_id, user:{nome_usuario,email_usuario, usuario_id}});
+
+      res.status(200);
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+  }
 }
 module.exports = UserController;

@@ -10,12 +10,15 @@ import Button from '@mui/material/Button';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 import api from '../../services/api';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { updateUsernameAndEmail } from '../../utils/apiFunctions';
 
 export default function PsychologistForm({
   open,
   setOpen,
   fetchPsychologists,
+  selectedPsychologist,
+  setSelectedPsychologist,
 }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -24,6 +27,7 @@ export default function PsychologistForm({
   const handleClose = () => {
     setEmail('');
     setName('');
+    setSelectedPsychologist(null);
     setOpen(false);
   };
 
@@ -35,14 +39,30 @@ export default function PsychologistForm({
       clinicaId,
     };
     try {
-      await api.post('/usuarios/add-linked-psychologist', formData);
-      toast.success('Psicólogo adicionado com sucesso!');
+      if (selectedPsychologist) {
+        updateUsernameAndEmail({
+          usuario_id: selectedPsychologist.usuario_id,
+          nome_usuario: name,
+          email_usuario: email,
+          closeFunction: handleClose,
+        });
+      } else {
+        await api.post('/usuarios/add-linked-psychologist', formData);
+        toast.success('Psicólogo adicionado com sucesso!');
+      }
       fetchPsychologists();
       handleClose();
     } catch (error) {
       toast.error('Ocorreu um erro ao adicionar o psicólogo');
     }
   };
+
+  useEffect(() => {
+    if (selectedPsychologist) {
+      setName(selectedPsychologist.nome_usuario);
+      setEmail(selectedPsychologist.email_usuario);
+    }
+  }, [open]);
   return (
     <Dialog
       open={open}
@@ -51,7 +71,9 @@ export default function PsychologistForm({
       fullWidth
       maxWidth={'md'}
     >
-      <DialogTitle>Adicionar Psicólogo</DialogTitle>
+      <DialogTitle>
+        {selectedPsychologist ? 'Editar' : 'Adicionar'} Psicólogo
+      </DialogTitle>
       <DialogContent>
         <Grid
           container
@@ -90,7 +112,9 @@ export default function PsychologistForm({
           <Grid item xs={12}>
             <DialogActions>
               <Button onClick={handleClose}>Cancelar</Button>
-              <Button type="submit">Adicionar</Button>
+              <Button type="submit">
+                {selectedPsychologist ? 'Editar' : 'Adicionar'}
+              </Button>
             </DialogActions>
           </Grid>
         </Grid>

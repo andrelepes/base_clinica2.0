@@ -9,7 +9,7 @@ const reschedule = async ({
   consultorio_id,
   data_hora_fim,
   tipo_sessao,
-  closeFunction
+  closeFunction,
 }) => {
   try {
     await api.post(`/agendamentos/reschedule/${agendamento_id}`, {
@@ -49,4 +49,41 @@ const cascadeSchedule = async ({ paciente_id, closeFunction }) => {
   }
 };
 
-export { reschedule, cancelSchedule, cascadeSchedule };
+const updateOffice = async ({
+  consultorio_id,
+  descricao,
+  nome_consultorio,
+  closeFunction,
+}) => {
+  try {
+    await api.put(`/consultorios/${consultorio_id}`, {
+      descricao,
+      nome_consultorio,
+    });
+    closeFunction();
+    toast.success('Consultório atualizado com sucesso!');
+  } catch (error) {
+    toast.error('Ocorreu um erro ao atualizar consultório');
+  }
+};
+
+const updateUsernameAndEmail = async ({
+  usuario_id,
+  email_usuario,
+  nome_usuario,
+  closeFunction,
+}) => {
+  try {
+    await api.put(`/usuarios/update/${usuario_id}`, {
+      email_usuario,
+      nome_usuario,
+      usuario_id
+    });
+    closeFunction();
+    toast.success('Registro atualizado com sucesso!');
+  } catch (error) {
+    toast.error('Ocorreu um erro ao atualizar o registro');
+  }
+};
+
+export { reschedule, cancelSchedule, cascadeSchedule, updateOffice, updateUsernameAndEmail };

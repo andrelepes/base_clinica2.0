@@ -88,6 +88,25 @@ static async deletarConsultorio(consultorio_id) {
         }
     }
 
+    static async updateOfficeById({consultorio_id, nome_consultorio, descricao} ) {
+        try {
+            const query = `
+            UPDATE
+                consultorios
+            SET
+                nome_consultorio = '${nome_consultorio}',
+                descricao = '${descricao}'
+            WHERE
+                consultorio_id = ${consultorio_id}
+            `
+            await db.query(query);
+            return { success: true, message: 'Consultório atualizado com sucesso!' };
+        } catch (error) {
+            console.error('Erro ao atualizar consultório:', error);
+            throw error;
+        }
+    }
+
     // Outros métodos, como atualizarConsultorio, listarConsultorios, obterConsultorioPorId, etc.
 }
 
