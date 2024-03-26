@@ -100,7 +100,7 @@ export default function ClinicDashboard() {
             Clínica
           </Typography>
         </Toolbar>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} direction='row'>
           <Grid item md={6} xs={12}>
             <TableWithActions
               title="Responsáveis Vinculados"
@@ -110,7 +110,9 @@ export default function ClinicDashboard() {
                 setSelectedPsychologist(psychologist);
                 setIsOpenPsychologistForm(true);
               }}
-              infoFunction={psychologist => navigate(`/psicologo/${psychologist.usuario_id}`)}
+              infoFunction={(psychologist) =>
+                navigate(`/psicologo/${psychologist.usuario_id}`)
+              }
               fields={[
                 {
                   title: 'Ações',
@@ -140,74 +142,78 @@ export default function ClinicDashboard() {
               ]}
             />
           </Grid>
-          <Grid item md={6} xs={12}>
-            <TableWithActions
-              title="Secretários Vinculados"
-              data={secretaries}
-              addFunction={() => setIsOpenSecretaryForm(true)}
-              editFunction={(secretary) => {
-                setSelectedSecretary(secretary);
-                setIsOpenSecretaryForm(true);
-              }}
-              infoFunction={secretary => navigate(`/secretario/${secretary.usuario_id}`)}
-              fields={[
-                {
-                  title: 'Ações',
-                  dataTitle: 'acoes',
-                },
-                {
-                  title: 'Nome',
-                  dataTitle: 'nome_usuario',
-                  maxWidth: 100,
-                  overflow: 'hidden',
-                  filterable: true,
-                },
-                {
-                  title: 'Email',
-                  dataTitle: 'email_usuario',
-                  maxWidth: 220,
-                  overflow: 'hidden',
-                  filterable: true,
-                },
-                {
-                  title: 'Status',
-                  dataTitle: 'status_usuario',
-                  maxWidth: 80,
-                  overflow: 'hidden',
-                  filterable: true,
-                },
-              ]}
-            />
-          </Grid>
-          <Grid item md={4} xs={12}>
-            <TableWithActions
-              title="Consultórios"
-              data={offices}
-              addFunction={() => setIsOpenOfficeForm(true)}
-              editFunction={(office) => {
-                setSelectedOffice(office);
-                setIsOpenOfficeForm(true);
-              }}
-              fields={[
-                {
-                  title: 'Ações',
-                  dataTitle: 'acoes',
-                },
-                {
-                  title: 'Nome',
-                  dataTitle: 'nome_consultorio',
-                  maxWidth: 200,
-                  overflow: 'hidden',
-                  filterable: true,
-                },
-                {
-                  title: 'Descrição',
-                  dataTitle: 'descricao',
-                  maxWidth: 200,
-                  overflow: 'hidden',
-                },
-              ]}
-            />
+          <Grid item container direction='row' md={6}>
+            <Grid item xs={12}>
+              <TableWithActions
+                title="Secretários Vinculados"
+                data={secretaries}
+                addFunction={() => setIsOpenSecretaryForm(true)}
+                editFunction={(secretary) => {
+                  setSelectedSecretary(secretary);
+                  setIsOpenSecretaryForm(true);
+                }}
+                infoFunction={(secretary) =>
+                  navigate(`/secretario/${secretary.usuario_id}`)
+                }
+                fields={[
+                  {
+                    title: 'Ações',
+                    dataTitle: 'acoes',
+                  },
+                  {
+                    title: 'Nome',
+                    dataTitle: 'nome_usuario',
+                    maxWidth: 100,
+                    overflow: 'hidden',
+                    filterable: true,
+                  },
+                  {
+                    title: 'Email',
+                    dataTitle: 'email_usuario',
+                    maxWidth: 220,
+                    overflow: 'hidden',
+                    filterable: true,
+                  },
+                  {
+                    title: 'Status',
+                    dataTitle: 'status_usuario',
+                    maxWidth: 80,
+                    overflow: 'hidden',
+                    filterable: true,
+                  },
+                ]}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TableWithActions
+                title="Consultórios"
+                data={offices}
+                addFunction={() => setIsOpenOfficeForm(true)}
+                editFunction={(office) => {
+                  setSelectedOffice(office);
+                  setIsOpenOfficeForm(true);
+                }}
+                fields={[
+                  {
+                    title: 'Ações',
+                    dataTitle: 'acoes',
+                  },
+                  {
+                    title: 'Nome',
+                    dataTitle: 'nome_consultorio',
+                    maxWidth: 200,
+                    overflow: 'hidden',
+                    filterable: true,
+                  },
+                  {
+                    title: 'Descrição',
+                    dataTitle: 'descricao',
+                    maxWidth: 200,
+                    overflow: 'hidden',
+                  },
+                ]}
+              />
+            </Grid>
           </Grid>
         </Grid>
       </Paper>

@@ -71,7 +71,7 @@ export default function SecretaryForm({
       maxWidth={'md'}
     >
       <DialogTitle>
-        {setSelectedSecretary ? 'Editar' : 'Adicionar'} Secretário
+        {selectedSecretary ? 'Editar' : 'Adicionar'} Secretário
       </DialogTitle>
       <DialogContent>
         <Grid
@@ -112,7 +112,7 @@ export default function SecretaryForm({
             <DialogActions>
               <Button onClick={handleClose}>Cancelar</Button>
               <Button type="submit">
-                {setSelectedSecretary ? 'Editar' : 'Adicionar'}
+                {selectedSecretary ? 'Editar' : 'Adicionar'}
               </Button>
             </DialogActions>
           </Grid>
