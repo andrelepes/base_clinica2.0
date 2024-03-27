@@ -37,7 +37,7 @@ export default function PsychologistsList() {
     <Box>
       <Paper>
         <TableWithActions
-          title="Horas Realizadas"
+          title="Relatório de Horas"
           data={psychologists}
           fields={[
             {
@@ -48,13 +48,13 @@ export default function PsychologistsList() {
               filterable: true,
             },
             {
-              title: 'Horas Realizadas',
+              title: 'Horas Atendidas',
               dataTitle: 'total_horas_sessao',
               maxWidth: 80,
               overflow: 'hidden',
             },
             {
-              title: 'Horas Restantes',
+              title: 'Horas Não Atendidas',
               dataTitle: 'horas_restantes',
               maxWidth: 80,
               overflow: 'hidden',
