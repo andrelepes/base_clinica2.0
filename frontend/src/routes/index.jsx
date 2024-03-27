@@ -7,7 +7,6 @@ import {
 } from 'react-router-dom';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
-import Agenda from '../components/Agenda/Agenda';
 import ErrorPage from '../pages/ErrorPage';
 import ProtectedPageLayout from './ProtectedPageLayout';
 import Providers from './Providers';
@@ -19,6 +18,7 @@ import OfficeAppointmentSchedule from '../pages/Appointment/OfficeAppointmentSch
 import MyAppointments from '../pages/Appointment/MyAppointments';
 import PatientAppointmentSchedule from '../pages/Appointment/PatientAppointmentSchedule';
 import PsychologistAppointmentSchedule from '../pages/Appointment/PsychologistAppointmentSchedule';
+import PsychologistsList from '../pages/Psychologist/PsychologistsList';
 
 function HomePage() {
   return (
@@ -53,6 +53,7 @@ export const router = createBrowserRouter(
         <Route index element={<HomePage />} />
         <Route path="pacientes/:id" element={<PatientDetails />} />
         <Route path="pacientes" element={<PatientsList />} />
+        <Route path="psicologos" element={<PsychologistsList />} />
         <Route path="agenda">
           <Route path="consultorios" element={<OfficeAppointmentSchedule />} />
           <Route path="minha" element={<MyAppointments />} />

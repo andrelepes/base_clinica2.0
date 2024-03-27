@@ -56,8 +56,6 @@ export default function PatientClosureForm({
     if (sessions) {
       setSessionsNumber(sessions?.length);
     }
-    console.log(expectationsOptions);
-    console.log(expectationsAnamneseOptions?.treatment_expectation.split(','));
     if (expectationsAnamneseOptions) {
       setExpectationsOptions(
         expectationsAnamneseOptions?.treatment_expectation.split(',')

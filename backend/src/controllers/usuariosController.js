@@ -327,6 +327,15 @@ static async getLinkedSecretaries(req, res) {
       res.status(500).json({ error: 'Erro ao buscar usuário' });
     }
   }
+  static async getPsychologistsHours(req,res){
+    try{
+      const clinica_id = req.clinicaId;
+      const psychologists = await Usuarios.getPsychologistsHoursByClinicId(clinica_id);
+      res.status(200).json(psychologists);
+    }catch(error){
+      res.status(500).json({ error: 'Erro ao buscar usuário' });
+    }
+  }
   static async updateUserByUserId(req,res){
     try {
       const user_id = req.params.usuario_id;

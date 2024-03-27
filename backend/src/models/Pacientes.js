@@ -249,6 +249,7 @@ static async getAllByClinicId(clinica_id){
             pacientes
         WHERE 
             clinica_id  = ${clinica_id} 
+            AND status_paciente = 'ativo'
         ORDER BY 
             nome_paciente
     `;

@@ -174,7 +174,6 @@ class Evolutions {
     }
 
     query += `ORDER BY a.data_hora_inicio ASC;`;
-    console.log(query)
     try {
       await db.query(query);
     } catch (error) {

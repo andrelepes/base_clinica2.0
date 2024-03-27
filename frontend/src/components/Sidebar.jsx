@@ -15,6 +15,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import EventNoteIcon from '@mui/icons-material/EventNote';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 
 import Toolbar from '@mui/material/Toolbar';
 import Collapse from '@mui/material/Collapse';
@@ -115,6 +116,9 @@ export default function Sidebar() {
         </Collapse>
         <DrawerItem itemLink="/pacientes" itemText="Pacientes">
           <PersonIcon />
+        </DrawerItem>
+        <DrawerItem itemLink="/psicologos" itemText="Psicólogos">
+          <AssignmentIndIcon />
         </DrawerItem>
         {(tipousuario === 'clinica' ||
           tipousuario === 'secretario_vinculado') && (

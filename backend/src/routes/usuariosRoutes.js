@@ -44,4 +44,10 @@ usuariosRoutes.put(
   ensureAuthenticated,
   UserController.updateUserByUserId
 );
+
+usuariosRoutes.get(
+  '/psychologists/hours',
+  ensureAuthenticated,
+  UserController.getPsychologistsHours
+);
 module.exports = { usuariosRoutes };

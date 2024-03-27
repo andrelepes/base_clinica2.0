@@ -86,9 +86,11 @@ export default function TableWithActions({
             {title}
           </Typography>
 
-          <Tooltip title={`Adicionar ${title}`} disableInteractive>
-            <IconButton onClick={addFunction}>{addIcon}</IconButton>
-          </Tooltip>
+          {addFunction && (
+            <Tooltip title={`Adicionar ${title}`} disableInteractive>
+              <IconButton onClick={addFunction}>{addIcon}</IconButton>
+            </Tooltip>
+          )}
         </Toolbar>
         <TableContainer>
           <Table size="medium">

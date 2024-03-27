@@ -54,7 +54,6 @@ export default function PatientEvolutionsForm({
   const { id: paciente_id } = useParams();
 
   useEffect(() => {
-    console.log(selectedEvolution);
     if (!!selectedEvolution?.attendance_status && !attended) {
       setAttended(selectedEvolution.attendance_status ?? '');
       setPunctuality(selectedEvolution.punctuality_status ?? '');

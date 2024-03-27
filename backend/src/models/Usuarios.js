@@ -184,6 +184,31 @@ static async buscarPorId(usuario_id) {
     }
   }
 
+  static async getPsychologistsHoursByClinicId(clinica_id) {
+    try {
+      const query = `
+      SELECT
+        u.usuario_id,
+        u.nome_usuario,
+        COALESCE(SUM(a.tipo_sessao)/60, 0) AS total_horas_sessao
+      FROM
+        usuarios u
+      LEFT JOIN agendamentos a ON u.usuario_id = a.usuario_id
+        AND a.data_hora_fim <= CURRENT_TIMESTAMP
+      WHERE
+        u.clinica_id = ${clinica_id}
+        AND u.tipousuario = 'psicologo_vinculado'
+      GROUP BY
+        u.usuario_id
+      ORDER BY
+        u.nome_usuario;
+      `;
+      return await db.any(query);
+    } catch (error) {
+        throw error;
+    }
+  }
+
   static async updateUserById({user_id, user}){
     try {
       return await db.oneOrNone(
