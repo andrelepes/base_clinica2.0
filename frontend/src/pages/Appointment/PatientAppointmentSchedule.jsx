@@ -132,8 +132,16 @@ export default function PatientAppointmentSchedule() {
             />
           </Box>
         </Toolbar>
-        <Box sx={{ overflowX: 'auto', display: 'flex', width: '100%', p: 1 }}>
-          <Box sx={{ display: 'flex' }}>
+        <Box
+          sx={{
+            overflowX: 'auto',
+            display: 'flex',
+            width: '100%',
+            p: 1,
+            transform: 'scaleY(-1)',
+          }}
+        >
+          <Box sx={{ display: 'flex', transform: 'scaleY(-1)' }}>
             {appointments.map((agendamento) => {
               return (
                 <Box
@@ -196,21 +204,21 @@ export default function PatientAppointmentSchedule() {
       </Paper>
       <RescheduleForm
         open={isOpenRescheduleForm}
-        setOpen={()=>setIsOpenRescheduleForm(false)}
+        setOpen={() => setIsOpenRescheduleForm(false)}
         selectedAppointment={selectedAppointment}
         setSelectedAppointment={setSelectedAppointment}
         updateAppointments={fetchAppointments}
       />
       <ConfirmationDialog
         open={isOpenDeleteConfirmation}
-        handleClose={()=>setIsOpenDeleteConfirmation(false)}
+        handleClose={() => setIsOpenDeleteConfirmation(false)}
         confirmAction={handleDelete}
         message={'Deseja realmente cancelar o agendamento?'}
         title={'Cancelar agendamento'}
       />
       <ConfirmationDialog
         open={isOpenCascadeConfirmation}
-        handleClose={()=>setIsOpenCascadeConfirmation(false)}
+        handleClose={() => setIsOpenCascadeConfirmation(false)}
         confirmAction={handleCascade}
         message={
           'Deseja realmente excluir todos os próxmos agendamentos desse paciente?'

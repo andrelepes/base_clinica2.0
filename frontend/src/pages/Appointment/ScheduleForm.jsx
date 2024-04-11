@@ -165,17 +165,15 @@ export default function ScheduleForm({ open, setOpen }) {
     setAvailableOffices(filteredOffices);
   };
 
-  let isMounted = false;
   useEffect(() => {
-    if (!isMounted) {
-      isMounted = true;
+    if (psychologists || patients) {
       return;
     }
     fetchAppointments();
     fetchPatients();
     fetchPsychologists();
     fetchOffices();
-  });
+  }, [open]);
 
   useEffect(() => {
     if (activeStep === 2) {

@@ -85,8 +85,16 @@ export default function OfficeAppointmentSchedule() {
             />
           </Box>
         </Toolbar>
-        <Box sx={{ overflowX: 'auto', display: 'flex', width: '100%', p: 1 }}>
-          <Box sx={{ display: 'flex' }}>
+        <Box
+          sx={{
+            overflowX: 'auto',
+            display: 'flex',
+            width: '100%',
+            p: 1,
+            transform: 'scaleY(-1)',
+          }}
+        >
+          <Box sx={{ display: 'flex', transform: 'scaleY(-1)' }}>
             {appointments.map((agendamento) => {
               return (
                 <Box
