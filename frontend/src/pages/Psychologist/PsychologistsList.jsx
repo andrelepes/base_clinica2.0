@@ -13,7 +13,7 @@ export default function PsychologistsList() {
       const { data } = await api.get('/usuarios/psychologists/hours');
       console.log(data);
       const hours = data.map((usuario) => {
-        const horasRestantes = Math.max(240 - usuario.total_horas_sessao, 0);
+        const horasRestantes = Math.max(50 - usuario.total_horas_sessao, 0);
         return {
           ...usuario,
           horas_restantes: horasRestantes,
