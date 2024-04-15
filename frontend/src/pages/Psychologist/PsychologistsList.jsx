@@ -41,7 +41,7 @@ export default function PsychologistsList() {
           data={psychologists}
           fields={[
             {
-              title: 'Nome do Psicólogo',
+              title: 'Nome do Aluno',
               dataTitle: 'nome_usuario',
               maxWidth: 100,
               overflow: 'hidden',

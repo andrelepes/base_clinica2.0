@@ -117,7 +117,7 @@ export default function Sidebar() {
         <DrawerItem itemLink="/pacientes" itemText="Pacientes">
           <PersonIcon />
         </DrawerItem>
-        <DrawerItem itemLink="/psicologos" itemText="Psicólogos">
+        <DrawerItem itemLink="/psicologos" itemText="Alunos">
           <AssignmentIndIcon />
         </DrawerItem>
         {(tipousuario === 'clinica' ||
