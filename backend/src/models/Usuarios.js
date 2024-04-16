@@ -208,6 +208,32 @@ static async buscarPorId(usuario_id) {
         throw error;
     }
   }
+  static async getAdditionalDataByPsychologist(clinica_id) {
+    try {
+      const query = `
+      SELECT
+          u.usuario_id,
+          (a.data_hora_inicio AT TIME ZONE 'UTC' AT TIME ZONE 'America/Sao_Paulo') AS data_hora_inicio,
+          a.status,
+          p.nome_paciente
+      FROM
+          usuarios u
+      LEFT JOIN agendamentos a ON u.usuario_id = a.usuario_id
+          AND a.data_hora_fim <= CURRENT_TIMESTAMP
+      LEFT JOIN pacientes p ON a.paciente_id = p.paciente_id
+      WHERE
+          u.clinica_id = ${clinica_id}
+          AND u.tipousuario = 'psicologo_vinculado'
+      GROUP BY
+          u.usuario_id, a.data_hora_inicio, a.status, p.nome_paciente
+      ORDER BY
+          u.usuario_id, a.data_hora_inicio
+      `
+      return await db.any(query);
+    } catch (error) {
+        throw error;
+    }
+  }
 
   static async updateUserById({user_id, user}){
     try {

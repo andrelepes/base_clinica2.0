@@ -331,7 +331,24 @@ static async getLinkedSecretaries(req, res) {
     try{
       const clinica_id = req.clinicaId;
       const psychologists = await Usuarios.getPsychologistsHoursByClinicId(clinica_id);
-      res.status(200).json(psychologists);
+      const additionalData = await Usuarios.getAdditionalDataByPsychologist(clinica_id);
+
+
+      const result = [];
+      const additionalDataByPsychologist = {};
+
+      additionalData.forEach(appointment => {
+          if (!additionalDataByPsychologist[appointment.usuario_id]) {
+              additionalDataByPsychologist[appointment.usuario_id] = [];
+          }
+          additionalDataByPsychologist[appointment.usuario_id].push(appointment);
+      });
+
+      for (const usuarioId in additionalDataByPsychologist) {
+          result.push(additionalDataByPsychologist[usuarioId]);
+      }
+
+      res.status(200).json({data:psychologists, additional_data: result});
     }catch(error){
       res.status(500).json({ error: 'Erro ao buscar usuário' });
     }
