@@ -213,7 +213,7 @@ static async buscarPorId(usuario_id) {
       const query = `
       SELECT
           u.usuario_id,
-          (a.data_hora_inicio AT TIME ZONE 'UTC' AT TIME ZONE 'America/Sao_Paulo') AS data_hora_inicio,
+          to_char(a.data_hora_inicio, 'DD/MM/YYYY HH24:MI') AS data_hora_inicio,
           a.status,
           p.nome_paciente
       FROM
