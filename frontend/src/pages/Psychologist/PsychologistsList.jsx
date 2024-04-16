@@ -110,7 +110,7 @@ export default function PsychologistsList() {
                     },
                     {
                       title: 'Status',
-                      dataTitle: 'nome_paciente',
+                      dataTitle: 'status',
                     },
                   ]}
                 />
