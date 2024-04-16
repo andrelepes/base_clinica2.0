@@ -68,6 +68,7 @@ export default function PsychologistsList() {
                 <TableCell>Nome do Aluno</TableCell>
                 <TableCell>Horas Atendidas</TableCell>
                 <TableCell>Horas Não Atendidas</TableCell>
+                <TableCell>Evoluções Pendentes</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -88,6 +89,10 @@ export default function PsychologistsList() {
                     {
                       title: 'Horas Não Atendidas',
                       dataTitle: 'horas_restantes',
+                    },
+                    {
+                      title: 'Evoluções Pendentes',
+                      dataTitle: 'pending_evolutions_count',
                     },
                   ]}
                   subData={
@@ -111,6 +116,10 @@ export default function PsychologistsList() {
                     {
                       title: 'Status',
                       dataTitle: 'status',
+                    },
+                    {
+                      title: 'Evolução Feita?',
+                      dataTitle: 'evolution_status',
                     },
                   ]}
                 />

@@ -190,7 +190,8 @@ static async buscarPorId(usuario_id) {
       SELECT
         u.usuario_id,
         u.nome_usuario,
-        COALESCE(SUM(a.tipo_sessao)/60, 0) AS total_horas_sessao
+        COALESCE(SUM(a.tipo_sessao)/60, 0) AS total_horas_sessao,
+        (SELECT COUNT(*) FROM evolutions e WHERE e.usuario_id = u.usuario_id AND e.evolution_status = false) as pending_evolutions_count
       FROM
         usuarios u
       LEFT JOIN agendamentos a ON u.usuario_id = a.usuario_id
@@ -215,17 +216,22 @@ static async buscarPorId(usuario_id) {
           u.usuario_id,
           to_char(a.data_hora_inicio, 'DD/MM/YYYY HH24:MI') AS data_hora_inicio,
           a.status,
-          p.nome_paciente
+          p.nome_paciente,
+          CASE
+            WHEN e.evolution_status IS FALSE THEN 'Não'
+            WHEN e.evolution_status IS TRUE THEN 'Sim'
+          END AS evolution_status
       FROM
           usuarios u
       LEFT JOIN agendamentos a ON u.usuario_id = a.usuario_id
           AND a.data_hora_fim <= CURRENT_TIMESTAMP
       LEFT JOIN pacientes p ON a.paciente_id = p.paciente_id
+      LEFT JOIN evolutions e ON e.paciente_id = p.paciente_id 
       WHERE
           u.clinica_id = ${clinica_id}
           AND u.tipousuario = 'psicologo_vinculado'
       GROUP BY
-          u.usuario_id, a.data_hora_inicio, a.status, p.nome_paciente
+          u.usuario_id, a.data_hora_inicio, a.status, p.nome_paciente, e.evolution_status
       ORDER BY
           u.usuario_id, a.data_hora_inicio
       `
