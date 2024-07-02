@@ -54,3 +54,13 @@ enum RecurrenceOptions {
   Quinzenal = 3,
   Mensal = 4,
 }
+
+export {
+  Status,
+  Roles,
+  AppointmentStatus,
+  AttendedOptions,
+  PunctualityOptions,
+  MoodStates,
+  RecurrenceOptions,
+};

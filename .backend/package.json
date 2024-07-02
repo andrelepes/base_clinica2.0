@@ -4,7 +4,7 @@
   "description": "Base Clinica is an web software made initialy to meet the needs for an school-clinic for psychologists.",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev -r tsconfig-paths/register --inspect --transpile-only --poll --ignore-watch node_modules --respawn src/server.ts"
+    "dev": "ts-node-dev -r tsconfig-paths/register --inspect --transpile-only --poll --ignore-watch node_modules --respawn src/http/server.ts"
   },
   "keywords": [
     "base-clinica",
@@ -15,6 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
     "dayjs": "^1.11.11",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
@@ -28,12 +29,14 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/nodemailer": "^6.4.15",
     "@types/pg-promise": "^5.4.3",
     "@types/uuid": "^9.0.8",
     "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.4.5"
   }
 }

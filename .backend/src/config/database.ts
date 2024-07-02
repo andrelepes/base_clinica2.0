@@ -1,4 +1,7 @@
 import pgPromise from 'pg-promise';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 const pgp = pgPromise();
 
@@ -7,7 +10,7 @@ const db = pgp({
   port: parseInt(process.env.DATABASE_PORT || '5432'),
   database: process.env.DATABASE_NAME,
   user: process.env.DATABASE_USER,
-  password: process.env.DATABASE_PASSWORD,
+  password: process.env.DATABASE_PASSWORD?.toString(),
 });
 
 export default db;
