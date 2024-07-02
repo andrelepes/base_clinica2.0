@@ -13,13 +13,13 @@ class Secretary {
 
   secretary_mail: string;
 
-  constructor(
-    user_id: string,
-    secretary_name: string,
-    secretary_phone: string,
-    secretary_mail: string,
-    clinic_id: string
-  ) {
+  constructor({
+    user_id,
+    secretary_name,
+    secretary_phone,
+    secretary_mail,
+    clinic_id,
+  }: Secretary) {
     this.secretary_id = this.secretary_id || uuidv4();
     this.user_id = user_id;
     this.secretary_name = secretary_name;

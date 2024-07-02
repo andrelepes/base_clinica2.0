@@ -1,15 +1,19 @@
 import db from 'config/database';
-import { ICreateClinicDTO, IUpdateClinicDTO } from 'modules/clinics/dtos/ClinicsDTOs';
+import {
+  ICreateClinicDTO,
+  IUpdateClinicDTO,
+} from 'modules/clinics/dtos/ClinicsDTOs';
 import { Clinic } from 'modules/clinics/entities/Clinic';
 import { IClinicRepository } from 'modules/clinics/repositories/IClinicRepository';
 
 class ClinicRepository implements IClinicRepository {
+  private tableName = 'clinics';
   async findByCnpj(cnpj: string): Promise<Clinic | null> {
     const query = `
          SELECT 
             *
          FROM
-            clinics
+            ${this.tableName}
          WHERE 
             clinic_cnpj = $1
       `;
@@ -18,7 +22,7 @@ class ClinicRepository implements IClinicRepository {
   }
   async create(data: ICreateClinicDTO): Promise<void> {
     const query = `
-      INSERT INTO clinics 
+      INSERT INTO ${this.tableName} 
          (clinic_id, user_id, clinic_cnpj, clinic_name, clinic_email, clinic_cep, clinic_address, clinic_phone, clinic_administrator_name)
       VALUES 
          ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -47,7 +51,7 @@ class ClinicRepository implements IClinicRepository {
       SELECT 
          *
       FROM
-         clinics
+         ${this.tableName}
       WHERE 
          clinic_id = $1
    `;
@@ -61,7 +65,7 @@ class ClinicRepository implements IClinicRepository {
     const values = [...Object.values(data), id];
 
     const query = `
-      UPDATE clinics
+      UPDATE ${this.tableName}
       SET ${columns}
       WHERE clinic_id = $${values.length}
    `;

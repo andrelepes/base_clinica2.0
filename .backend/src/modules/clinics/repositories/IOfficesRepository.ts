@@ -11,7 +11,6 @@ interface IOfficesRepository
   > {
   findByClinic(id: string): Promise<Office[]>;
   findByName(name: string): Promise<Office | null>;
-  ensureNoFutureAppointments(id: number): Promise<boolean>;
 }
 
 export { IOfficesRepository };
