@@ -4,12 +4,13 @@ import { User } from 'modules/users/entities/User';
 import { IUsersRepository } from 'modules/users/repositories/IUsersRepository';
 
 class UsersRepository implements IUsersRepository {
+  private tableName = 'users';
   async findByEmail(email: string): Promise<User | null> {
     const query = `
          SELECT
             *
          FROM
-            users
+            ${this.tableName}
          WHERE
             user_email = $1
       `;
@@ -17,7 +18,7 @@ class UsersRepository implements IUsersRepository {
   }
   async create(data: ICreateUserDTO): Promise<void> {
     const query = `
-         INSERT INTO users
+         INSERT INTO ${this.tableName}
             (user_id, user_email, user_password, user_role, user_status, profile_id, first_access_token)
          VALUES
             ($1, $2, $3, $4, $5, $6, $7)
@@ -42,7 +43,7 @@ class UsersRepository implements IUsersRepository {
       SELECT
          *
       FROM
-         users
+         ${this.tableName}
       WHERE
          user_id = $1
     `;
@@ -55,7 +56,7 @@ class UsersRepository implements IUsersRepository {
     const values = [...Object.values(data), id];
 
     const query = `
-         UPDATE users
+         UPDATE ${this.tableName}
          SET ${columns}
          WHERE user_id = $${values.length}
       `;
