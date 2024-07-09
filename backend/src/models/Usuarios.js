@@ -251,6 +251,18 @@ static async buscarPorId(usuario_id) {
       throw error;
     }
   }
+
+  static async deleteUserById(usuario_id){
+    try {
+      await db.none(
+        'DELETE FROM usuarios WHERE usuario_id=${usuario_id}',
+        { usuario_id }
+      );
+      return { success: true, message: 'Usuário deletado com sucesso!' };
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 module.exports = Usuarios;

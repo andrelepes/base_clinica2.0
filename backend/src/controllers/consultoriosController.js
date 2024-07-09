@@ -83,10 +83,11 @@ static async atualizarConsultorio(req, res) {
 }
 
 static async deletarConsultorio(req, res) {
-    if (!await ConsultorioController.checkPermission(req, req.params.consultorio_id)) {
-        return res.status(403).json({ message: 'Permissão negada.' });
-    }
+    // if (!await ConsultorioController.checkPermission(req, req.params.consultorio_id)) {
+    //     return res.status(403).json({ message: 'Permissão negada.' });
+    // }
     try {
+        console.log(req.params.consultorio_id)
         await Consultorios.deletarConsultorio(req.params.consultorio_id);
         res.status(200).send({ message: 'Consultório deletado com sucesso!' });
     } catch (error) {

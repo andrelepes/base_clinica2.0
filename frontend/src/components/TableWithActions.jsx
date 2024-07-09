@@ -35,11 +35,12 @@ export default function TableWithActions({
   editIcon = <EditIcon />,
   deleteIcon = <DeleteIcon color="error" />,
   infoIcon = <InfoIcon color="info" />,
+  startingPages = 5
 }) {
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('');
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(startingPages);
 
   const visibleRows = useMemo(
     () =>

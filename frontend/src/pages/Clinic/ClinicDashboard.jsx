@@ -4,6 +4,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
 import TableWithActions from '../../components/TableWithActions';
+import ConfirmationDialog from '../../components/ConfirmationDialog';
+
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../contexts/AuthContext';
@@ -24,6 +26,11 @@ export default function ClinicDashboard() {
   const [selectedPsychologist, setSelectedPsychologist] = useState(false);
   const [selectedSecretary, setSelectedSecretary] = useState(false);
   const [selectedOffice, setSelectedOffice] = useState(false);
+  const [confirmationTitle, setConfirmationTitle] = useState('');
+  const [openConfirmation, setOpenConfirmation] = useState(false);
+  const [confirmRoute, setConfirmRoute] = useState('');
+  const [confirmMessage, setConfirmMessage] = useState('');
+
   const { clinicaId } = useAuth();
 
   const navigate = useNavigate();
@@ -67,6 +74,27 @@ export default function ClinicDashboard() {
       toast.error('Erro ao buscar consultórios');
     }
   };
+  const handleDelete = async () => {
+    try {
+      await api.delete(confirmRoute);
+      setOpenConfirmation(false);
+      toast.success('Registro deletado com sucesso');
+      fetchPsychologists();
+      fetchSecretaries();
+      fetchOffices();
+    } catch (error) {
+      toast.error(
+        'Ocorreu um erro ao deletar o registro, verifique se o mesmo está sendo utilizado'
+      );
+    }
+  };
+
+  const confirmButton = (title, proceedRoute, message = '') => {
+    setConfirmationTitle(title);
+    setConfirmRoute(proceedRoute);
+    setConfirmMessage(message);
+    setOpenConfirmation(true);
+  };
 
   let isMounted = false;
   useEffect(() => {
@@ -100,11 +128,12 @@ export default function ClinicDashboard() {
             Clínica
           </Typography>
         </Toolbar>
-        <Grid container spacing={2} direction='row'>
+        <Grid container spacing={2} direction="row">
           <Grid item md={6} xs={12}>
             <TableWithActions
               title="Responsáveis Vinculados"
               data={psychologists}
+              startingPages={10}
               addFunction={() => setIsOpenPsychologistForm(true)}
               editFunction={(psychologist) => {
                 setSelectedPsychologist(psychologist);
@@ -113,6 +142,13 @@ export default function ClinicDashboard() {
               infoFunction={(psychologist) =>
                 navigate(`/psicologo/${psychologist.usuario_id}`)
               }
+              deleteFunction={(psychologist) => {
+                confirmButton(
+                  `Excluir ${psychologist.nome_usuario}`,
+                  `/usuarios/${psychologist.usuario_id}`,
+                  'Deseja excluir este responsável?'
+                );
+              }}
               fields={[
                 {
                   title: 'Ações',
@@ -142,7 +178,7 @@ export default function ClinicDashboard() {
               ]}
             />
           </Grid>
-          <Grid item container direction='row' md={6}>
+          <Grid item container direction="row" md={6}>
             <Grid item xs={12}>
               <TableWithActions
                 title="Secretários Vinculados"
@@ -154,6 +190,15 @@ export default function ClinicDashboard() {
                 }}
                 infoFunction={(secretary) =>
                   navigate(`/secretario/${secretary.usuario_id}`)
+                }
+                deleteFunction={
+                  (secretary)=>{
+                    confirmButton(
+                      'Excluir o secretário?',
+                      `/usuarios/${secretary.usuario_id}`,
+                      'Este registro será permanentemente excluído.'
+                    );
+                  }
                 }
                 fields={[
                   {
@@ -192,6 +237,13 @@ export default function ClinicDashboard() {
                 editFunction={(office) => {
                   setSelectedOffice(office);
                   setIsOpenOfficeForm(true);
+                }}
+                deleteFunction={(office) => {
+                  confirmButton(
+                    'Excluir Consultório',
+                    `/consultorios/${office.consultorio_id}`,
+                    `Deseja excluir o consultório ${office.nome_consultorio}?`
+                  );
                 }}
                 fields={[
                   {
@@ -237,6 +289,13 @@ export default function ClinicDashboard() {
         fetchOffices={fetchOffices}
         selectedOffice={selectedOffice}
         setSelectedOffice={setSelectedOffice}
+      />
+      <ConfirmationDialog
+        title={confirmationTitle}
+        handleClose={() => setOpenConfirmation(false)}
+        confirmAction={handleDelete}
+        message={confirmMessage}
+        open={openConfirmation}
       />
     </Box>
   );

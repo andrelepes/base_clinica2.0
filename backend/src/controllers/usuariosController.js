@@ -365,5 +365,16 @@ static async getLinkedSecretaries(req, res) {
       res.status(500).json({ error: 'Erro interno do servidor' });
     }
   }
+
+  static async deleteUser(req,res){
+    try {
+      const user_id = req.params.usuario_id;
+      await Usuarios.deleteUserById(user_id);
+      res.status(200).send({ message: 'Usuário deletado com sucesso!' });;
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+  }
 }
 module.exports = UserController;

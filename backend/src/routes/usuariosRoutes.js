@@ -50,4 +50,10 @@ usuariosRoutes.get(
   ensureAuthenticated,
   UserController.getPsychologistsHours
 );
+
+usuariosRoutes.delete(
+  '/:usuario_id',
+  ensureAuthenticated,
+  UserController.deleteUser
+);
 module.exports = { usuariosRoutes };
