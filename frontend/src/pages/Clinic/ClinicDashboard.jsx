@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 
 import TableWithActions from '../../components/TableWithActions';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
@@ -15,6 +16,7 @@ import PsychologistForm from './PsychologistForm';
 import SecretaryForm from './SecretaryForm';
 import OfficeForm from './OfficeForm';
 import { useNavigate } from 'react-router-dom';
+import VinculatePsychologistDialog from '../Psychologist/VinculatePsychologistDialog';
 
 export default function ClinicDashboard() {
   const [psychologists, setPsychologists] = useState([]);
@@ -23,6 +25,7 @@ export default function ClinicDashboard() {
   const [isOpenPsychologistForm, setIsOpenPsychologistForm] = useState(false);
   const [isOpenSecretaryForm, setIsOpenSecretaryForm] = useState(false);
   const [isOpenOfficeForm, setIsOpenOfficeForm] = useState(false);
+  const [isOpenVinculationDialog, setIsOpenVinculationDialog] = useState(false);
   const [selectedPsychologist, setSelectedPsychologist] = useState(false);
   const [selectedSecretary, setSelectedSecretary] = useState(false);
   const [selectedOffice, setSelectedOffice] = useState(false);
@@ -38,7 +41,7 @@ export default function ClinicDashboard() {
   const fetchPsychologists = async () => {
     try {
       const response = await api.get(
-        `/usuarios/linked-psychologists/${clinicaId}`
+        `/clinicas/${clinicaId}/linked-psychologists/`
       );
       const filteredPsychologists = response.data.filter(
         (psychologist) =>
@@ -86,7 +89,13 @@ export default function ClinicDashboard() {
       toast.error(
         'Ocorreu um erro ao deletar o registro, verifique se o mesmo está sendo utilizado'
       );
+      setOpenConfirmation(false);
     }
+  };
+
+  const handleVinculation = (psychologist) => {
+    setSelectedPsychologist(psychologist);
+    setIsOpenVinculationDialog(true);
   };
 
   const confirmButton = (title, proceedRoute, message = '') => {
@@ -149,6 +158,11 @@ export default function ClinicDashboard() {
                   'Deseja excluir este responsável?'
                 );
               }}
+              otherFunction={{
+                title: 'Vincular pacientes',
+                function: (psychologist) => handleVinculation(psychologist),
+                icon: <GroupAddIcon color="secondary" />,
+              }}
               fields={[
                 {
                   title: 'Ações',
@@ -191,15 +205,13 @@ export default function ClinicDashboard() {
                 infoFunction={(secretary) =>
                   navigate(`/secretario/${secretary.usuario_id}`)
                 }
-                deleteFunction={
-                  (secretary)=>{
-                    confirmButton(
-                      'Excluir o secretário?',
-                      `/usuarios/${secretary.usuario_id}`,
-                      'Este registro será permanentemente excluído.'
-                    );
-                  }
-                }
+                deleteFunction={(secretary) => {
+                  confirmButton(
+                    'Excluir o secretário?',
+                    `/usuarios/${secretary.usuario_id}`,
+                    'Este registro será permanentemente excluído.'
+                  );
+                }}
                 fields={[
                   {
                     title: 'Ações',
@@ -289,6 +301,12 @@ export default function ClinicDashboard() {
         fetchOffices={fetchOffices}
         selectedOffice={selectedOffice}
         setSelectedOffice={setSelectedOffice}
+      />
+      <VinculatePsychologistDialog
+        open={isOpenVinculationDialog}
+        setOpen={setIsOpenVinculationDialog}
+        selectedPsychologist={selectedPsychologist}
+        setSelectedPsychologist={setSelectedPsychologist}
       />
       <ConfirmationDialog
         title={confirmationTitle}

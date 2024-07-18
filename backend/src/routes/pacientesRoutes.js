@@ -8,12 +8,15 @@ pacientesRoutes.use(ensureAuthenticated);
 // Rota para filtrar pacientes
 pacientesRoutes.get('/filtrar', pacientesController.filtrarPacientes);
 
-pacientesRoutes.get('/pendentes', pacientesController.filtrarPacientesEvolucoesPendentes);
+pacientesRoutes.get(
+  '/pendentes',
+  pacientesController.filtrarPacientesEvolucoesPendentes
+);
 
 // Rota para listar todos os pacientes
 pacientesRoutes.get('/', pacientesController.listarPacientes);
 
-pacientesRoutes.get('/clinica', pacientesController.getAllByClinic)
+pacientesRoutes.get('/clinica', pacientesController.getAllByClinic);
 
 // Rota para listar todos os pacientes
 pacientesRoutes.get('/paginados', pacientesController.listarPacientesPaginados);
@@ -35,5 +38,10 @@ pacientesRoutes.put(
 
 // Rota para reativar um paciente
 pacientesRoutes.put('/:paciente_id/ativo', pacientesController.marcarComoAtivo);
+
+pacientesRoutes.post(
+  '/vincular/:usuario_id',
+  pacientesController.vinculatePatients
+);
 
 module.exports = { pacientesRoutes };

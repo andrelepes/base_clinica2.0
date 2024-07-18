@@ -189,6 +189,21 @@ static async getAllByClinic(req,res){
     }
 }
 
+static async vinculatePatients(req, res){
+    try {
+        const usuario_id = req.params.usuario_id;
+        const clinica_id = req.clinicaId;
+
+        const {pacientes} = req.body
+
+        await Pacientes.vinculatePatients(usuario_id, clinica_id, pacientes);
+
+        res.status(200).send();
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Erro ao vincular pacientes.', error: error.message });
+    }
+}
+
 }
 
 module.exports = PacientesController;

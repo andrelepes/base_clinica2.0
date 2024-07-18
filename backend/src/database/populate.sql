@@ -1190,6 +1190,11 @@ ADD CONSTRAINT unique_agendamento_id UNIQUE (agendamento_id);
 ALTER TABLE public.evolutions
 DROP COLUMN session_date;
 
+-- Added on 18/07/2024 by gabrielpaiv
+
+ALTER TABLE autorizacoes
+ADD CONSTRAINT unique_vinculo UNIQUE (usuario_id, paciente_id, clinica_id);
+
 --
 -- PostgreSQL database dump complete
 --

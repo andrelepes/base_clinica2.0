@@ -35,7 +35,8 @@ export default function TableWithActions({
   editIcon = <EditIcon />,
   deleteIcon = <DeleteIcon color="error" />,
   infoIcon = <InfoIcon color="info" />,
-  startingPages = 5
+  startingPages = 5,
+  otherFunction = {},
 }) {
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('');
@@ -177,6 +178,20 @@ export default function TableWithActions({
                                   disableInteractive
                                 >
                                   {infoIcon}
+                                </Tooltip>
+                              </IconButton>
+                            )}
+                            {otherFunction && (
+                              <IconButton
+                                aria-label="other"
+                                onClick={() => otherFunction.function(item)}
+                              >
+                                <Tooltip
+                                  title={otherFunction.title}
+                                  arrow
+                                  disableInteractive
+                                >
+                                  {otherFunction.icon}
                                 </Tooltip>
                               </IconButton>
                             )}

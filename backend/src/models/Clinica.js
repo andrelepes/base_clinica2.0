@@ -3,7 +3,39 @@ const db = require('../database/database');
 const Clinica = {
     listLinkedPsychologists: (clinicaId) => {
         const query = `
-            SELECT * FROM usuarios WHERE clinica_id = $1 AND tipousuario = 'psicologo_vinculado';
+            SELECT 
+                u.usuario_id,
+                u.nome_usuario,
+                u.email_usuario,
+                u.email_auxiliar,
+                u.status_usuario,
+                u.tipousuario,
+                u.clinica_id,
+                COALESCE(
+                    json_agg(
+                    json_build_object(
+                        'paciente_id', a.paciente_id,
+                        'nome_paciente', p.nome_paciente,
+                        'status', a.status
+                    )
+                    ) FILTER (WHERE a.paciente_id IS NOT NULL AND a.status = 'ativo'), 
+                    '[]'
+                ) AS pacientes_autorizados
+            FROM 
+                usuarios u
+            LEFT JOIN 
+                autorizacoes a 
+            ON 
+                u.usuario_id = a.usuario_id
+            LEFT JOIN
+                pacientes p
+            ON
+                a.paciente_id = p.paciente_id
+            WHERE 
+                u.clinica_id = $1 AND
+                u.tipousuario = 'psicologo_vinculado'
+            GROUP BY 
+                u.usuario_id
         `;
         return db.manyOrNone(query, [clinicaId]);
     },

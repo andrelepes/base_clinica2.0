@@ -254,9 +254,39 @@ static async getAllByClinicId(clinica_id){
             nome_paciente
     `;
     return await db.any(query);
-} catch (error) {
-    throw error;
+  } catch (error) {
+      throw error;
+  }
 }
+
+static async vinculatePatients(usuario_id, clinica_id, pacientes) {
+  try {
+    const insertValues = pacientes.map(paciente => `(${usuario_id}, ${paciente}, ${clinica_id}, 'ativo', now())`).join(', ');
+    await db.tx(async t => {
+      const insertQuery = `
+        INSERT INTO autorizacoes (usuario_id, paciente_id, clinica_id, status, data_concessao)
+        VALUES
+        ${insertValues}
+        ON CONFLICT (usuario_id, paciente_id, clinica_id)
+        DO UPDATE SET status = EXCLUDED.status, data_concessao = EXCLUDED.data_concessao, data_retirada = null
+        WHERE autorizacoes.status = 'inativo';
+      `;
+      await t.none(insertQuery);
+
+      const updateQuery = `
+        UPDATE autorizacoes
+        SET 
+          status = 'inativo',
+          data_retirada = now()
+        WHERE usuario_id = $1
+          AND clinica_id = $2
+          AND paciente_id NOT IN (${pacientes.join(', ')});
+      `;
+      await t.none(updateQuery, [usuario_id, clinica_id]);
+    });
+  } catch (error) {
+    throw error;
+  }
 }
 
 }
