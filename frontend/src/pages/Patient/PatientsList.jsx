@@ -205,11 +205,11 @@ export default function PatientsList() {
                   onEdit={() => handleEdit(patient)}
                   onInfo={() => navigate(`/pacientes/${patient.paciente_id}`)}
                   onSchedule={() => handleSchedule(patient)}
-                  //   assignedPsychologists={
-                  //     psicologosVinculados[patient.paciente_id]?.length > 0
-                  //       ? psicologosVinculados[patient.paciente_id].join(', ')
-                  //       : undefined
-                  //   }
+                  assignedPsychologists={
+                    patient.psicologos_autorizados?.length > 0
+                      ? patient.psicologos_autorizados.map(psychologist=> {return psychologist.nome_psicologo}).join(', ')
+                      : undefined
+                  }
                 />
               ))}
               {emptyRows > 0 && (

@@ -163,13 +163,12 @@ static async marcarComoAtivo(req, res) {
 }
 
 static async filtrarPacientesEvolucoesPendentes(req, res) {
-    try {
-        const { nome, status } = req.query; 
+    try { 
         const usuario_id = req.user;
         const clinica_id = req.clinicaId;
         const tipousuario = req.tipousuario;
 
-        const pacientes = await Pacientes.filtrarPacientesComEvolucoesPendentes(nome, status, tipousuario, clinica_id, usuario_id);
+        const pacientes = await Pacientes.filtrarPacientesComEvolucoesPendentes(tipousuario, clinica_id, usuario_id);
         res.status(200).json({ success: true, data: pacientes });
     } catch (error) {
         console.error('Erro ao filtrar pacientes:', error.message);

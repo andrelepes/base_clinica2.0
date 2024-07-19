@@ -173,7 +173,7 @@ class Evolutions {
       query += ` AND a.usuario_id IN (SELECT usuario_id FROM usuarios WHERE clinica_id = ${clinicaId})`;
     }
 
-    query += `ORDER BY a.data_hora_inicio ASC;`;
+    query += ` ORDER BY a.data_hora_inicio ASC;`;
     try {
       await db.query(query);
     } catch (error) {

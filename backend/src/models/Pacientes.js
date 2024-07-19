@@ -199,36 +199,56 @@ static async marcarComoAtivo(paciente_id, clinica_id, tipousuario) {
   }
 }
 
-static async filtrarPacientesComEvolucoesPendentes(nome, status, tipousuario, clinica_id, usuario_id) {
+static async filtrarPacientesComEvolucoesPendentes(tipousuario, clinica_id, usuario_id) {
   try {
-    const nomeBusca = nome ? `%${nome}%` : null; // Formato para busca parcial com LIKE no SQL
-    let query = 'SELECT p.*, (SELECT COUNT(*) FROM evolutions e WHERE e.paciente_id = p.paciente_id AND e.evolution_status = false) AS pending_evolutions_count FROM pacientes p WHERE 1=1'; // Base da consulta
+    let query = `
+    SELECT 
+      p.*, 
+      (SELECT COUNT(*) FROM evolutions e WHERE e.paciente_id = p.paciente_id AND e.evolution_status = false) AS pending_evolutions_count,
+      COALESCE(
+        json_agg(
+          json_build_object(
+            'nome_psicologo', u.nome_usuario
+          )
+        ) FILTER (WHERE a.usuario_id IS NOT NULL AND a.status = 'ativo'), 
+        '[]'
+      ) AS psicologos_autorizados
+    FROM 
+      pacientes p
+    LEFT JOIN 
+      autorizacoes a ON p.paciente_id = a.paciente_id
+    LEFT JOIN 
+      usuarios u ON a.usuario_id = u.usuario_id
+    WHERE 
+      1=1
+    `; 
     const values = [];
-
-    if (nomeBusca) {
-      query += ` AND LOWER(nome_paciente) LIKE LOWER($${values.length + 1})`; // Tornando a busca insensível ao caso
-      values.push(nomeBusca);
-    }
-
-    if (status) {
-      query += ` AND status_paciente = $${values.length + 1}`;
-      values.push(status);
-    }
-
+    
     switch (tipousuario) {
       case 'psicologo':
-        query += ` AND usuario_id = $${values.length + 1}`;
+        query += ` AND p.usuario_id = $${values.length + 1}`;
         values.push(usuario_id);
         break;
       case 'clinica':
       case 'secretario_vinculado':
-      case 'psicologo_vinculado':
-        query += ` AND clinica_id = $${values.length + 1}`;
+        query += ` AND p.clinica_id = $${values.length + 1}`;
         values.push(clinica_id);
+        break;
+      case 'psicologo_vinculado':
+        query += ` AND p.clinica_id = $${values.length + 1} AND EXISTS (
+          SELECT 1 FROM autorizacoes a2 
+          WHERE a2.paciente_id = p.paciente_id 
+          AND a2.usuario_id = $${values.length + 2}
+        )`;
+        values.push(clinica_id, usuario_id);
         break;
       default:
         throw new Error('Tipo de usuário não reconhecido.');
     }
+
+    query += `
+      GROUP BY p.paciente_id
+    `;
 
     const pacientes = await db.any(query, values);
     return pacientes;
