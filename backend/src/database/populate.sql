@@ -1195,6 +1195,27 @@ DROP COLUMN session_date;
 ALTER TABLE autorizacoes
 ADD CONSTRAINT unique_vinculo UNIQUE (usuario_id, paciente_id, clinica_id);
 
+-- Added on 22/07/2024 by gabrielpaiv
+
+ALTER TABLE
+  evolutions
+ADD COLUMN
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE
+  evolutions
+ADD COLUMN
+  archive_id UUID;
+
+CREATE TABLE
+  evolution_changelog (
+    evolution_change_id SERIAL PRIMARY KEY,
+    evolution_id INTEGER NOT NULL REFERENCES evolutions (evolution_id),
+    old_record JSON NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    usuario_id INTEGER NOT NULL REFERENCES usuarios (usuario_id)
+  );
+
 --
 -- PostgreSQL database dump complete
 --

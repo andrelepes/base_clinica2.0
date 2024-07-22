@@ -157,8 +157,8 @@ class Agendamentos {
                     SELECT 
                         agendamentos.agendamento_id,                     
                         consultorios.nome_consultorio,
-                        (agendamentos.data_hora_inicio AT TIME ZONE 'UTC' AT TIME ZONE 'America/Sao_Paulo') as data_hora_inicio,
-                        (agendamentos.data_hora_fim AT TIME ZONE 'UTC' AT TIME ZONE 'America/Sao_Paulo') as data_hora_fim,
+                        agendamentos.data_hora_inicio,
+                        agendamentos.data_hora_fim,
                         agendamentos.recorrencia,
                         agendamentos.status,
                         agendamentos.tipo_sessao,
