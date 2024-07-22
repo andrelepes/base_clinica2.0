@@ -180,9 +180,19 @@ static async getAllByClinic(req,res){
     try {
         const clinica_id = req.clinicaId;
 
-        const pacientes = await Pacientes.getAllByClinicId(clinica_id)
+        const usuario_id = req.user;
 
-        res.status(200).json(pacientes)
+        const tipousuario = req.tipousuario;
+
+        if(tipousuario !== 'psicologo_vinculado'){
+            const pacientes = await Pacientes.getAllByClinicId(clinica_id)
+            res.status(200).json(pacientes)
+        }else{
+            const pacientes = await Pacientes.getAllAuthorized(usuario_id)
+            res.status(200).json(pacientes)
+        }
+
+
     } catch (error) {
         res.status(500).json({ success: false, message: 'Erro ao filtrar pacientes.', error: error.message });
     }

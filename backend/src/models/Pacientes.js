@@ -278,6 +278,25 @@ static async getAllByClinicId(clinica_id){
       throw error;
   }
 }
+static async getAllAuthorized(usuario_id){
+  try {
+    const query = `
+        SELECT 
+            paciente_id,
+            nome_paciente
+        FROM 
+            pacientes
+        WHERE 
+            paciente_id IN (SELECT paciente_id FROM autorizacoes WHERE usuario_id = ${usuario_id}) 
+            AND status_paciente = 'ativo'
+        ORDER BY 
+            nome_paciente
+    `;
+    return await db.any(query);
+  } catch (error) {
+      throw error;
+  }
+}
 
 static async vinculatePatients(usuario_id, clinica_id, pacientes) {
   try {

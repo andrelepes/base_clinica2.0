@@ -24,6 +24,7 @@ import { toast } from 'react-toastify';
 
 import { recurrenceOptions } from '../../utils/formTypes';
 import dayjs from 'dayjs';
+import { useAuth } from '../../contexts/AuthContext';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -60,6 +61,8 @@ export default function ScheduleForm({ open, setOpen }) {
   const [offices, setOffices] = useState([]);
   const [availableOffices, setAvailableOffices] = useState([]);
 
+  const { tipousuario, user, usuarioId } = useAuth();
+
   const fetchAppointments = async () => {
     try {
       const { data } = await api.get('/agendamentos/next/');
@@ -81,6 +84,7 @@ export default function ScheduleForm({ open, setOpen }) {
   const fetchPsychologists = async () => {
     try {
       const { data } = await api.get('/usuarios/psychologists/from/clinic/');
+      console.log('Wtf?', tipousuario, user, usuarioId);
 
       setPsychologists(data);
     } catch (error) {
@@ -165,19 +169,22 @@ export default function ScheduleForm({ open, setOpen }) {
     setAvailableOffices(filteredOffices);
   };
 
-  let isMounted = false;
   useEffect(() => {
-    if (!isMounted) {
-      isMounted = true;
-      return;
+    if (open) {
+      if (psychologists.length || patients.length) {
+        return;
+      }
+      fetchAppointments();
+      fetchPatients();
+      fetchOffices();
+      if (tipousuario === 'psicologo_vinculado') {
+        setPsychologists([
+          { nome_usuario: user.nome_usuario, usuario_id: usuarioId },
+        ]);
+        return;
+      }
+      fetchPsychologists();
     }
-    if (psychologists.length || patients.length) {
-      return;
-    }
-    fetchAppointments();
-    fetchPatients();
-    fetchPsychologists();
-    fetchOffices();
   }, [open]);
 
   useEffect(() => {
