@@ -104,22 +104,29 @@ export default function Sidebar() {
               <MeetingRoomIcon />
             </DrawerItem>
             {tipousuario === 'clinica' && (
-              <DrawerItem itemText="Por psicólogo" itemLink='/agenda/psicologos'>
+              <DrawerItem
+                itemText="Por psicólogo"
+                itemLink="/agenda/psicologos"
+              >
                 <SupervisorAccountIcon />
               </DrawerItem>
             )}
-            <DrawerItem itemText="Por paciente" itemLink="/agenda/pacientes">
-              <PersonIcon />
-            </DrawerItem>
+            {tipousuario !== 'psicologo_vinculado' && (
+              <DrawerItem itemText="Por paciente" itemLink="/agenda/pacientes">
+                <PersonIcon />
+              </DrawerItem>
+            )}
           </List>
           <Divider />
         </Collapse>
         <DrawerItem itemLink="/pacientes" itemText="Pacientes">
           <PersonIcon />
         </DrawerItem>
-        <DrawerItem itemLink="/psicologos" itemText="Alunos">
-          <AssignmentIndIcon />
-        </DrawerItem>
+        {tipousuario === 'clinica' && (
+          <DrawerItem itemLink="/psicologos" itemText="Alunos">
+            <AssignmentIndIcon />
+          </DrawerItem>
+        )}
         {(tipousuario === 'clinica' ||
           tipousuario === 'secretario_vinculado') && (
           <DrawerItem itemLink="/clinicas" itemText="Clínica">
