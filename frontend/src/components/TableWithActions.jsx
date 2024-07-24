@@ -73,27 +73,29 @@ export default function TableWithActions({
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <Toolbar
-          sx={{
-            pl: { sm: 2 },
-            pr: { xs: 1, sm: 1 },
-          }}
-        >
-          <Typography
-            sx={{ flex: '1 1 100%' }}
-            variant="h"
-            id="tableTitle"
-            component="div"
+        {(title || addFunction) && (
+          <Toolbar
+            sx={{
+              pl: { sm: 2 },
+              pr: { xs: 1, sm: 1 },
+            }}
           >
-            {title}
-          </Typography>
+            <Typography
+              sx={{ flex: '1 1 100%' }}
+              variant="h"
+              id="tableTitle"
+              component="div"
+            >
+              {title}
+            </Typography>
 
-          {addFunction && (
-            <Tooltip title={`Adicionar ${title}`} disableInteractive>
-              <IconButton onClick={addFunction}>{addIcon}</IconButton>
-            </Tooltip>
-          )}
-        </Toolbar>
+            {addFunction && (
+              <Tooltip title={`Adicionar ${title}`} disableInteractive>
+                <IconButton onClick={addFunction}>{addIcon}</IconButton>
+              </Tooltip>
+            )}
+          </Toolbar>
+        )}
         <TableContainer>
           <Table size="medium">
             <TableHead>

@@ -38,6 +38,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import EventRepeatIcon from '@mui/icons-material/EventRepeat';
+import HistoryDialog from './HistoryDialog';
 
 export default function PatientDetails() {
   const [order, setOrder] = useState('asc');
@@ -55,6 +56,10 @@ export default function PatientDetails() {
   const [isOpenConfirmation, setIsOpenConfirmation] = useState(false);
   const [paciente, setPaciente] = useState(null);
   const [nextAppointment, setNextAppointment] = useState(null);
+
+  const [isOpenHistory, setIsOpenHistory] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  const [recordType, setRecordType] = useState('');
 
   const { usuarioId: usuario_id } = useAuth();
 
@@ -140,6 +145,16 @@ export default function PatientDetails() {
     }
   };
 
+  const handleEvolutionHistoryModal = (historyArray) => {
+    setSelectedRecord(historyArray);
+    setRecordType(
+      `Evolução da Sessão: ${dayjs(selectedEvolution?.session_date).format(
+        'DD/MM/YYYY [às] HH:mm'
+      )}`
+    );
+    setIsOpenHistory(true);
+  };
+
   let isMounted = false;
   useEffect(() => {
     if (!isMounted) {
@@ -220,6 +235,11 @@ export default function PatientDetails() {
                         setReadOnly(true);
                         setSelectedEvolution(evolution);
                         setIsOpenEvolutionForm(true);
+                      }}
+                      onHistory={() => {
+                        handleEvolutionHistoryModal(
+                          evolution.evolution_changelog
+                        );
                       }}
                     />
                   ))}
@@ -471,6 +491,12 @@ export default function PatientDetails() {
         fetchEvolutions={fetchEvolutions}
         sessions={evolutions}
         expectationsAnamneseOptions={anamnesis}
+      />
+      <HistoryDialog
+        open={isOpenHistory}
+        setOpen={setIsOpenHistory}
+        recordType={recordType}
+        record={selectedRecord}
       />
     </Box>
   );

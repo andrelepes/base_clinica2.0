@@ -8,6 +8,7 @@ import {
 import IconButton from '@mui/material/IconButton';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import HistoryIcon from '@mui/icons-material/History';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Collapse from '@mui/material/Collapse';
@@ -24,7 +25,12 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAuth } from '../../contexts/AuthContext';
 
-export default function EvolutionDetailsRow({ evolution, onEdit, onInfo }) {
+export default function EvolutionDetailsRow({
+  evolution,
+  onEdit,
+  onInfo,
+  onHistory,
+}) {
   const {
     arrival_mood_state,
     session_date,
@@ -59,6 +65,15 @@ export default function EvolutionDetailsRow({ evolution, onEdit, onInfo }) {
                 <VisibilityIcon color="primary" />
               </Tooltip>
             </IconButton>
+            <IconButton aria-label="history" onClick={onHistory}>
+              <Tooltip
+                title="Ver Histórico de alterações da Evolução"
+                arrow
+                disableInteractive
+              >
+                <HistoryIcon color="success" />
+              </Tooltip>
+            </IconButton>
           </Stack>
         </TableCell>
         <TableCell component="th" scope="row">
@@ -71,9 +86,13 @@ export default function EvolutionDetailsRow({ evolution, onEdit, onInfo }) {
               moodStates.find((mood) => mood.id === arrival_mood_state)?.value
             }
             readOnly
+            sx={{verticalAlign: 'bottom'}}
           />{' '}
-          {arrival_mood_state &&
-            moodStates.find((mood) => mood.id === arrival_mood_state)?.title}
+          {arrival_mood_state && (
+            <Typography variant="h">
+              {moodStates.find((mood) => mood.id === arrival_mood_state)?.title}
+            </Typography>
+          )}
         </TableCell>
         <TableCell align="left">
           <Rating
@@ -82,9 +101,16 @@ export default function EvolutionDetailsRow({ evolution, onEdit, onInfo }) {
               moodStates.find((mood) => mood.id === departure_mood_state)?.value
             }
             readOnly
+            sx={{verticalAlign: 'bottom'}}
           />{' '}
-          {departure_mood_state &&
-            moodStates.find((mood) => mood.id === departure_mood_state)?.title}
+          {departure_mood_state && (
+            <Typography variant="h">
+              {
+                moodStates.find((mood) => mood.id === departure_mood_state)
+                  ?.title
+              }
+            </Typography>
+          )}
         </TableCell>
         <TableCell>{evolution_status ? 'Feita' : 'Pendente'}</TableCell>
       </TableRow>
