@@ -44,7 +44,7 @@ export default function EvolutionDetailsRow({
     usuario_id,
   } = evolution;
 
-  const { usuarioId } = useAuth();
+  const { usuarioId, tipousuario } = useAuth();
 
   // const [open, setOpen] = useState(false);
 
@@ -53,27 +53,32 @@ export default function EvolutionDetailsRow({
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
         <TableCell>
           <Stack direction="row" spacing={1}>
-            {usuarioId === usuario_id && (
-              <IconButton aria-label="edit" onClick={onEdit}>
-                <Tooltip title="Editar Evolução" arrow disableInteractive>
-                  <EditIcon />
-                </Tooltip>
-              </IconButton>
-            )}
+            <IconButton
+              aria-label="edit"
+              onClick={onEdit}
+              disabled={usuarioId !== usuario_id}
+            >
+              <Tooltip title="Editar Evolução" arrow disableInteractive>
+                <EditIcon />
+              </Tooltip>
+            </IconButton>
+
             <IconButton aria-label="info" onClick={onInfo}>
               <Tooltip title="Ver Evolução" arrow disableInteractive>
                 <VisibilityIcon color="primary" />
               </Tooltip>
             </IconButton>
-            <IconButton aria-label="history" onClick={onHistory}>
-              <Tooltip
-                title="Ver Histórico de alterações da Evolução"
-                arrow
-                disableInteractive
-              >
-                <HistoryIcon color="success" />
-              </Tooltip>
-            </IconButton>
+            {tipousuario === 'clinica' && (
+              <IconButton aria-label="history" onClick={onHistory}>
+                <Tooltip
+                  title="Ver Histórico de alterações da Evolução"
+                  arrow
+                  disableInteractive
+                >
+                  <HistoryIcon color="success" />
+                </Tooltip>
+              </IconButton>
+            )}
           </Stack>
         </TableCell>
         <TableCell component="th" scope="row">
@@ -86,7 +91,7 @@ export default function EvolutionDetailsRow({
               moodStates.find((mood) => mood.id === arrival_mood_state)?.value
             }
             readOnly
-            sx={{verticalAlign: 'bottom'}}
+            sx={{ verticalAlign: 'bottom' }}
           />{' '}
           {arrival_mood_state && (
             <Typography variant="h">
@@ -101,7 +106,7 @@ export default function EvolutionDetailsRow({
               moodStates.find((mood) => mood.id === departure_mood_state)?.value
             }
             readOnly
-            sx={{verticalAlign: 'bottom'}}
+            sx={{ verticalAlign: 'bottom' }}
           />{' '}
           {departure_mood_state && (
             <Typography variant="h">

@@ -1,7 +1,8 @@
 const db = require('../database/database');
 
 class Evolutions {
-  async findAllByUserIdAndPatientId(userId, patientId) {
+  async findAllByPatientId(tipousuario, patientId) {
+    const isClinica = tipousuario === 'clinica';
     const query = `
     SELECT 
       e.evolution_id, 
@@ -16,8 +17,10 @@ class Evolutions {
       e.departure_mood_state, 
       e.therapist_notes, 
       e.evolution_status, 
-      a.data_hora_inicio AS session_date,
-      COALESCE(
+      a.data_hora_inicio AS session_date
+      ${
+        isClinica
+          ? `,COALESCE(
         json_agg(
           json_build_object(
             'nome_modificador', u.nome_usuario,
@@ -26,20 +29,29 @@ class Evolutions {
           )
         ) FILTER (WHERE ec.evolution_id IS NOT NULL), 
         '[]'
-      ) AS evolution_changelog
+      ) AS evolution_changelog`
+          : ``
+      }
     FROM 
       evolutions e
     INNER JOIN 
       agendamentos a ON e.agendamento_id = a.agendamento_id
-    LEFT JOIN
-      evolution_changelog ec ON e.evolution_id = ec.evolution_id
-    LEFT JOIN 
-      usuarios u ON ec.usuario_id = u.usuario_id
-    
+    ${
+      isClinica
+        ? `LEFT JOIN
+          evolution_changelog ec ON e.evolution_id = ec.evolution_id
+       LEFT JOIN 
+          usuarios u ON ec.usuario_id = u.usuario_id  `
+        : ''
+    }     
     WHERE 
-      e.usuario_id = ${userId} AND e.paciente_id = ${patientId}
-    GROUP BY
-      e.evolution_id, a.data_hora_inicio`;
+      e.paciente_id = ${patientId}
+    ${
+      isClinica
+        ? `GROUP BY
+      e.evolution_id, a.data_hora_inicio`
+        : ''
+    }`;
     try {
       return db.any(query);
     } catch (error) {

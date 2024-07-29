@@ -13,7 +13,7 @@ evolutionsRoutes.post(
 evolutionsRoutes.get(
   '/paciente/:patientId',
   ensureAuthenticated,
-  evolutionsController.getAllEvolutionsByUserIdAndPatientId
+  evolutionsController.getAllEvolutionsByPatientId
 );
 
 evolutionsRoutes.get(

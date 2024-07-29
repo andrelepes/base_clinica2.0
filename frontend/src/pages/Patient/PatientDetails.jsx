@@ -12,6 +12,7 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import Tooltip from '@mui/material/Tooltip';
 import TablePagination from '@mui/material/TablePagination';
+import TableSortLabel from '@mui/material/TableSortLabel';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import Grid from '@mui/material/Grid';
 import TaskIcon from '@mui/icons-material/Task';
@@ -39,12 +40,14 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 import HistoryDialog from './HistoryDialog';
+import { getComparator, stableSort } from '../../utils/sortFunctions';
+import { visuallyHidden } from '@mui/utils';
 
 export default function PatientDetails() {
-  const [order, setOrder] = useState('asc');
-  const [orderBy, setOrderBy] = useState('nome_paciente');
+  const [order, setOrder] = useState('desc');
+  const [orderBy, setOrderBy] = useState('session_date');
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(7);
   const [evolutions, setEvolutions] = useState([]);
   const [anamnesis, setAnamnesis] = useState(null);
   const [closure, setClosure] = useState(null);
@@ -67,9 +70,27 @@ export default function PatientDetails() {
 
   const visibleRows = useMemo(
     () =>
-      evolutions?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [evolutions, page, rowsPerPage]
+      stableSort(evolutions, getComparator(order, orderBy)).slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+      ),
+    [evolutions, page, rowsPerPage, order, orderBy]
   );
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleRequestSort = (property) => (event) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
 
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - evolutions?.length) : 0;
@@ -215,11 +236,79 @@ export default function PatientDetails() {
                 <TableHead>
                   <TableRow>
                     <TableCell>Ações</TableCell>
-                    <TableCell>Data da Sessão</TableCell>
-                    <TableCell>Humor do Paciente na Chegada</TableCell>
+                    <TableCell
+                      sortDirection={orderBy === 'session_date' ? order : false}
+                    >
+                      <TableSortLabel
+                        active={orderBy === 'session_date'}
+                        direction={orderBy === 'session_date' ? order : 'desc'}
+                        onClick={handleRequestSort('session_date')}
+                      >
+                        Data da Sessão
+                        {orderBy === 'session_date' ? (
+                          <Box component="span" sx={visuallyHidden}>
+                            {order === 'desc'
+                              ? 'sorted descending'
+                              : 'sorted ascending'}
+                          </Box>
+                        ) : null}
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={orderBy === 'arrival_mood_state'}
+                        direction={
+                          orderBy === 'arrival_mood_state' ? order : 'desc'
+                        }
+                        onClick={handleRequestSort('arrival_mood_state')}
+                      >
+                        Humor do Paciente na Chegada
+                        {orderBy === 'arrival_mood_state' ? (
+                          <Box component="span" sx={visuallyHidden}>
+                            {order === 'desc'
+                              ? 'sorted descending'
+                              : 'sorted ascending'}
+                          </Box>
+                        ) : null}
+                      </TableSortLabel>
+                    </TableCell>
 
-                    <TableCell>Humor do Paciente na Saída</TableCell>
-                    <TableCell>Evoluções Pendentes</TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={orderBy === 'departure_mood_state'}
+                        direction={
+                          orderBy === 'departure_mood_state' ? order : 'desc'
+                        }
+                        onClick={handleRequestSort('departure_mood_state')}
+                      >
+                        Humor do Paciente na Saída
+                        {orderBy === 'departure_mood_state' ? (
+                          <Box component="span" sx={visuallyHidden}>
+                            {order === 'desc'
+                              ? 'sorted descending'
+                              : 'sorted ascending'}
+                          </Box>
+                        ) : null}
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={orderBy === 'evolution_status'}
+                        direction={
+                          orderBy === 'evolution_status' ? order : 'desc'
+                        }
+                        onClick={handleRequestSort('evolution_status')}
+                      >
+                        Evoluções Pendentes
+                        {orderBy === 'evolution_status' ? (
+                          <Box component="span" sx={visuallyHidden}>
+                            {order === 'desc'
+                              ? 'sorted descending'
+                              : 'sorted ascending'}
+                          </Box>
+                        ) : null}
+                      </TableSortLabel>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -249,23 +338,23 @@ export default function PatientDetails() {
                     </TableRow>
                   )}
                 </TableBody>
-                {/* <TableFooter>
-              <TableRow>
-                <TablePagination
-                  rowsPerPageOptions={[
-                    5,
-                    10,
-                    25,
-                    { label: 'Todas', value: -1 },
-                  ]}
-                  count={patients?.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-              </TableRow>
-            </TableFooter> */}
+                <TableFooter>
+                  <TableRow>
+                    <TablePagination
+                      rowsPerPageOptions={[
+                        5,
+                        10,
+                        25,
+                        { label: 'Todas', value: -1 },
+                      ]}
+                      count={evolutions?.length}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                  </TableRow>
+                </TableFooter>
               </Table>
             </TableContainer>
           </Paper>

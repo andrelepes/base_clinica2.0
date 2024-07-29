@@ -13,7 +13,7 @@ export default function HistoryDialog({ recordType, open, setOpen, record }) {
 
   useEffect(() => {
     if (open) {
-      if (record.length > 0) {
+      if (record?.length > 0) {
         const partial = record.map((item) => {
           const data_modificada = dayjs(item.data_atualizacao).format(
             'DD/MM/YYYY [às] HH:mm:ss'
@@ -45,7 +45,7 @@ export default function HistoryDialog({ recordType, open, setOpen, record }) {
         </Toolbar>
       </AppBar>
       <DialogContent>
-        {record.length > 0 ? (
+        {record?.length > 0 ? (
           <TableWithActions
             fields={[
               {

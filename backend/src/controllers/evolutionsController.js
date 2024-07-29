@@ -2,12 +2,12 @@ const Evolutions = require('../models/Evolutions');
 const Agendamentos = require('../models/Agendamentos');
 
 class EvolutionsController {
-  async getAllEvolutionsByUserIdAndPatientId(req, res) {
+  async getAllEvolutionsByPatientId(req, res) {
     try {
       const evolutions = new Evolutions();
       const patientId = req.params.patientId;
-      const allEvolutions = await evolutions.findAllByUserIdAndPatientId(
-        req.user,
+      const allEvolutions = await evolutions.findAllByPatientId(
+        req.tipousuario,
         patientId
       );
       res.status(200).json(allEvolutions);
