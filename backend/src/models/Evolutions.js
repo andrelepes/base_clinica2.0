@@ -17,7 +17,19 @@ class Evolutions {
       e.departure_mood_state, 
       e.therapist_notes, 
       e.evolution_status, 
-      a.data_hora_inicio AS session_date
+      a.data_hora_inicio AS session_date,
+      COALESCE(
+        CASE
+          WHEN arc.archive_id IS NULL THEN '{}'
+          ELSE json_build_object(
+            'archive_id', arc.archive_id,
+            'archive_name', arc.archive_name,
+            'archive_mime_type', arc.archive_mime_type,
+            'created_at', arc.created_at          
+          )
+        END,
+        '{}'
+      ) AS archive
       ${
         isClinica
           ? `,COALESCE(
@@ -36,6 +48,8 @@ class Evolutions {
       evolutions e
     INNER JOIN 
       agendamentos a ON e.agendamento_id = a.agendamento_id
+    LEFT JOIN
+      archives arc ON e.archive_id = arc.archive_id
     ${
       isClinica
         ? `LEFT JOIN
@@ -49,10 +63,11 @@ class Evolutions {
     ${
       isClinica
         ? `GROUP BY
-      e.evolution_id, a.data_hora_inicio`
+      arc.archive_id, e.evolution_id, a.data_hora_inicio`
         : ''
     }`;
     try {
+      console.log(query);
       return db.any(query);
     } catch (error) {
       throw error;
@@ -254,6 +269,54 @@ class Evolutions {
     query += ` ORDER BY a.data_hora_inicio ASC;`;
     try {
       await db.query(query);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async uploadArchiveWithHistory(
+    { archive_id, archive_name, archive_mime_type, archive_localization },
+    evolution_id,
+    user_id
+  ) {
+    try {
+      const query = `INSERT INTO archives 
+        (archive_id, archive_name, archive_localization, archive_mime_type) 
+      VALUES
+        ('${archive_id}', '${archive_name}', '${archive_localization}', '${archive_mime_type}')
+        `;
+      const updateQuery = `
+      UPDATE evolutions
+      SET archive_id = '${archive_id}'
+      WHERE evolution_id = ${evolution_id}
+      `;
+      const insertChangelogQuery = `
+        INSERT INTO evolution_changelog (
+          evolution_id,
+          old_record,
+          usuario_id 
+        ) VALUES (
+          ${evolution_id},
+          '${JSON.stringify({ archive_id })}',
+          ${user_id}
+        )
+      `;
+      await db.tx(async (t) => {
+        await t.none(query);
+        await t.none(updateQuery);
+        await t.none(insertChangelogQuery);
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getEvolutionArchiveById(archive_id) {
+    try {
+      const query = `
+        SELECT * FROM archives WHERE archive_id = '${archive_id}'
+      `;
+
+      return await db.oneOrNone(query);
     } catch (error) {
       throw error;
     }

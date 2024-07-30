@@ -8,6 +8,7 @@ import {
 import IconButton from '@mui/material/IconButton';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
 import HistoryIcon from '@mui/icons-material/History';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
@@ -30,6 +31,7 @@ export default function EvolutionDetailsRow({
   onEdit,
   onInfo,
   onHistory,
+  onAttach,
 }) {
   const {
     arrival_mood_state,
@@ -79,6 +81,14 @@ export default function EvolutionDetailsRow({
                 </Tooltip>
               </IconButton>
             )}
+            <IconButton
+              aria-label="attach"
+              onClick={onAttach}
+            >
+              <Tooltip title="Anexar arquivo à Evolução" arrow disableInteractive>
+                <AttachFileIcon />
+              </Tooltip>
+            </IconButton>
           </Stack>
         </TableCell>
         <TableCell component="th" scope="row">

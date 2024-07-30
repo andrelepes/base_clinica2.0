@@ -1,5 +1,9 @@
 const Evolutions = require('../models/Evolutions');
 const Agendamentos = require('../models/Agendamentos');
+const pathFunction = require('path');
+const { deleteFile } = require('../utils/file');
+const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 
 class EvolutionsController {
   async getAllEvolutionsByPatientId(req, res) {
@@ -136,7 +140,7 @@ class EvolutionsController {
         res.status(200).send('Evolution updated successfully');
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       res.status(500).json({ error: error.message });
     }
   }
@@ -165,6 +169,70 @@ class EvolutionsController {
       });
 
       res.status(200).send('Pending Evolutions Generated');
+    } catch (error) {
+      console.log(error);
+      res.status(500).send('Erro interno do servidor');
+    }
+  }
+
+  async uploadArchive(req, res) {
+    const evolution_id = req.params.evolutionId;
+    const { originalname, mimetype, path } = req.file;
+    const user = req.user;
+
+    try {
+      const archive = {
+        archive_id: uuidv4(),
+        archive_name: originalname,
+        archive_mime_type: mimetype,
+        archive_localization: pathFunction.relative(__dirname, path),
+      };
+      const evolutions = new Evolutions();
+
+      const evolution = await evolutions.findByIdAndUserId(
+        req.params.evolutionId,
+        req.user
+      );
+
+      if (!evolution) {
+        return res.status(404).send('Evolution not found');
+      }
+
+      await evolutions.uploadArchiveWithHistory(archive, evolution_id, user);
+      res.status(200).send('Arquivo enviado com sucesso');
+    } catch (error) {
+      deleteFile(path);
+      res.status(500).send('Erro interno do servidor');
+    }
+  }
+  async getEvolutionArchiveById(req, res) {
+    try {
+      const evolutions = new Evolutions();
+      const archive = await evolutions.getEvolutionArchiveById(
+        req.params.archive_id
+      );
+      if (!archive) {
+        return res.status(404).send('Arquivo não encontrado');
+      }
+
+      const localization = pathFunction.join(
+        __dirname,
+        archive.archive_localization
+      );
+
+      fs.access(localization, fs.constants.F_OK, (err) => {
+        if (err) {
+          res.status(404).send({ error: 'File not found' });
+        }
+
+        res.download(localization, archive.archive_name, (err) => {
+          if (err) {
+            res.status(500).send({
+              error: 'Could not download the file. ' + err.message,
+            });
+          }
+        });
+      });
     } catch (error) {
       console.log(error);
       res.status(500).send('Erro interno do servidor');

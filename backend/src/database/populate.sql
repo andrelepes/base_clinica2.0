@@ -1192,29 +1192,50 @@ DROP COLUMN session_date;
 
 -- Added on 18/07/2024 by gabrielpaiv
 
-ALTER TABLE autorizacoes
+ALTER TABLE public.autorizacoes
 ADD CONSTRAINT unique_vinculo UNIQUE (usuario_id, paciente_id, clinica_id);
 
 -- Added on 22/07/2024 by gabrielpaiv
 
 ALTER TABLE
-  evolutions
+  public.evolutions
 ADD COLUMN
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
 ALTER TABLE
-  evolutions
+  public.evolutions
 ADD COLUMN
   archive_id UUID;
 
 CREATE TABLE
-  evolution_changelog (
+  public.evolution_changelog (
     evolution_change_id SERIAL PRIMARY KEY,
     evolution_id INTEGER NOT NULL REFERENCES evolutions (evolution_id),
     old_record JSON NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     usuario_id INTEGER NOT NULL REFERENCES usuarios (usuario_id)
   );
+
+-- Added on 29/07/2024 by gabrielpaiv
+
+CREATE TABLE
+  public.archives (
+    archive_id uuid NOT NULL,
+    archive_name character varying(255) NOT NULL,
+    archive_localization character varying(255) NOT NULL,
+    created_at timestamp without time zone NULL DEFAULT CURRENT_TIMESTAMP,
+    archive_mime_type character varying(50) NOT NULL
+  );
+
+ALTER TABLE
+  public.archives
+ADD
+  CONSTRAINT archives_pkey PRIMARY KEY (archive_id);
+
+ALTER TABLE public.evolutions
+ADD CONSTRAINT evolutions_archive_id_fkey
+FOREIGN KEY (archive_id) 
+REFERENCES public.archives(archive_id);
 
 --
 -- PostgreSQL database dump complete

@@ -42,6 +42,7 @@ import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 import HistoryDialog from './HistoryDialog';
 import { getComparator, stableSort } from '../../utils/sortFunctions';
 import { visuallyHidden } from '@mui/utils';
+import AttachementDialog from './AttachmentDialog';
 
 export default function PatientDetails() {
   const [order, setOrder] = useState('desc');
@@ -60,6 +61,7 @@ export default function PatientDetails() {
   const [paciente, setPaciente] = useState(null);
   const [nextAppointment, setNextAppointment] = useState(null);
 
+  const [isOpenAttachmentDialog, setIsOpenAttachmentDialog] = useState(false);
   const [isOpenHistory, setIsOpenHistory] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [recordType, setRecordType] = useState('');
@@ -330,6 +332,10 @@ export default function PatientDetails() {
                           evolution.evolution_changelog
                         );
                       }}
+                      onAttach={() => {
+                        setSelectedRecord(evolution);
+                        setIsOpenAttachmentDialog(true);
+                      }}
                     />
                   ))}
                   {emptyRows > 0 && (
@@ -586,6 +592,12 @@ export default function PatientDetails() {
         setOpen={setIsOpenHistory}
         recordType={recordType}
         record={selectedRecord}
+      />
+      <AttachementDialog
+        open={isOpenAttachmentDialog}
+        setOpen={setIsOpenAttachmentDialog}
+        selectedRecord={selectedRecord}
+        setSelectedRecord={setSelectedRecord}
       />
     </Box>
   );

@@ -1,6 +1,21 @@
 const ensureAuthenticated = require('../middlewares/ensureAuthenticated.js');
 const evolutionsRoutes = require('express').Router();
 const EvolutionsController = require('../controllers/evolutionsController');
+const multer = require('multer');
+const path = require('path');
+
+const uploadConfig = require('../config/upload');
+
+const uploadPath = path.join(
+  __dirname,
+  '..',
+  '..',
+  'uploads',
+  'evolutions',
+  'archive'
+);
+
+const uploadArchive = multer(uploadConfig.upload(uploadPath));
 
 const evolutionsController = new EvolutionsController();
 
@@ -23,9 +38,22 @@ evolutionsRoutes.get(
 );
 
 evolutionsRoutes.get(
+  '/archive/:archive_id',
+  ensureAuthenticated,
+  evolutionsController.getEvolutionArchiveById
+);
+
+evolutionsRoutes.get(
   '/:evolutionId',
   ensureAuthenticated,
   evolutionsController.getEvolutionByIdAndUserId
+);
+
+evolutionsRoutes.put(
+  '/archive/:evolutionId',
+  ensureAuthenticated,
+  uploadArchive.single('archive'),
+  evolutionsController.uploadArchive
 );
 
 evolutionsRoutes.put(
