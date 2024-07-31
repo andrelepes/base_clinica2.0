@@ -90,7 +90,7 @@ export default function AttachementDialog({
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
             {selectedRecord?.archive?.archive_id
               ? usuarioId === selectedRecord?.usuario_id
-                ? 'Reenviar'
+                ? 'Reenviar ou Baixar'
                 : 'Baixar'
               : 'Enviar'}{' '}
             arquivo
@@ -112,6 +112,7 @@ export default function AttachementDialog({
             variant="contained"
             tabIndex={-1}
             onClick={handleDownload}
+            sx={{marginBottom: '16px'}}
           >
             {selectedRecord.archive.archive_name}
             <CloudDownloadIcon

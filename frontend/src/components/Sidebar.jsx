@@ -127,8 +127,7 @@ export default function Sidebar() {
             <AssignmentIndIcon />
           </DrawerItem>
         )}
-        {(tipousuario === 'clinica' ||
-          tipousuario === 'secretario_vinculado') && (
+        {tipousuario === 'clinica' && (
           <DrawerItem itemLink="/clinicas" itemText="Clínica">
             <BusinessIcon />
           </DrawerItem>

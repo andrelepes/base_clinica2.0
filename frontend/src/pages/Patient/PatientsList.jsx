@@ -27,6 +27,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { getComparator, stableSort } from '../../utils/sortFunctions';
 import ScheduleForm from '../Appointment/ScheduleForm';
+import PatientDetailsDialog from './PatientDetailsDialog';
 
 export default function PatientsList() {
   const [order, setOrder] = useState('asc');
@@ -35,11 +36,14 @@ export default function PatientsList() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [patients, setPatients] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
+
+  const [isOpenPatientDetailDialog, setIsOpenPatientDetailDialog] =
+    useState(false);
   const [isOpenPatientForm, setIsOpenPatientForm] = useState(false);
   const [isOpenScheduleForm, setIsOpenScheduleForm] = useState(false);
   const [isOpenConfirmation, setIsOpenConfirmation] = useState(false);
 
-  const { usuarioId: usuario_id } = useAuth();
+  const { usuarioId: usuario_id, tipousuario } = useAuth();
 
   const navigate = useNavigate();
 
@@ -119,6 +123,14 @@ export default function PatientsList() {
       toast.error('Ocorreu um erro ao inativar o paciente');
     }
   };
+  const handleInfo = (patient) => {
+    if (tipousuario !== 'secretario_vinculado') {
+      navigate(`/pacientes/${patient.paciente_id}`);
+    } else {
+      setSelectedPatient(patient);
+      setIsOpenPatientDetailDialog(true);
+    }
+  };
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
@@ -139,7 +151,7 @@ export default function PatientsList() {
 
           <Tooltip title="Agendar Horário" disableInteractive>
             <IconButton onClick={() => setIsOpenScheduleForm(true)}>
-              <CalendarMonthIcon color='success' fontSize="large" />
+              <CalendarMonthIcon color="success" fontSize="large" />
             </IconButton>
           </Tooltip>
           <Tooltip title="Adicionar Paciente" disableInteractive>
@@ -203,11 +215,15 @@ export default function PatientsList() {
                   key={patient.paciente_id}
                   onDelete={() => handleConfirmDelete(patient)}
                   onEdit={() => handleEdit(patient)}
-                  onInfo={() => navigate(`/pacientes/${patient.paciente_id}`)}
+                  onInfo={() => handleInfo(patient)}
                   onSchedule={() => handleSchedule(patient)}
                   assignedPsychologists={
                     patient.psicologos_autorizados?.length > 0
-                      ? patient.psicologos_autorizados.map(psychologist=> {return psychologist.nome_psicologo}).join(', ')
+                      ? patient.psicologos_autorizados
+                          .map((psychologist) => {
+                            return psychologist.nome_psicologo;
+                          })
+                          .join(', ')
                       : undefined
                   }
                 />
@@ -260,6 +276,12 @@ export default function PatientsList() {
         title={`Inativar ${selectedPatient?.nome_paciente}`}
         message="Tem certeza que deseja inativar o paciente?"
         confirmAction={handleDelete}
+      />
+      <PatientDetailsDialog
+        open={isOpenPatientDetailDialog}
+        setOpen={setIsOpenPatientDetailDialog}
+        selectedPatient={selectedPatient}
+        setSelectedPatient={setSelectedPatient}
       />
     </Box>
   );
