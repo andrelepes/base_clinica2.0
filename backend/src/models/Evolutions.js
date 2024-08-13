@@ -4,6 +4,77 @@ class Evolutions {
   async findAllByPatientId(tipousuario, patientId) {
     const isClinica = tipousuario === 'clinica';
     const query = `
+    WITH ArchiveCTE AS (
+      SELECT e.evolution_id,
+        json_agg(
+          json_build_object(
+            'archive_id',
+            arc.archive_id,
+            'archive_name',
+            arc.archive_name,
+            'archive_mime_type',
+            arc.archive_mime_type,
+            'created_at',
+            arc.created_at
+          )
+        ) FILTER (
+          WHERE arc.archive_id IS NOT NULL
+        ) AS archive
+      FROM evolutions e
+        LEFT JOIN archives arc ON e.evolution_id = arc.evolution_id
+      GROUP BY e.evolution_id
+    ),
+    SignCTE AS (
+      SELECT 
+        e.evolution_id,
+        (SELECT count(*) FROM evolution_sign WHERE status = true AND evolution_id = e.evolution_id) as signatures,
+        json_agg(
+          json_build_object(
+            'evolution_sign_id',
+            esgn.evolution_sign_id,
+            'status',
+            esgn.status,
+            'nome_usuario',
+            (
+              SELECT nome_usuario
+              FROM usuarios
+              WHERE usuario_id = esgn.usuario_id
+            ),
+            'signed_at',
+            esgn.signed_at
+          )
+        ) FILTER (
+          WHERE esgn.evolution_sign_id IS NOT NULL
+        ) AS evolution_signs
+      FROM evolutions e
+        LEFT JOIN evolution_sign esgn ON e.evolution_id = esgn.evolution_id
+      GROUP BY e.evolution_id
+    )${
+      isClinica
+        ? `, ChangelogCTE AS (
+        SELECT e.evolution_id,
+          json_agg(
+            json_build_object(
+              'nome_modificador',
+              (
+                SELECT nome_usuario
+                FROM usuarios
+                WHERE usuario_id = ec.usuario_id
+              ),
+              'data_atualizacao',
+              ec.updated_at,
+              'dados_antigos',
+              ec.old_record
+            )
+          ) FILTER (
+            WHERE ec.evolution_id IS NOT NULL
+          ) AS evolution_changelog
+        FROM evolutions e
+          LEFT JOIN evolution_changelog ec ON e.evolution_id = ec.evolution_id
+        GROUP BY e.evolution_id
+      )`
+        : ''
+    }
     SELECT 
       e.evolution_id, 
       e.usuario_id, 
@@ -18,56 +89,30 @@ class Evolutions {
       e.therapist_notes, 
       e.evolution_status, 
       a.data_hora_inicio AS session_date,
-      COALESCE(
-        CASE
-          WHEN arc.archive_id IS NULL THEN '{}'
-          ELSE json_build_object(
-            'archive_id', arc.archive_id,
-            'archive_name', arc.archive_name,
-            'archive_mime_type', arc.archive_mime_type,
-            'created_at', arc.created_at          
-          )
-        END,
-        '{}'
-      ) AS archive
-      ${
+      sc.signatures,
+      COALESCE(ac.archive, '[]') AS archive,
+      COALESCE(sc.evolution_signs, '[]') AS evolution_signs${
         isClinica
-          ? `,COALESCE(
-        json_agg(
-          json_build_object(
-            'nome_modificador', u.nome_usuario,
-            'data_atualizacao', ec.updated_at,
-            'dados_antigos', ec.old_record
-          )
-        ) FILTER (WHERE ec.evolution_id IS NOT NULL), 
-        '[]'
-      ) AS evolution_changelog`
+          ? `, COALESCE(logc.evolution_changelog, '[]') AS evolution_changelog`
           : ``
       }
     FROM 
       evolutions e
     INNER JOIN 
       agendamentos a ON e.agendamento_id = a.agendamento_id
-    LEFT JOIN
-      archives arc ON e.archive_id = arc.archive_id
+    LEFT JOIN 
+      ArchiveCTE ac ON e.evolution_id = ac.evolution_id
+    LEFT JOIN 
+      SignCTE sc ON e.evolution_id = sc.evolution_id
     ${
       isClinica
         ? `LEFT JOIN
-          evolution_changelog ec ON e.evolution_id = ec.evolution_id
-       LEFT JOIN 
-          usuarios u ON ec.usuario_id = u.usuario_id  `
+          ChangelogCTE logc ON e.evolution_id = logc.evolution_id`
         : ''
     }     
     WHERE 
-      e.paciente_id = ${patientId}
-    ${
-      isClinica
-        ? `GROUP BY
-      arc.archive_id, e.evolution_id, a.data_hora_inicio`
-        : ''
-    }`;
+      e.paciente_id = ${patientId}`;
     try {
-      console.log(query);
       return db.any(query);
     } catch (error) {
       throw error;
@@ -205,7 +250,13 @@ class Evolutions {
           evolution_status = \${evolution_status}
         WHERE 
           evolution_id = ${evolutionId}
-          AND usuario_id = \${usuario_id}
+          AND usuario_id = \${usuario_id};
+        UPDATE 
+          evolution_sign
+        SET 
+          status = false
+        WHERE 
+          evolution_id = ${evolutionId};
       `;
 
     try {
@@ -281,14 +332,17 @@ class Evolutions {
   ) {
     try {
       const query = `INSERT INTO archives 
-        (archive_id, archive_name, archive_localization, archive_mime_type) 
+        (archive_id, archive_name, archive_localization, archive_mime_type, evolution_id) 
       VALUES
-        ('${archive_id}', '${archive_name}', '${archive_localization}', '${archive_mime_type}')
+        ('${archive_id}', '${archive_name}', '${archive_localization}', '${archive_mime_type}', ${evolution_id})
         `;
       const updateQuery = `
       UPDATE evolutions
       SET archive_id = '${archive_id}'
-      WHERE evolution_id = ${evolution_id}
+      WHERE evolution_id = ${evolution_id};
+      UPDATE evolution_sign
+      SET status = false
+      WHERE evolution_id = ${evolution_id};
       `;
       const insertChangelogQuery = `
         INSERT INTO evolution_changelog (
@@ -317,6 +371,43 @@ class Evolutions {
       `;
 
       return await db.oneOrNone(query);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteEvolutionArchiveById(archive_id) {
+    try {
+      const query = `
+        DELETE FROM archives WHERE archive_id = '${archive_id}'
+      `;
+      await db.none(query);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findEvolutionSignature(usuario_id, evolution_id) {
+    const query = `SELECT * FROM evolution_sign WHERE usuario_id = ${usuario_id} AND evolution_id = ${evolution_id}`;
+
+    try {
+      return await db.oneOrNone(query);
+    } catch (error) {
+      throw error;
+    }
+  }
+  async signEvolution(
+    usuario_id,
+    evolution_id,
+    signatureId,
+    signature_status = false
+  ) {
+    const query = signature_status
+      ? `UPDATE evolution_sign SET status = ${signature_status} WHERE evolution_sign_id = '${signatureId}'`
+      : `INSERT INTO evolution_sign (usuario_id, evolution_id, evolution_sign_id, status) VALUES (${usuario_id}, ${evolution_id}, '${signatureId}', ${true})`;
+
+    try {
+      await db.none(query);
     } catch (error) {
       throw error;
     }

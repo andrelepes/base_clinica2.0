@@ -6,10 +6,7 @@ const path = require('path');
 
 const uploadConfig = require('../config/upload');
 
-const uploadPath = path.join(
-  __dirname,
-  '..',
-  '..',
+const uploadPath = path.resolve(
   'uploads',
   'evolutions',
   'archive'
@@ -23,6 +20,12 @@ evolutionsRoutes.post(
   '/paciente/:patientId',
   ensureAuthenticated,
   evolutionsController.createEvolutionForUserIdAndPatientId
+);
+
+evolutionsRoutes.put(
+  '/sign',
+  ensureAuthenticated,
+  evolutionsController.signEvolution
 );
 
 evolutionsRoutes.get(
@@ -63,9 +66,16 @@ evolutionsRoutes.put(
 );
 
 evolutionsRoutes.delete(
+  '/archive/:archiveId',
+  ensureAuthenticated,
+  evolutionsController.deleteEvolutionArchiveById
+)
+
+evolutionsRoutes.delete(
   '/:evolutionId',
   ensureAuthenticated,
   evolutionsController.deleteEvolutionByIdAndUserId
 );
+
 
 module.exports = { evolutionsRoutes };

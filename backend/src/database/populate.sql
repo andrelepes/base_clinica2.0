@@ -1237,6 +1237,36 @@ ADD CONSTRAINT evolutions_archive_id_fkey
 FOREIGN KEY (archive_id) 
 REFERENCES public.archives(archive_id);
 
+-- Added on 31/07/2024 by gabrielpaiv
+
+CREATE TABLE
+  public.evolution_sign (
+    evolution_sign_id uuid PRIMARY KEY,
+    evolution_id INTEGER NOT NULL REFERENCES evolutions (evolution_id),
+    signed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status BOOLEAN NOT NULL,
+    usuario_id INTEGER NOT NULL REFERENCES usuarios (usuario_id)
+  );
+
+
+-- Added on 13/08/2024 by gabrielpa
+
+ALTER TABLE
+  "public"."archives"
+ADD COLUMN
+  "evolution_id" INT NOT NULL;
+
+ALTER TABLE
+  "public"."archives"
+ADD COLUMN
+  "evolution_id" INT NOT NULL;
+
+ALTER TABLE
+  "public"."evolutions"
+ADD
+  CONSTRAINT "evolutions_archive_id_fkey" FOREIGN KEY ("archive_id") REFERENCES "public"."archives" ("archive_id") ON DELETE
+SET
+  NULL;
 --
 -- PostgreSQL database dump complete
 --

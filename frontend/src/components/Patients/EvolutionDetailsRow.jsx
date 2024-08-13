@@ -28,6 +28,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 export default function EvolutionDetailsRow({
   evolution,
+  authorizationTotal,
   onEdit,
   onInfo,
   onHistory,
@@ -44,9 +45,12 @@ export default function EvolutionDetailsRow({
     next_session_plan,
     therapist_notes,
     usuario_id,
+    signatures,
   } = evolution;
 
-  const { usuarioId, tipousuario } = useAuth();
+  const { usuarioId, tipousuario, user } = useAuth();
+
+  const isSigned = evolution?.evolution_signs?.find(item=> item.nome_usuario === user.nome_usuario)?.status;
 
   // const [open, setOpen] = useState(false);
 
@@ -81,11 +85,12 @@ export default function EvolutionDetailsRow({
                 </Tooltip>
               </IconButton>
             )}
-            <IconButton
-              aria-label="attach"
-              onClick={onAttach}
-            >
-              <Tooltip title="Anexar arquivo à Evolução" arrow disableInteractive>
+            <IconButton aria-label="attach" onClick={onAttach}>
+              <Tooltip
+                title="Anexar arquivo à Evolução"
+                arrow
+                disableInteractive
+              >
                 <AttachFileIcon />
               </Tooltip>
             </IconButton>
@@ -127,7 +132,10 @@ export default function EvolutionDetailsRow({
             </Typography>
           )}
         </TableCell>
-        <TableCell>{evolution_status ? 'Feita' : 'Pendente'}</TableCell>
+        <TableCell>{evolution_status ? (isSigned ? 'Feita': 'Pendente de Assinatura') : 'Pendente'}</TableCell>
+        <TableCell>
+          {signatures}/{authorizationTotal}
+        </TableCell>
       </TableRow>
       {/* <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>

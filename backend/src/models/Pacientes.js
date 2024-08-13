@@ -117,7 +117,7 @@ static async filtrarPacientes(nome, status, tipousuario, clinica_id, usuario_id)
   // Método para buscar um paciente por ID
   static async buscarPorId(paciente_id) {
   try {
-    const paciente = await db.oneOrNone('SELECT * FROM pacientes WHERE paciente_id = $1', [paciente_id]);
+    const paciente = await db.oneOrNone('SELECT p.*, (SELECT count(*) FROM autorizacoes WHERE paciente_id = $1) as authorization_total FROM pacientes p WHERE paciente_id = $1', [paciente_id]);
     return paciente;
   } catch (error) {
     console.error('Erro ao buscar paciente por ID:', error);

@@ -238,5 +238,55 @@ class EvolutionsController {
       res.status(500).send('Erro interno do servidor');
     }
   }
+
+  async deleteEvolutionArchiveById(req, res) {
+    try {
+      const evolutions = new Evolutions();
+      const fileExists = await evolutions.getEvolutionArchiveById(
+        req.params.archiveId
+      );
+      if (!fileExists) {
+        return res.status(404).send('Arquivo não encontrado');
+      }
+      deleteFile(fileExists.archive_localization);
+      await evolutions.deleteEvolutionArchiveById(req.params.archiveId);
+      res.status(200).send('Evolução excluída com sucesso');
+    } catch (error) {
+      res.status(500).send('Erro interno do servidor');
+    }
+  }
+
+  async signEvolution(req, res) {
+    const { usuario_id, evolution_id } = req.body;
+
+    try {
+      const evolutions = new Evolutions();
+
+      const signatureExists = await evolutions.findEvolutionSignature(
+        usuario_id,
+        evolution_id
+      );
+
+      if (signatureExists) {
+        await evolutions.signEvolution(
+          usuario_id,
+          evolution_id,
+          signatureExists.evolution_sign_id,
+          true
+        );
+        res.status(200).send('Evolução assinada com sucesso');
+      } else {
+        const evolutionSignId = uuidv4();
+        await evolutions.signEvolution(
+          usuario_id,
+          evolution_id,
+          evolutionSignId
+        );
+        res.status(200).send('Evolução assinada com sucesso');
+      }
+    } catch (error) {
+      res.status(500).send('Erro interno do servidor');
+    }
+  }
 }
 module.exports = EvolutionsController;

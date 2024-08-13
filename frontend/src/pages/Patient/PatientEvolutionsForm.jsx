@@ -49,7 +49,7 @@ export default function PatientEvolutionsForm({
 
   const [arrivalMoodHover, setArrivalMoodHover] = useState(-1);
   const [departureMoodHover, setDepartureMoodHover] = useState(-1);
-  const { usuarioId: usuario_id } = useAuth();
+  const { usuarioId: usuario_id, user } = useAuth();
 
   const { id: paciente_id } = useParams();
 
@@ -111,6 +111,21 @@ export default function PatientEvolutionsForm({
       toast.error(error.response.data.message ?? 'Erro no envio da evolução');
     }
   };
+
+  const handleSign = async () => {
+    try {
+      await api.put('/evolutions/sign', {
+        usuario_id,
+        evolution_id: selectedEvolution.evolution_id,
+      });
+      toast.success('Assinatura realizada com sucesso');
+      fetchEvolutions();
+      handleClose();
+    } catch (error) {
+      toast.error(error.response.data.message ?? 'Erro ao assinar a evolução');
+    }
+  };
+
   const handleClose = () => {
     setAttended('');
     setPunctuality('');
@@ -145,6 +160,18 @@ export default function PatientEvolutionsForm({
               'DD/MM/YYYY [às] HH:mm'
             )}
           </Typography>
+          {selectedEvolution?.evolution_status &&
+            !selectedEvolution?.evolution_signs?.find(
+              (item) => item.nome_usuario == user.nome_usuario
+            )?.status && (
+              <Button
+                color="inherit"
+                onClick={handleSign}
+                sx={{ border: '1px solid', marginRight: 2 }}
+              >
+                Assinar evolução
+              </Button>
+            )}
           {!isRead && (
             <Button autoFocus color="inherit" onClick={handleSubmit}>
               Enviar

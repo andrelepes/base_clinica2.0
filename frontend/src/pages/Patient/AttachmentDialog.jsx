@@ -9,7 +9,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
+import Chip from '@mui/material/Chip';
 import { MuiFileInput } from 'mui-file-input';
 import { toast } from 'react-toastify';
 
@@ -17,23 +17,12 @@ import { useEffect, useState } from 'react';
 import api from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 
-const VisuallyHiddenInput = styled('input')({
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  height: 1,
-  overflow: 'hidden',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  whiteSpace: 'nowrap',
-  width: 1,
-});
-
 export default function AttachementDialog({
   open,
   setOpen,
   selectedRecord,
   setSelectedRecord,
+  fetchEvolutions,
 }) {
   const [archive, setArchive] = useState(null);
 
@@ -62,20 +51,22 @@ export default function AttachementDialog({
       );
 
       toast.success('Arquivo enviado com sucesso!');
+      fetchEvolutions();
+      handleClose();
     } catch (error) {
       toast.error('Ocorreu um erro ao enviar o arquivo');
     }
   };
-  const handleDownload = async () => {
+  const handleDownload = async (archive) => {
     try {
       const response = await api.get(
-        `/evolutions/archive/${selectedRecord.archive.archive_id}`,
+        `/evolutions/archive/${archive.archive_id}`,
         { responseType: 'blob' }
       );
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', selectedRecord.archive.archive_name);
+      link.setAttribute('download', archive.archive_name);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -83,12 +74,23 @@ export default function AttachementDialog({
       toast.error('Ocorreu um erro ao baixar o arquivo');
     }
   };
+
+  const handleDelete = async (archive) => {
+    try {
+      await api.delete(`/evolutions/archive/${archive.archive_id}`);
+      toast.success('Arquivo excluído com sucesso!');
+      fetchEvolutions();
+      handleClose();
+    } catch (error) {
+      toast.error('Ocorreu um erro ao excluir o arquivo');
+    }
+  };
   return (
     <Dialog open={open} onClose={handleClose} keepMounted>
       <AppBar sx={{ position: 'relative', bgcolor: 'primary.main' }}>
         <Toolbar>
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-            {selectedRecord?.archive?.archive_id
+            {selectedRecord?.archive?.length > 0
               ? usuarioId === selectedRecord?.usuario_id
                 ? 'Reenviar ou Baixar'
                 : 'Baixar'
@@ -106,26 +108,28 @@ export default function AttachementDialog({
         </Toolbar>
       </AppBar>
       <DialogContent>
-        {selectedRecord?.archive?.archive_id ? (
-          <Button
-            component="label"
-            variant="contained"
-            tabIndex={-1}
-            onClick={handleDownload}
-            sx={{marginBottom: '16px'}}
-          >
-            {selectedRecord.archive.archive_name}
-            <CloudDownloadIcon
-              sx={{ marginBottom: '3px', marginLeft: '8px' }}
-            />
-          </Button>
-        ) : (
-          usuarioId !== selectedRecord?.usuario_id && (
-            <Typography>
-              Não existe nenhum arquivo para esta evolução
-            </Typography>
-          )
-        )}
+        {selectedRecord?.archive?.length > 0
+          ? selectedRecord.archive.map((archive) => (
+              <Chip
+                variant="outlined"
+                label={archive.archive_name}
+                onClick={() => handleDownload(archive)}
+                sx={{ marginBottom: '16px', marginRight: '16px' }}
+                icon={<CloudDownloadIcon />}
+                onDelete={
+                  usuarioId === selectedRecord?.usuario_id
+                    ? () => {
+                        handleDelete(archive);
+                      }
+                    : ''
+                }
+              />
+            ))
+          : usuarioId !== selectedRecord?.usuario_id && (
+              <Typography>
+                Não existe nenhum arquivo para esta evolução
+              </Typography>
+            )}
 
         {usuarioId === selectedRecord?.usuario_id && (
           <MuiFileInput

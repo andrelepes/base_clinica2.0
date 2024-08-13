@@ -311,6 +311,24 @@ export default function PatientDetails() {
                         ) : null}
                       </TableSortLabel>
                     </TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={orderBy === 'signatures'}
+                        direction={
+                          orderBy === 'signatures' ? order : 'desc'
+                        }
+                        onClick={handleRequestSort('signatures')}
+                      >
+                        Total de Assinaturas
+                        {orderBy === 'signatures' ? (
+                          <Box component="span" sx={visuallyHidden}>
+                            {order === 'desc'
+                              ? 'sorted descending'
+                              : 'sorted ascending'}
+                          </Box>
+                        ) : null}
+                      </TableSortLabel>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -318,6 +336,7 @@ export default function PatientDetails() {
                     <EvolutionDetailsRow
                       evolution={evolution}
                       key={evolution.evolution_id}
+                      authorizationTotal={paciente?.authorization_total}
                       onEdit={() => {
                         setSelectedEvolution(evolution);
                         setIsOpenEvolutionForm(true);
@@ -598,6 +617,7 @@ export default function PatientDetails() {
         setOpen={setIsOpenAttachmentDialog}
         selectedRecord={selectedRecord}
         setSelectedRecord={setSelectedRecord}
+        fetchEvolutions={fetchEvolutions}
       />
     </Box>
   );
