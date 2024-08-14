@@ -12,6 +12,7 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import HistoryIcon from '@mui/icons-material/History';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
+import Badge from '@mui/material/Badge';
 import Collapse from '@mui/material/Collapse';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -46,11 +47,14 @@ export default function EvolutionDetailsRow({
     therapist_notes,
     usuario_id,
     signatures,
+    archive
   } = evolution;
 
   const { usuarioId, tipousuario, user } = useAuth();
 
-  const isSigned = evolution?.evolution_signs?.find(item=> item.nome_usuario === user.nome_usuario)?.status;
+  const isSigned = evolution?.evolution_signs?.find(
+    (item) => item.nome_usuario === user.nome_usuario
+  )?.status;
 
   // const [open, setOpen] = useState(false);
 
@@ -91,7 +95,9 @@ export default function EvolutionDetailsRow({
                 arrow
                 disableInteractive
               >
-                <AttachFileIcon />
+                <Badge badgeContent={archive.length}>
+                  <AttachFileIcon />
+                </Badge>
               </Tooltip>
             </IconButton>
           </Stack>
@@ -132,7 +138,13 @@ export default function EvolutionDetailsRow({
             </Typography>
           )}
         </TableCell>
-        <TableCell>{evolution_status ? (isSigned ? 'Feita': 'Pendente de Assinatura') : 'Pendente'}</TableCell>
+        <TableCell>
+          {evolution_status
+            ? isSigned
+              ? 'Feita'
+              : 'Pendente de Assinatura'
+            : 'Pendente'}
+        </TableCell>
         <TableCell>
           {signatures}/{authorizationTotal}
         </TableCell>
