@@ -138,7 +138,7 @@ export default function ClinicDashboard() {
           </Typography>
         </Toolbar>
         <Grid container spacing={2} direction="row">
-          <Grid item md={6} xs={12}>
+          <Grid item xs={12}>
             <TableWithActions
               title="Responsáveis Vinculados"
               data={psychologists}
@@ -192,92 +192,90 @@ export default function ClinicDashboard() {
               ]}
             />
           </Grid>
-          <Grid item container direction="row" md={6}>
-            <Grid item xs={12}>
-              <TableWithActions
-                title="Secretários Vinculados"
-                data={secretaries}
-                addFunction={() => setIsOpenSecretaryForm(true)}
-                editFunction={(secretary) => {
-                  setSelectedSecretary(secretary);
-                  setIsOpenSecretaryForm(true);
-                }}
-                infoFunction={(secretary) =>
-                  navigate(`/secretario/${secretary.usuario_id}`)
-                }
-                deleteFunction={(secretary) => {
-                  confirmButton(
-                    'Excluir o secretário?',
-                    `/usuarios/${secretary.usuario_id}`,
-                    'Este registro será permanentemente excluído.'
-                  );
-                }}
-                fields={[
-                  {
-                    title: 'Ações',
-                    dataTitle: 'acoes',
-                  },
-                  {
-                    title: 'Nome',
-                    dataTitle: 'nome_usuario',
-                    maxWidth: 100,
-                    overflow: 'hidden',
-                    filterable: true,
-                  },
-                  {
-                    title: 'Email',
-                    dataTitle: 'email_usuario',
-                    maxWidth: 220,
-                    overflow: 'hidden',
-                    filterable: true,
-                  },
-                  {
-                    title: 'Status',
-                    dataTitle: 'status_usuario',
-                    maxWidth: 80,
-                    overflow: 'hidden',
-                    filterable: true,
-                  },
-                ]}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TableWithActions
-                title="Consultórios"
-                data={offices}
-                addFunction={() => setIsOpenOfficeForm(true)}
-                editFunction={(office) => {
-                  setSelectedOffice(office);
-                  setIsOpenOfficeForm(true);
-                }}
-                deleteFunction={(office) => {
-                  confirmButton(
-                    'Excluir Consultório',
-                    `/consultorios/${office.consultorio_id}`,
-                    `Deseja excluir o consultório ${office.nome_consultorio}?`
-                  );
-                }}
-                fields={[
-                  {
-                    title: 'Ações',
-                    dataTitle: 'acoes',
-                  },
-                  {
-                    title: 'Nome',
-                    dataTitle: 'nome_consultorio',
-                    maxWidth: 200,
-                    overflow: 'hidden',
-                    filterable: true,
-                  },
-                  {
-                    title: 'Descrição',
-                    dataTitle: 'descricao',
-                    maxWidth: 200,
-                    overflow: 'hidden',
-                  },
-                ]}
-              />
-            </Grid>
+          <Grid item xs={12}>
+            <TableWithActions
+              title="Secretários Vinculados"
+              data={secretaries}
+              addFunction={() => setIsOpenSecretaryForm(true)}
+              editFunction={(secretary) => {
+                setSelectedSecretary(secretary);
+                setIsOpenSecretaryForm(true);
+              }}
+              infoFunction={(secretary) =>
+                navigate(`/secretario/${secretary.usuario_id}`)
+              }
+              deleteFunction={(secretary) => {
+                confirmButton(
+                  'Excluir o secretário?',
+                  `/usuarios/${secretary.usuario_id}`,
+                  'Este registro será permanentemente excluído.'
+                );
+              }}
+              fields={[
+                {
+                  title: 'Ações',
+                  dataTitle: 'acoes',
+                },
+                {
+                  title: 'Nome',
+                  dataTitle: 'nome_usuario',
+                  maxWidth: 100,
+                  overflow: 'hidden',
+                  filterable: true,
+                },
+                {
+                  title: 'Email',
+                  dataTitle: 'email_usuario',
+                  maxWidth: 220,
+                  overflow: 'hidden',
+                  filterable: true,
+                },
+                {
+                  title: 'Status',
+                  dataTitle: 'status_usuario',
+                  maxWidth: 80,
+                  overflow: 'hidden',
+                  filterable: true,
+                },
+              ]}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TableWithActions
+              title="Consultórios"
+              data={offices}
+              addFunction={() => setIsOpenOfficeForm(true)}
+              editFunction={(office) => {
+                setSelectedOffice(office);
+                setIsOpenOfficeForm(true);
+              }}
+              deleteFunction={(office) => {
+                confirmButton(
+                  'Excluir Consultório',
+                  `/consultorios/${office.consultorio_id}`,
+                  `Deseja excluir o consultório ${office.nome_consultorio}?`
+                );
+              }}
+              fields={[
+                {
+                  title: 'Ações',
+                  dataTitle: 'acoes',
+                },
+                {
+                  title: 'Nome',
+                  dataTitle: 'nome_consultorio',
+                  maxWidth: 200,
+                  overflow: 'hidden',
+                  filterable: true,
+                },
+                {
+                  title: 'Descrição',
+                  dataTitle: 'descricao',
+                  maxWidth: 200,
+                  overflow: 'hidden',
+                },
+              ]}
+            />
           </Grid>
         </Grid>
       </Paper>
