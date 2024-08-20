@@ -6,11 +6,7 @@ const path = require('path');
 
 const uploadConfig = require('../config/upload');
 
-const uploadPath = path.resolve(
-  'uploads',
-  'evolutions',
-  'archive'
-);
+const uploadPath = path.resolve('uploads', 'evolutions', 'archive');
 
 const uploadArchive = multer(uploadConfig.upload(uploadPath));
 
@@ -26,6 +22,12 @@ evolutionsRoutes.put(
   '/sign',
   ensureAuthenticated,
   evolutionsController.signEvolution
+);
+
+evolutionsRoutes.get(
+  '/reports/pdf/:evolution_id',
+  ensureAuthenticated,
+  evolutionsController.generateEvolutionPDF
 );
 
 evolutionsRoutes.get(
@@ -69,13 +71,12 @@ evolutionsRoutes.delete(
   '/archive/:archiveId',
   ensureAuthenticated,
   evolutionsController.deleteEvolutionArchiveById
-)
+);
 
 evolutionsRoutes.delete(
   '/:evolutionId',
   ensureAuthenticated,
   evolutionsController.deleteEvolutionByIdAndUserId
 );
-
 
 module.exports = { evolutionsRoutes };

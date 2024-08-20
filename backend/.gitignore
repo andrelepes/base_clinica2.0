@@ -8,13 +8,14 @@
 # development
 package-lock.json
 /uploads
+/downloads
 
 # testing
 /coverage
 
 # production
 /build
-env
+.env
 
 # misc
 .DS_Store

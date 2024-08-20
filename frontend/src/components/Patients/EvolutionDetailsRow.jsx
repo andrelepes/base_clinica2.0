@@ -9,6 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import HistoryIcon from '@mui/icons-material/History';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
@@ -34,6 +35,7 @@ export default function EvolutionDetailsRow({
   onInfo,
   onHistory,
   onAttach,
+  onDownload
 }) {
   const {
     arrival_mood_state,
@@ -47,7 +49,7 @@ export default function EvolutionDetailsRow({
     therapist_notes,
     usuario_id,
     signatures,
-    archive
+    archive,
   } = evolution;
 
   const { usuarioId, tipousuario, user } = useAuth();
@@ -98,6 +100,11 @@ export default function EvolutionDetailsRow({
                 <Badge badgeContent={archive.length}>
                   <AttachFileIcon />
                 </Badge>
+              </Tooltip>
+            </IconButton>
+            <IconButton aria-label="report_download" onClick={onDownload} disabled={!evolution_status}>
+              <Tooltip title="Baixar a Evolução" arrow disableInteractive>
+                <FileDownloadIcon />
               </Tooltip>
             </IconButton>
           </Stack>

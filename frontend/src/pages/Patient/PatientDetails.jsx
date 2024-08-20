@@ -178,6 +178,28 @@ export default function PatientDetails() {
     setIsOpenHistory(true);
   };
 
+  const handleDownloadReportPDF = async (evolution) => {
+    try {
+      const response = await api.get(
+        `/evolutions/reports/pdf/${evolution.evolution_id}`,
+        { responseType: 'blob' }
+      );
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `evolucao_${dayjs(evolution?.session_date).format(
+        'DD-MM-YYYY-HH-mm'
+      )}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (error) {
+      toast.error('Ocorreu um erro ao baixar a evolução!');
+    }
+  };
+
   let isMounted = false;
   useEffect(() => {
     if (!isMounted) {
@@ -314,9 +336,7 @@ export default function PatientDetails() {
                     <TableCell>
                       <TableSortLabel
                         active={orderBy === 'signatures'}
-                        direction={
-                          orderBy === 'signatures' ? order : 'desc'
-                        }
+                        direction={orderBy === 'signatures' ? order : 'desc'}
                         onClick={handleRequestSort('signatures')}
                       >
                         Total de Assinaturas
@@ -354,6 +374,9 @@ export default function PatientDetails() {
                       onAttach={() => {
                         setSelectedRecord(evolution);
                         setIsOpenAttachmentDialog(true);
+                      }}
+                      onDownload={() => {
+                        handleDownloadReportPDF(evolution);
                       }}
                     />
                   ))}

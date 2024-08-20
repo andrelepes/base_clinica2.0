@@ -4,6 +4,7 @@ const pathFunction = require('path');
 const { deleteFile } = require('../utils/file');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
+const { generateToPDF } = require('../utils/pdfGenerator');
 
 class EvolutionsController {
   async getAllEvolutionsByPatientId(req, res) {
@@ -285,6 +286,37 @@ class EvolutionsController {
         res.status(200).send('Evolução assinada com sucesso');
       }
     } catch (error) {
+      res.status(500).send('Erro interno do servidor');
+    }
+  }
+
+  async generateEvolutionPDF(req, res) {
+    try {
+      const { evolution_id } = req.params;
+      const evolutions = new Evolutions();
+      const pdfData = await evolutions.getEvolutionDataToPDFDocument(
+        evolution_id
+      );
+
+      const pdfResponse = await generateToPDF(
+        'reports/singleEvolutionReport.hbs',
+        pdfData
+      );
+
+      res.set({
+        'Content-Type': 'application/pdf',
+      });
+      res.download(pdfResponse, 'evolution.pdf', (err) => {
+        if (err) {
+          res.status(500).send({
+            error: 'Could not download the file. ' + err.message,
+          });
+        }
+      });
+
+      deleteFile(pdfResponse);
+    } catch (error) {
+      console.log(error);
       res.status(500).send('Erro interno do servidor');
     }
   }

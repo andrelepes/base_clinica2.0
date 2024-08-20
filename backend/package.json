@@ -25,6 +25,7 @@
     "nodemailer": "^6.9.4",
     "pg": "^8.11.2",
     "pg-promise": "^11.5.3",
+    "puppeteer": "^23.1.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
