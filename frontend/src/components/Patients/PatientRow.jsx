@@ -1,11 +1,13 @@
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import Stack from '@mui/material/Stack';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
 import Tooltip from '@mui/material/Tooltip';
+import { useAuth } from '../../contexts/AuthContext';
 // import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 export default function PatientRow({
@@ -19,8 +21,10 @@ export default function PatientRow({
   onDelete,
   onInfo,
   onSchedule,
+  onFolder,
   assignedPsychologists = 'Nenhum psicólogo autorizado',
 }) {
+  const { tipousuario } = useAuth();
   return (
     <TableRow hover tabIndex={-1} key={patient.paciente_id}>
       <TableCell sx={{ width: 150 }}>
@@ -48,6 +52,13 @@ export default function PatientRow({
               <InfoIcon color="primary" />
             </Tooltip>
           </IconButton>
+          {tipousuario !== 'secretario_vinculado' && (
+            <IconButton aria-label="folder" onClick={onFolder}>
+              <Tooltip title="Pasta do paciente" arrow disableInteractive>
+                <ContentPasteIcon color="success" />
+              </Tooltip>
+            </IconButton>
+          )}
           {/* <IconButton aria-label="schedule" onClick={onSchedule}>
             <Tooltip title="Agendar horário" arrow disableInteractive>
               <CalendarMonthIcon color="success" />
