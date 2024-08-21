@@ -604,7 +604,7 @@ export default function PatientDetails() {
         setIsRead={setReadOnly}
         fetchEvolutions={fetchEvolutions}
         setSelectedEvolution={setSelectedEvolution}
-        patientName={paciente.nome_paciente}
+        patientName={paciente?.nome_paciente}
       />
       <PatientAnamnesisForm
         open={isOpenAnamnesisForm}
