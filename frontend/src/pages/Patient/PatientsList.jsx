@@ -124,11 +124,12 @@ export default function PatientsList() {
     }
   };
   const handleInfo = (patient) => {
+    setSelectedPatient(patient);
+    setIsOpenPatientDetailDialog(true);
+  };
+  const handleFolder = (patient) => {
     if (tipousuario !== 'secretario_vinculado') {
       navigate(`/pacientes/${patient.paciente_id}`);
-    } else {
-      setSelectedPatient(patient);
-      setIsOpenPatientDetailDialog(true);
     }
   };
   return (
@@ -154,11 +155,13 @@ export default function PatientsList() {
               <CalendarMonthIcon color="success" fontSize="large" />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Adicionar Paciente" disableInteractive>
-            <IconButton onClick={() => setIsOpenPatientForm(true)}>
-              <PersonAddIcon fontSize="large" />
-            </IconButton>
-          </Tooltip>
+          {tipousuario !== 'psicologo_vinculado' && (
+            <Tooltip title="Adicionar Paciente" disableInteractive>
+              <IconButton onClick={() => setIsOpenPatientForm(true)}>
+                <PersonAddIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
+          )}
         </Toolbar>
         <TableContainer>
           <Table sx={{ minWidth: 750 }} size="medium">
@@ -217,6 +220,7 @@ export default function PatientsList() {
                   onEdit={() => handleEdit(patient)}
                   onInfo={() => handleInfo(patient)}
                   onSchedule={() => handleSchedule(patient)}
+                  onFolder={() => handleFolder(patient)}
                   assignedPsychologists={
                     patient.psicologos_autorizados?.length > 0
                       ? patient.psicologos_autorizados

@@ -222,191 +222,6 @@ export default function PatientDetails() {
   return (
     <Box sx={{ width: '100%' }} display="flex">
       <Grid container>
-        <Grid item md={3} xs={12}>
-          <PatientDetailCard
-            handleChangeStatus={handleChangeStatus}
-            patient={paciente}
-          />
-        </Grid>
-        <Grid item md={9} xs={12}>
-          <Paper sx={{ width: '100%', mb: 2, height: '97.5%' }}>
-            <Toolbar
-              sx={{
-                pl: { sm: 2 },
-                pr: { xs: 1, sm: 1 },
-              }}
-            >
-              <Typography
-                sx={{ flex: '1 1 100%' }}
-                variant="h"
-                id="tableTitle"
-                component="div"
-              >
-                Evoluções
-              </Typography>
-              <Tooltip title="Adicionar Anamnese" disableInteractive>
-                <IconButton onClick={() => setIsOpenAnamnesisForm(true)}>
-                  <NoteAddIcon fontSize="large" />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Adicionar Formulário de Alta" disableInteractive>
-                <IconButton onClick={() => setIsOpenClosureForm(true)}>
-                  <TaskIcon fontSize="large" />
-                </IconButton>
-              </Tooltip>
-            </Toolbar>
-            <TableContainer>
-              <Table size="medium">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Ações</TableCell>
-                    <TableCell
-                      sortDirection={orderBy === 'session_date' ? order : false}
-                    >
-                      <TableSortLabel
-                        active={orderBy === 'session_date'}
-                        direction={orderBy === 'session_date' ? order : 'desc'}
-                        onClick={handleRequestSort('session_date')}
-                      >
-                        Data da Sessão
-                        {orderBy === 'session_date' ? (
-                          <Box component="span" sx={visuallyHidden}>
-                            {order === 'desc'
-                              ? 'sorted descending'
-                              : 'sorted ascending'}
-                          </Box>
-                        ) : null}
-                      </TableSortLabel>
-                    </TableCell>
-                    <TableCell>
-                      <TableSortLabel
-                        active={orderBy === 'arrival_mood_state'}
-                        direction={
-                          orderBy === 'arrival_mood_state' ? order : 'desc'
-                        }
-                        onClick={handleRequestSort('arrival_mood_state')}
-                      >
-                        Humor do Paciente na Chegada
-                        {orderBy === 'arrival_mood_state' ? (
-                          <Box component="span" sx={visuallyHidden}>
-                            {order === 'desc'
-                              ? 'sorted descending'
-                              : 'sorted ascending'}
-                          </Box>
-                        ) : null}
-                      </TableSortLabel>
-                    </TableCell>
-
-                    <TableCell>
-                      <TableSortLabel
-                        active={orderBy === 'departure_mood_state'}
-                        direction={
-                          orderBy === 'departure_mood_state' ? order : 'desc'
-                        }
-                        onClick={handleRequestSort('departure_mood_state')}
-                      >
-                        Humor do Paciente na Saída
-                        {orderBy === 'departure_mood_state' ? (
-                          <Box component="span" sx={visuallyHidden}>
-                            {order === 'desc'
-                              ? 'sorted descending'
-                              : 'sorted ascending'}
-                          </Box>
-                        ) : null}
-                      </TableSortLabel>
-                    </TableCell>
-                    <TableCell>
-                      <TableSortLabel
-                        active={orderBy === 'evolution_status'}
-                        direction={
-                          orderBy === 'evolution_status' ? order : 'desc'
-                        }
-                        onClick={handleRequestSort('evolution_status')}
-                      >
-                        Evoluções Pendentes
-                        {orderBy === 'evolution_status' ? (
-                          <Box component="span" sx={visuallyHidden}>
-                            {order === 'desc'
-                              ? 'sorted descending'
-                              : 'sorted ascending'}
-                          </Box>
-                        ) : null}
-                      </TableSortLabel>
-                    </TableCell>
-                    <TableCell>
-                      <TableSortLabel
-                        active={orderBy === 'signatures'}
-                        direction={orderBy === 'signatures' ? order : 'desc'}
-                        onClick={handleRequestSort('signatures')}
-                      >
-                        Total de Assinaturas
-                        {orderBy === 'signatures' ? (
-                          <Box component="span" sx={visuallyHidden}>
-                            {order === 'desc'
-                              ? 'sorted descending'
-                              : 'sorted ascending'}
-                          </Box>
-                        ) : null}
-                      </TableSortLabel>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {visibleRows?.map((evolution) => (
-                    <EvolutionDetailsRow
-                      evolution={evolution}
-                      key={evolution.evolution_id}
-                      authorizationTotal={paciente?.authorization_total}
-                      onEdit={() => {
-                        setSelectedEvolution(evolution);
-                        setIsOpenEvolutionForm(true);
-                      }}
-                      onInfo={() => {
-                        setReadOnly(true);
-                        setSelectedEvolution(evolution);
-                        setIsOpenEvolutionForm(true);
-                      }}
-                      onHistory={() => {
-                        handleEvolutionHistoryModal(
-                          evolution.evolution_changelog
-                        );
-                      }}
-                      onAttach={() => {
-                        setSelectedRecord(evolution);
-                        setIsOpenAttachmentDialog(true);
-                      }}
-                      onDownload={() => {
-                        handleDownloadReportPDF(evolution);
-                      }}
-                    />
-                  ))}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 73 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-                <TableFooter>
-                  <TableRow>
-                    <TablePagination
-                      rowsPerPageOptions={[
-                        5,
-                        10,
-                        25,
-                        { label: 'Todas', value: -1 },
-                      ]}
-                      count={evolutions?.length}
-                      rowsPerPage={rowsPerPage}
-                      page={page}
-                      onPageChange={handleChangePage}
-                      onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                  </TableRow>
-                </TableFooter>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Grid>
         {nextAppointment && (
           <Grid item xs={12} md={3}>
             <Box
@@ -601,6 +416,185 @@ export default function PatientDetails() {
             </TableContainer>
           </Paper>
         </Grid>
+        <Grid item xs={12}>
+          <Paper sx={{ width: '100%', mb: 2, height: '97.5%' }}>
+            <Toolbar
+              sx={{
+                pl: { sm: 2 },
+                pr: { xs: 1, sm: 1 },
+              }}
+            >
+              <Typography
+                sx={{ flex: '1 1 100%' }}
+                variant="h"
+                id="tableTitle"
+                component="div"
+              >
+                Evoluções
+              </Typography>
+              <Tooltip title="Adicionar Anamnese" disableInteractive>
+                <IconButton onClick={() => setIsOpenAnamnesisForm(true)}>
+                  <NoteAddIcon fontSize="large" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Adicionar Formulário de Alta" disableInteractive>
+                <IconButton onClick={() => setIsOpenClosureForm(true)}>
+                  <TaskIcon fontSize="large" />
+                </IconButton>
+              </Tooltip>
+            </Toolbar>
+            <TableContainer>
+              <Table size="medium">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Ações</TableCell>
+                    <TableCell
+                      sortDirection={orderBy === 'session_date' ? order : false}
+                    >
+                      <TableSortLabel
+                        active={orderBy === 'session_date'}
+                        direction={orderBy === 'session_date' ? order : 'desc'}
+                        onClick={handleRequestSort('session_date')}
+                      >
+                        Data da Sessão
+                        {orderBy === 'session_date' ? (
+                          <Box component="span" sx={visuallyHidden}>
+                            {order === 'desc'
+                              ? 'sorted descending'
+                              : 'sorted ascending'}
+                          </Box>
+                        ) : null}
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={orderBy === 'arrival_mood_state'}
+                        direction={
+                          orderBy === 'arrival_mood_state' ? order : 'desc'
+                        }
+                        onClick={handleRequestSort('arrival_mood_state')}
+                      >
+                        Humor do Paciente na Chegada
+                        {orderBy === 'arrival_mood_state' ? (
+                          <Box component="span" sx={visuallyHidden}>
+                            {order === 'desc'
+                              ? 'sorted descending'
+                              : 'sorted ascending'}
+                          </Box>
+                        ) : null}
+                      </TableSortLabel>
+                    </TableCell>
+
+                    <TableCell>
+                      <TableSortLabel
+                        active={orderBy === 'departure_mood_state'}
+                        direction={
+                          orderBy === 'departure_mood_state' ? order : 'desc'
+                        }
+                        onClick={handleRequestSort('departure_mood_state')}
+                      >
+                        Humor do Paciente na Saída
+                        {orderBy === 'departure_mood_state' ? (
+                          <Box component="span" sx={visuallyHidden}>
+                            {order === 'desc'
+                              ? 'sorted descending'
+                              : 'sorted ascending'}
+                          </Box>
+                        ) : null}
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={orderBy === 'evolution_status'}
+                        direction={
+                          orderBy === 'evolution_status' ? order : 'desc'
+                        }
+                        onClick={handleRequestSort('evolution_status')}
+                      >
+                        Evoluções Pendentes
+                        {orderBy === 'evolution_status' ? (
+                          <Box component="span" sx={visuallyHidden}>
+                            {order === 'desc'
+                              ? 'sorted descending'
+                              : 'sorted ascending'}
+                          </Box>
+                        ) : null}
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={orderBy === 'signatures'}
+                        direction={orderBy === 'signatures' ? order : 'desc'}
+                        onClick={handleRequestSort('signatures')}
+                      >
+                        Total de Assinaturas
+                        {orderBy === 'signatures' ? (
+                          <Box component="span" sx={visuallyHidden}>
+                            {order === 'desc'
+                              ? 'sorted descending'
+                              : 'sorted ascending'}
+                          </Box>
+                        ) : null}
+                      </TableSortLabel>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {visibleRows?.map((evolution) => (
+                    <EvolutionDetailsRow
+                      evolution={evolution}
+                      key={evolution.evolution_id}
+                      authorizationTotal={paciente?.authorization_total}
+                      onEdit={() => {
+                        setSelectedEvolution(evolution);
+                        setIsOpenEvolutionForm(true);
+                      }}
+                      onInfo={() => {
+                        setReadOnly(true);
+                        setSelectedEvolution(evolution);
+                        setIsOpenEvolutionForm(true);
+                      }}
+                      onHistory={() => {
+                        handleEvolutionHistoryModal(
+                          evolution.evolution_changelog
+                        );
+                      }}
+                      onAttach={() => {
+                        setSelectedRecord(evolution);
+                        setIsOpenAttachmentDialog(true);
+                      }}
+                      onDownload={() => {
+                        handleDownloadReportPDF(evolution);
+                      }}
+                    />
+                  ))}
+                  {emptyRows > 0 && (
+                    <TableRow style={{ height: 73 * emptyRows }}>
+                      <TableCell colSpan={6} />
+                    </TableRow>
+                  )}
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TablePagination
+                      rowsPerPageOptions={[
+                        5,
+                        10,
+                        25,
+                        { label: 'Todas', value: -1 },
+                      ]}
+                      count={evolutions?.length}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                  </TableRow>
+                </TableFooter>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Grid>
       </Grid>
       <PatientEvolutionsForm
         open={isOpenEvolutionForm}
@@ -610,6 +604,7 @@ export default function PatientDetails() {
         setIsRead={setReadOnly}
         fetchEvolutions={fetchEvolutions}
         setSelectedEvolution={setSelectedEvolution}
+        patientName={paciente.nome_paciente}
       />
       <PatientAnamnesisForm
         open={isOpenAnamnesisForm}

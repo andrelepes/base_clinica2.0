@@ -37,6 +37,7 @@ export default function PatientEvolutionsForm({
   fetchEvolutions,
   selectedEvolution,
   setSelectedEvolution,
+  patientName,
 }) {
   const [attended, setAttended] = useState('');
   const [punctuality, setPunctuality] = useState('');
@@ -155,7 +156,7 @@ export default function PatientEvolutionsForm({
             <CloseIcon />
           </IconButton>
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-            Evolução de Paciente, Data da Sessão:{' '}
+            Evolução de {patientName}, Data da Sessão:{' '}
             {dayjs(selectedEvolution?.session_date).format(
               'DD/MM/YYYY [às] HH:mm'
             )}
