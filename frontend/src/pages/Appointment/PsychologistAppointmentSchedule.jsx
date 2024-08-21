@@ -127,7 +127,6 @@ export default function PsychologistAppointmentSchedule() {
               id="selected_date"
               name="selected_date"
               value={selectedDate}
-              disablePast
               onChange={(newValue) => setSelectedDate(newValue)}
               slotProps={{ textField: { fullWidth: true } }}
             />
