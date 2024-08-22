@@ -47,11 +47,6 @@ export default function PatientRow({
               />
             </Tooltip>
           </IconButton>
-          <IconButton aria-label="info" onClick={onInfo}>
-            <Tooltip title="Informações do paciente" arrow disableInteractive>
-              <InfoIcon color="primary" />
-            </Tooltip>
-          </IconButton>
           {tipousuario !== 'secretario_vinculado' && (
             <IconButton aria-label="folder" onClick={onFolder}>
               <Tooltip title="Pasta do paciente" arrow disableInteractive>
@@ -59,6 +54,11 @@ export default function PatientRow({
               </Tooltip>
             </IconButton>
           )}
+          <IconButton aria-label="info" onClick={onInfo}>
+            <Tooltip title="Informações do paciente" arrow disableInteractive>
+              <InfoIcon color="primary" />
+            </Tooltip>
+          </IconButton>
           {/* <IconButton aria-label="schedule" onClick={onSchedule}>
             <Tooltip title="Agendar horário" arrow disableInteractive>
               <CalendarMonthIcon color="success" />

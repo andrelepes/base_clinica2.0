@@ -54,7 +54,7 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function Sidebar() {
-  const isLargeScreen = useMediaQuery('(min-width:1024px)');
+  const isLargeScreen = useMediaQuery('(min-width:1025px)');
 
   const [open, setOpen] = useState(isLargeScreen);
   const [isOpenSchedule, setIsOpenSchedule] = useState(false);
