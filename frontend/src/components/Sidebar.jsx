@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { styled } from '@mui/material';
+import { useMediaQuery } from '@mui/material';
 
 import HomeIcon from '@mui/icons-material/Home';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
@@ -53,7 +54,9 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function Sidebar() {
-  const [open, setOpen] = useState(true);
+  const isLargeScreen = useMediaQuery('(min-width:1024px)');
+
+  const [open, setOpen] = useState(isLargeScreen);
   const [isOpenSchedule, setIsOpenSchedule] = useState(false);
   const { tipousuario, logout } = useAuth();
 
