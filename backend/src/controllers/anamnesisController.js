@@ -1,11 +1,15 @@
 const Anamnesis = require('../models/Anamnesis');
+const { v4: uuidv4 } = require('uuid');
 
 class AnamnesisController {
   async getByPatientId(req, res) {
     try {
       const anamnesisModel = new Anamnesis();
       const patientId = req.params.patientId;
-      const anamnesis = await anamnesisModel.findByPatientId(patientId);
+      const anamnesis = await anamnesisModel.findByPatientId(
+        req.tipousuario,
+        patientId
+      );
       if (anamnesis) {
         res.status(200).json(anamnesis);
       } else {
@@ -81,8 +85,50 @@ class AnamnesisController {
       const anamnesisId = req.params.anamnesisId;
       const updateData = req.body;
 
-      await anamnesisModel.update(anamnesisId, updateData);
+      const anamnesis = await anamnesisModel.findById(anamnesisId);
+
+      if (!anamnesis) {
+        res.status(404).send('Anamnesis not found');
+      }
+
+      await anamnesisModel.updateWithHistory(
+        anamnesisId,
+        updateData,
+        JSON.stringify(anamnesis)
+      );
       res.status(200).send('Anamnesis updated successfully');
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async signAnamnesis(req, res) {
+    try {
+      const { usuario_id, anamnesis_id } = req.body;
+
+      const anamnesisModel = new Anamnesis();
+      const signatureExists = await anamnesisModel.findAnamnesisSignature(
+        usuario_id,
+        anamnesis_id
+      );
+
+      if (signatureExists) {
+        await anamnesisModel.signAnamnesis(
+          usuario_id,
+          anamnesis_id,
+          signatureExists.anamnesis_sign_id,
+          true
+        );
+        res.status(200).send('Anamnese assinada com sucesso');
+      } else {
+        const anamnesisSignId = uuidv4();
+        await anamnesisModel.signAnamnesis(
+          usuario_id,
+          anamnesis_id,
+          anamnesisSignId
+        );
+        res.status(200).send('Anamnese assinada com sucesso');
+      }
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

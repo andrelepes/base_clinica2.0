@@ -44,7 +44,7 @@ export default function PatientAnamnesisForm({
   setOpen,
   isRead,
   setIsRead,
-  fetchEvolutions,
+  fetchAnamnesis,
   anamnesis,
 }) {
   const [maritalStatus, setMaritalStatus] = useState('');
@@ -61,7 +61,7 @@ export default function PatientAnamnesisForm({
   const [healthyLifeHabits, setHealthyLifeHabits] = useState([]);
   const [relevantInformation, setRelevantInformation] = useState('');
 
-  const { usuarioId: usuario_id } = useAuth();
+  const { usuarioId: usuario_id, user } = useAuth();
   const { id: paciente_id } = useParams();
 
   useEffect(() => {
@@ -119,12 +119,34 @@ export default function PatientAnamnesisForm({
     };
 
     try {
-      await api.post('/anamnesis/', data);
-      toast.success('Anamnese criada com sucesso!');
-      fetchEvolutions();
+      if (!anamnesis.anamnesis_id) {
+        await api.post('/anamnesis/', data);
+        toast.success('Anamnese criada com sucesso!');
+      } else {
+        await api.put(`/anamnesis/${anamnesis.anamnesis_id}`, {
+          ...data,
+          anamnesis_id: anamnesis.anamnesis_id,
+        });
+        toast.success('Anamnese atualizada com sucesso!');
+      }
+      fetchAnamnesis();
       handleClose();
     } catch (error) {
       toast.error('Ocorreu um erro ao enviar a Anamnese do paciente');
+    }
+  };
+
+  const handleSign = async () => {
+    try {
+      await api.put('/anamnesis/sign', {
+        usuario_id,
+        anamnesis_id: anamnesis.anamnesis_id,
+      });
+      toast.success('Assinatura realizada com sucesso');
+      fetchAnamnesis();
+      handleClose();
+    } catch (error) {
+      toast.error(error.response.data.message ?? 'Erro ao assinar a anamnese');
     }
   };
   return (
@@ -148,6 +170,18 @@ export default function PatientAnamnesisForm({
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
             Anamnese de Paciente
           </Typography>
+          {anamnesis?.anamnesis_id &&
+            !anamnesis?.anamnesis_signs?.find(
+              (item) => item.nome_usuario == user.nome_usuario
+            )?.status && (
+              <Button
+                color="inherit"
+                onClick={handleSign}
+                sx={{ border: '1px solid', marginRight: 2 }}
+              >
+                Assinar Anamnese
+              </Button>
+            )}
           {!isRead && (
             <Button autoFocus color="inherit" onClick={handleSubmit}>
               Enviar

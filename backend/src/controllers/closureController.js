@@ -1,11 +1,14 @@
 const Closure = require('../models/Closure');
-
+const { v4: uuidv4 } = require('uuid');
 class ClosureController {
   async getByPatientId(req, res) {
     try {
       const closureModel = new Closure();
       const patientId = req.params.patientId;
-      const closure = await closureModel.findByPatientId(patientId);
+      const closure = await closureModel.findByPatientId(
+        req.tipousuario,
+        patientId
+      );
       if (closure) {
         res.status(200).json(closure);
       } else {
@@ -67,8 +70,46 @@ class ClosureController {
       const closureId = req.params.closureId;
       const updateData = req.body;
 
-      await closureModel.update(closureId, updateData);
+      const closure = await closureModel.findById(closureId);
+
+      if (!closure) {
+        res.status(404).send('Closure not found');
+      }
+
+      await closureModel.updateWithHistory(
+        closureId,
+        updateData,
+        JSON.stringify(closure)
+      );
       res.status(200).send('Closure updated successfully');
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async signClosure(req, res) {
+    try {
+      const { usuario_id, closure_id } = req.body;
+
+      const closureModel = new Closure();
+      const signatureExists = await closureModel.findClosureSignature(
+        usuario_id,
+        closure_id
+      );
+
+      if (signatureExists) {
+        await closureModel.signClosure(
+          usuario_id,
+          closure_id,
+          signatureExists.patient_closure_sign_id,
+          true
+        );
+        res.status(200).send('Alta assinada com sucesso');
+      } else {
+        const closureSignId = uuidv4();
+        await closureModel.signClosure(usuario_id, closure_id, closureSignId);
+        res.status(200).send('Alta assinada com sucesso');
+      }
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

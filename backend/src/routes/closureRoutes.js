@@ -23,6 +23,12 @@ closureRoutes.get(
 );
 
 closureRoutes.put(
+  '/sign',
+  ensureAuthenticated,
+  closureController.signClosure
+);
+
+closureRoutes.put(
   '/:closureId',
   ensureAuthenticated,
   closureController.updateClosure

@@ -1267,6 +1267,46 @@ ADD
   CONSTRAINT "evolutions_archive_id_fkey" FOREIGN KEY ("archive_id") REFERENCES "public"."archives" ("archive_id") ON DELETE
 SET
   NULL;
+
+
+-- Added on 22/08/2024 by gabrielpaiv
+
+CREATE TABLE
+  public.anamnesis_changelog (
+    anamnesis_change_id SERIAL PRIMARY KEY,
+    anamnesis_id INTEGER NOT NULL REFERENCES anamnesis (anamnesis_id),
+    old_record JSON NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    usuario_id INTEGER NOT NULL REFERENCES usuarios (usuario_id)
+  );
+
+CREATE TABLE
+  public.anamnesis_sign (
+    anamnesis_sign_id uuid PRIMARY KEY,
+    anamnesis_id INTEGER NOT NULL REFERENCES anamnesis (anamnesis_id),
+    signed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status BOOLEAN NOT NULL,
+    usuario_id INTEGER NOT NULL REFERENCES usuarios (usuario_id)
+  );
+
+CREATE TABLE
+  public.patient_closure_changelog (
+    patient_closure_change_id SERIAL PRIMARY KEY,
+    patient_closure_id INTEGER NOT NULL REFERENCES patient_closure (patient_closure_id),
+    old_record JSON NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    usuario_id INTEGER NOT NULL REFERENCES usuarios (usuario_id)
+  );
+
+CREATE TABLE
+  public.patient_closure_sign (
+    patient_closure_sign_id uuid PRIMARY KEY,
+    patient_closure_id INTEGER NOT NULL REFERENCES patient_closure (patient_closure_id),
+    signed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status BOOLEAN NOT NULL,
+    usuario_id INTEGER NOT NULL REFERENCES usuarios (usuario_id)
+  );
+
 --
 -- PostgreSQL database dump complete
 --

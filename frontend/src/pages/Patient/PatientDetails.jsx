@@ -14,12 +14,12 @@ import Tooltip from '@mui/material/Tooltip';
 import TablePagination from '@mui/material/TablePagination';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import HistoryIcon from '@mui/icons-material/History';
 import Grid from '@mui/material/Grid';
 import TaskIcon from '@mui/icons-material/Task';
 import EvolutionDetailsRow from '../../components/Patients/EvolutionDetailsRow';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import PatientDetailCard from '../../components/Patients/PatientDetailCard';
 import { toast } from 'react-toastify';
 import api from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
@@ -66,7 +66,7 @@ export default function PatientDetails() {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [recordType, setRecordType] = useState('');
 
-  const { usuarioId: usuario_id } = useAuth();
+  const { usuarioId: usuario_id, tipousuario } = useAuth();
 
   const paciente_id = useParams().id;
 
@@ -175,6 +175,18 @@ export default function PatientDetails() {
         'DD/MM/YYYY [às] HH:mm'
       )}`
     );
+    setIsOpenHistory(true);
+  };
+
+  const handleAnamnesisHistoryModal = (historyArray) => {
+    setSelectedRecord(historyArray);
+    setRecordType('Anamnese do paciente');
+    setIsOpenHistory(true);
+  };
+  
+  const handleClosureHistoryModal = (historyArray) => {
+    setSelectedRecord(historyArray);
+    setRecordType('Alta do paciente');
     setIsOpenHistory(true);
   };
 
@@ -304,6 +316,7 @@ export default function PatientDetails() {
                           <IconButton
                             aria-label="edit"
                             onClick={() => setIsOpenAnamnesisForm(true)}
+                            disabled={anamnesis.usuario_id !== usuario_id}
                           >
                             <Tooltip
                               title="Editar Anamnese"
@@ -320,6 +333,7 @@ export default function PatientDetails() {
                           >
                             <IconButton
                               onClick={() => setIsOpenAnamnesisForm(true)}
+                              disabled={tipousuario !== 'psicologo_vinculado'}
                             >
                               <NoteAddIcon />
                             </IconButton>
@@ -342,6 +356,24 @@ export default function PatientDetails() {
                             </Tooltip>
                           </IconButton>
                         )}
+                        {anamnesis && tipousuario === 'clinica' && (
+                          <IconButton
+                            aria-label="history"
+                            onClick={() => {
+                              handleAnamnesisHistoryModal(
+                                anamnesis.anamnesis_changelog
+                              );
+                            }}
+                          >
+                            <Tooltip
+                              title="Ver Histórico de Anamnese"
+                              arrow
+                              disableInteractive
+                            >
+                              <HistoryIcon color="success" />
+                            </Tooltip>
+                          </IconButton>
+                        )}
                       </Stack>
                     </TableCell>
                     <TableCell>Anamnese</TableCell>
@@ -361,6 +393,7 @@ export default function PatientDetails() {
                           <IconButton
                             aria-label="edit"
                             onClick={() => setIsOpenClosureForm(true)}
+                            disabled={anamnesis.usuario_id !== usuario_id}
                           >
                             <Tooltip
                               title="Editar Formulário de Alta"
@@ -377,6 +410,7 @@ export default function PatientDetails() {
                           >
                             <IconButton
                               onClick={() => setIsOpenClosureForm(true)}
+                              disabled={tipousuario !== 'psicologo_vinculado'}
                             >
                               <TaskIcon />
                             </IconButton>
@@ -396,6 +430,24 @@ export default function PatientDetails() {
                               disableInteractive
                             >
                               <VisibilityIcon color="primary" />
+                            </Tooltip>
+                          </IconButton>
+                        )}
+                        {closure && tipousuario === 'clinica' && (
+                          <IconButton
+                            aria-label="history"
+                            onClick={() => {
+                              handleClosureHistoryModal(
+                                closure.patient_closure_changelog
+                              );
+                            }}
+                          >
+                            <Tooltip
+                              title="Ver Histórico do Formulário de Alta"
+                              arrow
+                              disableInteractive
+                            >
+                              <HistoryIcon color="success" />
                             </Tooltip>
                           </IconButton>
                         )}
@@ -433,12 +485,18 @@ export default function PatientDetails() {
                 Evoluções
               </Typography>
               <Tooltip title="Adicionar Anamnese" disableInteractive>
-                <IconButton onClick={() => setIsOpenAnamnesisForm(true)}>
+                <IconButton
+                  onClick={() => setIsOpenAnamnesisForm(true)}
+                  disabled={tipousuario !== 'psicologo_vinculado'}
+                >
                   <NoteAddIcon fontSize="large" />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Adicionar Formulário de Alta" disableInteractive>
-                <IconButton onClick={() => setIsOpenClosureForm(true)}>
+                <IconButton
+                  onClick={() => setIsOpenClosureForm(true)}
+                  disabled={tipousuario !== 'psicologo_vinculado'}
+                >
                   <TaskIcon fontSize="large" />
                 </IconButton>
               </Tooltip>
@@ -612,7 +670,7 @@ export default function PatientDetails() {
         anamnesis={anamnesis}
         isRead={readOnly}
         setIsRead={setReadOnly}
-        fetchEvolutions={fetchEvolutions}
+        fetchAnamnesis={fetchReports}
       />
       <PatientClosureForm
         open={isOpenClosureForm}
@@ -620,7 +678,7 @@ export default function PatientDetails() {
         closure={closure}
         isRead={readOnly}
         setIsRead={setReadOnly}
-        fetchEvolutions={fetchEvolutions}
+        fetchClosure={fetchReports}
         sessions={evolutions}
         expectationsAnamneseOptions={anamnesis}
       />

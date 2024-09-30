@@ -36,7 +36,7 @@ export default function PatientClosureForm({
   setOpen,
   isRead,
   setIsRead,
-  fetchEvolutions,
+  fetchClosure,
   closure,
   expectationsAnamneseOptions,
   sessions,
@@ -49,7 +49,7 @@ export default function PatientClosureForm({
   const [relevantInformation, setRelevantInformation] = useState('');
   const [expectationsOptions, setExpectationsOptions] = useState([]);
 
-  const { usuarioId: usuario_id } = useAuth();
+  const { usuarioId: usuario_id, user } = useAuth();
   const { id: paciente_id } = useParams();
 
   useEffect(() => {
@@ -65,7 +65,9 @@ export default function PatientClosureForm({
       setCaseStatus(closure?.case_status);
       setOverallResultsEvaluation(closure?.overall_results_evaluation);
       setInitialExpectationsMet(closure?.initial_expectations_met.split(','));
-      setHealthyHabitsAcquired(closure?.healthy_life_habits_acquired.split(','));
+      setHealthyHabitsAcquired(
+        closure?.healthy_life_habits_acquired.split(',')
+      );
       setRelevantInformation(closure?.additional_relevant_information);
     }
   }, [open]);
@@ -93,14 +95,39 @@ export default function PatientClosureForm({
     };
 
     try {
-      await api.post('/closure/', data);
-      toast.success('Formulário de Alta enviado com sucesso!');
-      fetchEvolutions();
+      if (!closure.patient_closure_id) {
+        await api.post('/closure/', data);
+        toast.success('Formulário de Alta criado com sucesso!');
+      } else {
+        await api.put(`/closure/${closure.patient_closure_id}`, {
+          ...data,
+          closure_id: closure.patient_closure_id,
+        });
+        toast.success('Formulário de Alta atualizado com sucesso!');
+      }
+      fetchClosure();
       handleClose();
     } catch (error) {
       toast.error('Ocorreu um erro ao enviar o Formulário de Alta');
     }
   };
+
+  const handleSign = async () => {
+    try {
+      await api.put('/closure/sign', {
+        usuario_id,
+        closure_id: closure.patient_closure_id,
+      });
+      toast.success('Assinatura realizada com sucesso');
+      fetchClosure();
+      handleClose();
+    } catch (error) {
+      toast.error(
+        error.response.data.message ?? 'Erro ao assinar o formulário de alta'
+      );
+    }
+  };
+
   return (
     <Dialog
       open={open}
@@ -122,6 +149,18 @@ export default function PatientClosureForm({
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
             Alta de Paciente
           </Typography>
+          {closure?.patient_closure_id &&
+            !closure?.patient_closure_signs?.find(
+              (item) => item.nome_usuario == user.nome_usuario
+            )?.status && (
+              <Button
+                color="inherit"
+                onClick={handleSign}
+                sx={{ border: '1px solid', marginRight: 2 }}
+              >
+                Assinar Formulário de Alta
+              </Button>
+            )}
           {!isRead && (
             <Button autoFocus color="inherit" onClick={handleSubmit}>
               Enviar

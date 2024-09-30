@@ -23,6 +23,12 @@ anamnesisRoutes.get(
 );
 
 anamnesisRoutes.put(
+  '/sign',
+  ensureAuthenticated,
+  anamnesisController.signAnamnesis
+);
+
+anamnesisRoutes.put(
   '/:anamnesisId',
   ensureAuthenticated,
   anamnesisController.updateAnamnesis
