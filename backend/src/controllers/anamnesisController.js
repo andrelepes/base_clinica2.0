@@ -1,5 +1,7 @@
 const Anamnesis = require('../models/Anamnesis');
 const { v4: uuidv4 } = require('uuid');
+const { generateToPDF } = require('../utils/pdfGenerator');
+const { deleteFile } = require('../utils/file');
 
 class AnamnesisController {
   async getByPatientId(req, res) {
@@ -142,6 +144,37 @@ class AnamnesisController {
       res.status(200).send('Anamnesis deleted successfully');
     } catch (error) {
       res.status(500).json({ error: error.message });
+    }
+  }
+
+  async generateAnamnesisPDF(req, res) {
+    try {
+      const { anamnesis_id } = req.params;
+      const anamnesisModel = new Anamnesis();
+      const pdfData = await anamnesisModel.getAnamnesisDataToPDFDocument(
+        anamnesis_id
+      );
+
+      const pdfResponse = await generateToPDF(
+        'reports/anamnesisReport.hbs',
+        pdfData
+      );
+
+      res.set({
+        'Content-Type': 'application/pdf',
+      });
+      res.download(pdfResponse, 'anamnesis.pdf', (err) => {
+        if (err) {
+          res.status(500).send({
+            error: 'Could not download the file. ' + err.message,
+          });
+        }
+      });
+
+      deleteFile(pdfResponse);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send('Erro interno do servidor');
     }
   }
 }

@@ -220,8 +220,8 @@ class Anamnesis {
     const query = `
     WITH SignCTE AS (
       SELECT 
-        e.anamnesis_id,
-        (SELECT count(*) FROM anamnesis_sign WHERE status = true AND anamnesis_id = e.anamnesis_id) as signatures,
+        a.anamnesis_id,
+        (SELECT count(*) FROM anamnesis_sign WHERE status = true AND anamnesis_id = a.anamnesis_id) as signatures,
         json_agg(
           json_build_object(
             'anamnesis_sign_id', asgn.anamnesis_sign_id,
@@ -236,23 +236,54 @@ class Anamnesis {
         ) FILTER (
           WHERE asgn.anamnesis_sign_id IS NOT NULL
         ) AS anamnesis_signs
-      FROM anamnesis e
-        LEFT JOIN anamnesis_sign asgn ON e.anamnesis_id = asgn.anamnesis_id
-      GROUP BY e.anamnesis_id
+      FROM anamnesis a
+        LEFT JOIN anamnesis_sign asgn ON a.anamnesis_id = asgn.anamnesis_id
+      GROUP BY a.anamnesis_id
+    ),
+    PatientCTE as (
+      SELECT 
+        p.paciente_id, 
+        TO_CHAR(p.data_nascimento_paciente,'DD/MM/YYYY') as data_nascimento_paciente, 
+        row_to_json(p) AS patient_data 
+      FROM 
+        pacientes p 
+      GROUP BY 
+        p.paciente_id
     )
     SELECT 
-      an.*, 
       u.nome_usuario,
-      COALESCE(sc.anamnesis_signs, '[]') AS anamnesis_signs
+      an.marital_status,
+      an.gender,
+      an.socioeconomic_level,
+      an.occupation,
+      an.education_level,
+      an.care_modality,
+      an.special_needs,
+      an.referred_by,
+      an.relevant_information,
+      pcte.data_nascimento_paciente, 
+      string_to_array(an.treatment_expectation, ',') as treatment_expectation,
+      string_to_array(an.undergoing_treatment, ',') as undergoing_treatment,
+      string_to_array(an.diagnosis, ',') as diagnosis,
+      string_to_array(an.healthy_life_habits, ',') as healthy_life_habits,
+      COALESCE(sc.anamnesis_signs, '[]') AS anamnesis_signs,
+      COALESCE(pcte.patient_data, '{}') AS patient_data
     FROM 
       anamnesis AS an 
     JOIN 
       usuarios AS u ON an.usuario_id = u.usuario_id 
     LEFT JOIN 
       SignCTE sc ON an.anamnesis_id = sc.anamnesis_id
+    LEFT JOIN
+      PatientCTE pcte ON an.paciente_id = pcte.paciente_id
     WHERE 
       an.anamnesis_id = \${anamnesis_id}
     `;
+    try {
+      return await db.oneOrNone(query, { anamnesis_id });
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

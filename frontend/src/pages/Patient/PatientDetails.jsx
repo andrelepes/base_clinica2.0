@@ -15,6 +15,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import HistoryIcon from '@mui/icons-material/History';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import Grid from '@mui/material/Grid';
 import TaskIcon from '@mui/icons-material/Task';
 import EvolutionDetailsRow from '../../components/Patients/EvolutionDetailsRow';
@@ -183,14 +184,14 @@ export default function PatientDetails() {
     setRecordType('Anamnese do paciente');
     setIsOpenHistory(true);
   };
-  
+
   const handleClosureHistoryModal = (historyArray) => {
     setSelectedRecord(historyArray);
     setRecordType('Alta do paciente');
     setIsOpenHistory(true);
   };
 
-  const handleDownloadReportPDF = async (evolution) => {
+  const handleDownloadEvolutionReportPDF = async (evolution) => {
     try {
       const response = await api.get(
         `/evolutions/reports/pdf/${evolution.evolution_id}`,
@@ -204,6 +205,46 @@ export default function PatientDetails() {
       a.download = `evolucao_${dayjs(evolution?.session_date).format(
         'DD-MM-YYYY-HH-mm'
       )}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (error) {
+      toast.error('Ocorreu um erro ao baixar a evolução!');
+    }
+  };
+
+  const handleDownloadAnamnesisReportPDF = async (anamnesis_id) => {
+    try {
+      const response = await api.get(
+        `/anamnesis/reports/pdf/${anamnesis_id}`,
+        { responseType: 'blob' }
+      );
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `anamnese_${paciente.nome_paciente}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (error) {
+      toast.error('Ocorreu um erro ao baixar a evolução!');
+    }
+  };
+
+  const handleDownloadClosureReportPDF = async (closure) => {
+    try {
+      const response = await api.get(
+        `/closure/reports/pdf/${closure.patient_closure_id}`,
+        { responseType: 'blob' }
+      );
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `alta_${paciente.nome_paciente}.pdf`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -371,6 +412,22 @@ export default function PatientDetails() {
                               disableInteractive
                             >
                               <HistoryIcon color="success" />
+                            </Tooltip>
+                          </IconButton>
+                        )}
+                        {anamnesis && (
+                          <IconButton
+                            aria-label="info"
+                            onClick={() => {
+                              handleDownloadAnamnesisReportPDF(anamnesis.anamnesis_id);
+                            }}
+                          >
+                            <Tooltip
+                              title="Ver Anamnese"
+                              arrow
+                              disableInteractive
+                            >
+                              <FileDownloadIcon color="primary" />
                             </Tooltip>
                           </IconButton>
                         )}
@@ -622,7 +679,7 @@ export default function PatientDetails() {
                         setIsOpenAttachmentDialog(true);
                       }}
                       onDownload={() => {
-                        handleDownloadReportPDF(evolution);
+                        handleDownloadEvolutionReportPDF(evolution);
                       }}
                     />
                   ))}

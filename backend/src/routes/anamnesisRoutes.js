@@ -11,6 +11,12 @@ anamnesisRoutes.post(
 );
 
 anamnesisRoutes.get(
+  '/reports/pdf/:anamnesis_id',
+  ensureAuthenticated,
+  anamnesisController.generateAnamnesisPDF
+);
+
+anamnesisRoutes.get(
   '/patient/:patientId',
   ensureAuthenticated,
   anamnesisController.getByPatientId
