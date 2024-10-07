@@ -11,6 +11,12 @@ closureRoutes.post(
 );
 
 closureRoutes.get(
+  '/reports/pdf/:closure_id',
+  ensureAuthenticated,
+  closureController.generateClosurePDF
+);
+
+closureRoutes.get(
   '/patient/:patientId',
   ensureAuthenticated,
   closureController.getByPatientId

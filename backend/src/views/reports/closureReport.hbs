@@ -1,0 +1,336 @@
+<style>
+   @page {
+      size: A4;
+      margin: 3cm 2cm 2cm 3cm;
+      @top-right {
+         content: counter(page);
+         font-size: 12pt;
+      }
+   }
+
+   body {
+      margin: 0;
+      padding: 0;
+      line-height: 1.5;
+      font-size: 12pt;
+      font-family: 'Times New Roman', Times, serif;
+   }
+
+   p {
+      text-align: justify;
+      text-indent: 1.25cm;
+      color: #29292e;
+   }
+
+   h1, h2, h4, h5, h6 {
+      font-weight: bold;
+      text-align: left;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+   }
+   h1,h2{
+      color: #29292e;
+   }
+   h3{
+      color: #55555e;
+   }
+
+   .page {
+      /* ou em pixels */
+      /* width: 793.7px; */
+      /* height: 1122.5px; */
+      background-color: white;
+   }   
+
+   .container { 
+      background-color: white; 
+   }
+
+   .signatures{
+      margin-top: 64px;
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(2, 1fr);      
+   }
+
+   .signature-box{
+      border: 1px solid black;
+      padding: 8px;
+      width: 260px;
+      h4{
+         display: flex;
+         justify-content: center;
+         margin-top: 0;
+         border-top: 2px solid black;
+         padding-inline: 8px;
+         color: #29292e;
+      }
+      li{
+         display: flex;
+         height: 50px;
+         justify-content: center;
+      }
+   } 
+
+  itembox{
+    display: grid;
+
+    &#closure_info{
+      grid-template-areas: 
+        'name name name name date date' 
+        'case case case evaluation evaluation sessions' 
+        'habits habits habits expectations expectations expectations' 
+        'info info info info info info';
+    }
+
+    
+    item{
+      color: #29292e;
+      border: 1px solid black;
+      padding: 4px;
+      margin: 2px;
+
+      li{
+        margin-left: 8px;
+        list-style: disc;
+      }
+    }
+  }
+   .header{
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin-left: -35px;
+   }
+   svg { 
+      width: auto; 
+      height: 80px; 
+      padding-top: 15px;
+   }
+   ul, li{
+      list-style: none;
+      color: #29292e;
+   }
+</style>
+
+<div class='page'>
+  <div class='header'>
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      xmlns:xlink='http://www.w3.org/1999/xlink'
+      viewBox='0 0 1317 459'
+    >
+      <defs>
+        <style>
+          .cls-1 { letter-spacing: .18em; } .cls-2 { fill: #1fd0e0; font-family:
+          Montserrat-Bold, Montserrat; font-size: 117.86px; font-weight: 700; }
+          .cls-3 { letter-spacing: .17em; } .cls-4 { isolation: isolate; }
+          .cls-5 { letter-spacing: .15em; } .cls-6 { letter-spacing: .2em; }
+          .cls-7 { fill: url(#linear-gradient-5); } .cls-7, .cls-8, .cls-9,
+          .cls-10, .cls-11, .cls-12, .cls-13, .cls-14, .cls-15 { stroke-width:
+          0px; } .cls-7, .cls-8, .cls-9, .cls-10, .cls-12, .cls-13, .cls-14,
+          .cls-15 { mix-blend-mode: multiply; } .cls-8 { fill:
+          url(#linear-gradient-4); } .cls-16 { letter-spacing: .19em; } .cls-9 {
+          fill: url(#linear-gradient); } .cls-17 { letter-spacing: .18em; }
+          .cls-10 { fill: url(#linear-gradient-2); } .cls-11 { fill:
+          url(#Gradient_22); } .cls-12 { fill: url(#linear-gradient-3); }
+          .cls-13 { fill: url(#linear-gradient-7); } .cls-14 { fill:
+          url(#linear-gradient-8); } .cls-15 { fill: url(#linear-gradient-6); }
+          .cls-18 { fill: #3d3d3d; font-family: Montserrat-Medium, Montserrat;
+          font-size: 36.15px; font-weight: 500; }
+        </style>
+        <linearGradient
+          id='Gradient_22'
+          data-name='Gradient 22'
+          x1='231.33'
+          y1='37.03'
+          x2='445.2'
+          y2='250.9'
+          gradientUnits='userSpaceOnUse'
+        >
+          <stop offset='0' stop-color='#9cff87' />
+          <stop offset='1' stop-color='#1fd0e0' />
+        </linearGradient>
+        <linearGradient
+          id='linear-gradient'
+          x1='5071'
+          y1='216.57'
+          x2='5071'
+          y2='290.67'
+          gradientTransform='translate(5311.38 457.81) rotate(-180)'
+          gradientUnits='userSpaceOnUse'
+        >
+          <stop offset='0' stop-color='#1fd0e0' />
+          <stop offset='.03' stop-color='#26b0e1' />
+          <stop offset='.29' stop-color='#68c8ea' />
+          <stop offset='.62' stop-color='#b8e5f5' />
+          <stop offset='.86' stop-color='#ebf7fc' />
+          <stop offset='.98' stop-color='#fff' />
+        </linearGradient>
+        <linearGradient
+          id='linear-gradient-2'
+          x1='2290.68'
+          y1='-1912.72'
+          x2='2290.68'
+          y2='-1838.62'
+          gradientTransform='translate(2227 2336.76) rotate(-90)'
+          xlink:href='#linear-gradient'
+        />
+        <linearGradient
+          id='linear-gradient-3'
+          x1='2940.41'
+          y1='2639.93'
+          x2='2940.41'
+          y2='2714.03'
+          gradientTransform='translate(3075.47 -2625.28) rotate(90)'
+          gradientUnits='userSpaceOnUse'
+        >
+          <stop offset='0' stop-color='#1fd0e0' />
+          <stop offset='.03' stop-color='#26b0e1' />
+          <stop offset='.43' stop-color='#7ed0ed' />
+          <stop offset='.98' stop-color='#fff' />
+        </linearGradient>
+        <linearGradient
+          id='linear-gradient-4'
+          x1='509.44'
+          y1='119.97'
+          x2='509.44'
+          y2='194.08'
+          gradientTransform='matrix(1,0,0,1,0,0)'
+          xlink:href='#linear-gradient-3'
+        />
+        <linearGradient
+          id='linear-gradient-5'
+          x1='313.48'
+          y1='259.2'
+          x2='313.48'
+          y2='302.65'
+          gradientTransform='matrix(1,0,0,1,0,0)'
+          xlink:href='#linear-gradient-3'
+        />
+        <linearGradient
+          id='linear-gradient-6'
+          x1='2907.17'
+          y1='-2433.48'
+          x2='2907.17'
+          y2='-2390.04'
+          gradientTransform='translate(2886.99 3149.21) rotate(-90)'
+          xlink:href='#linear-gradient-3'
+        />
+        <linearGradient
+          id='linear-gradient-7'
+          x1='5309.61'
+          y1='-127.95'
+          x2='5309.61'
+          y2='-84.51'
+          gradientTransform='translate(5745.96 -25.94) rotate(-180)'
+          xlink:href='#linear-gradient-3'
+        />
+        <linearGradient
+          id='linear-gradient-8'
+          x1='3294.33'
+          y1='2562.66'
+          x2='3294.33'
+          y2='2606.1'
+          gradientTransform='translate(2858.97 -3175.16) rotate(90)'
+          xlink:href='#linear-gradient-3'
+        />
+      </defs>
+      <g class='cls-4'>
+        <g id='Layer_2' data-name='Layer 2'>
+          <g id='Layer_1-2' data-name='Layer 1'>
+            <g>
+              <g transform='translate(520 190)'>
+                <text class='cls-2' transform='translate(5.4 0)'>
+                  <tspan x='60' y='0'>Base Clínica</tspan>
+                </text>
+                <text class='cls-18' transform='translate(60 50)'>
+                  <tspan class='cls-6' x='20' y='0'>ANÁLISE E CAPACITAÇÃO</tspan>
+                </text>
+              </g>
+              <g>
+                <path
+                  class='cls-11'
+                  d='m555.52,180.61c0-49.59-39.31-90.15-88.4-92.2C465.06,39.31,424.5,0,374.91,0s-90.15,39.31-92.2,88.4c-49.09,2.05-88.4,42.62-88.4,92.2s39.31,90.15,88.4,92.2c2.05,49.09,42.62,88.4,92.2,88.4s90.15-39.31,92.2-88.4c49.09-2.05,88.4-42.62,88.4-92.2Zm-88.3,47.76v-65.05c-3.02-.87-6.22-1.32-9.52-1.32-19.24,0-34.84,15.59-34.84,34.84v72.07c0,26.43-21.5,47.94-47.94,47.94-25.08,0-45.72-19.38-47.76-43.94h65.05c.87-3.02,1.32-6.22,1.32-9.52,0-19.25-15.59-34.84-34.83-34.84h-72.08c-26.43,0-47.94-21.51-47.94-47.94s19.38-45.72,43.94-47.76v65.05c3.02.87,6.22,1.32,9.52,1.32,19.25,0,34.84-15.59,34.84-34.83v-72.08c0-26.43,21.51-47.94,47.94-47.94s45.72,19.38,47.76,43.94h-65.05c-.87,3.02-1.32,6.22-1.32,9.52,0,19.24,15.59,34.84,34.84,34.84h72.07c26.43,0,47.94,21.5,47.94,47.94,0,25.08-19.38,45.72-43.94,47.76Z'
+                />
+                <path
+                  class='cls-9'
+                  d='m198.06,154.56c.09,1.19,6.03,73.82,84.65,73.82h0c-24.61-1.99-44.04-22.64-44.04-47.77s19.38-45.72,43.94-47.76l.1-44.44c-40.14,1.68-73.73,29.11-84.65,66.16Z'
+                />
+                <path
+                  class='cls-10'
+                  d='m400.96,3.76c-1.19.09-73.82,6.03-73.82,84.65h0c1.99-24.61,22.64-44.04,47.77-44.04s45.72,19.38,47.76,43.94l44.44.1c-1.68-40.14-29.11-73.73-66.16-84.65Z'
+                />
+                <path
+                  class='cls-12'
+                  d='m348.86,357.46c1.19-.09,73.82-6.03,73.82-84.65h0c-1.99,24.61-22.64,44.04-47.77,44.04s-45.72-19.38-47.76-43.94l-44.44-.1c1.68,40.14,29.11,73.73,66.16,84.65Z'
+                />
+                <path
+                  class='cls-8'
+                  d='m551.76,206.65c-.09-1.19-6.03-73.82-84.65-73.82h0c24.61,1.99,44.04,22.64,44.04,47.77s-19.38,45.72-43.94,47.76l-.1,44.44c40.14-1.68,73.73-29.11,84.65-66.16Z'
+                />
+                <path
+                  class='cls-7'
+                  d='m327.15,272.91h.1l-.1-.1h-44.44c.49,11.66,3.17,22.75,7.6,32.91h53.94c-9.58-8-16.01-19.66-17.1-32.81Z'
+                />
+                <path
+                  class='cls-15'
+                  d='m467.21,228.37v-.1l-.1.1v44.44c11.66-.49,22.75-3.17,32.91-7.6v-53.94c-8,9.58-19.66,16.01-32.81,17.1Z'
+                />
+                <path
+                  class='cls-13'
+                  d='m422.67,88.3h-.1l.1.1h44.44c-.49-11.66-3.17-22.75-7.6-32.91h-53.94c9.58,8,16.01,19.66,17.1,32.81Z'
+                />
+                <path
+                  class='cls-14'
+                  d='m282.61,132.84v.1l.1-.1v-44.44c-11.66.49-22.75,3.17-32.91,7.6v53.94c8-9.58,19.66-16.01,32.81-17.1Z'
+                />
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </svg>
+    <h3>Brasília, DF <br/> {{now}}</h3>
+  </div>
+  <div class="content">
+   <section>
+      <h2>1. Relatório de Alta de Paciente</h2>   
+      <itembox id="closure_info">
+        <item style="grid-area: name;">Nome do paciente: {{nome_paciente}}</item>
+        <item style="grid-area: date">Data: {{created_at}}</item> 
+        <item style="grid-area: case">Motivo: {{case_status}}</item> 
+        <item style="grid-area: evaluation">Avaliação: {{overall_results_evaluation}} de 5</item> 
+        <item style="grid-area: sessions">Sessões: {{treatment_duration_sessions}}</item> 
+        <item style="grid-area: habits">
+          Hábitos adquiridos: 
+          {{#each healthy_life_habits_acquired}}
+            <li>{{this}}</li>
+          {{/each}}
+        </item> 
+        <item style="grid-area: expectations">
+          Expectativas iniciais atendidas: 
+          {{#each initial_expectations_met}}
+            <li>{{this}}</li>
+          {{/each}}
+        </item>
+        <item style="grid-area: info">
+          Informações adicionais: 
+          <p>{{additional_relevant_information}}</p>
+        </item> 
+      </itembox>
+   </section>
+  </div>
+  <div class="signatures">
+   {{#each closure_signs}}
+      <div class="signature-box">
+         {{#if status}}
+         <li>Assinado digitalmente em: <br/>{{signed_at}}</li>
+         {{else}}
+         <li></li>
+         {{/if}}
+         <h4>{{this.nome_usuario}}</h4>
+      </div>
+   {{/each}}
+  </div>
+</div>

@@ -232,11 +232,18 @@ class Closure {
           WHERE pcsgn.patient_closure_sign_id IS NOT NULL
         ) AS closure_signs
       FROM patient_closure pc
-        LEFT JOIN closure_sign pcsgn ON pc.patient_closure_id = pcsgn.patient_closure_id
+        LEFT JOIN patient_closure_sign pcsgn ON pc.patient_closure_id = pcsgn.patient_closure_id
       GROUP BY pc.patient_closure_id
     )
     SELECT 
-      pc.*, 
+      pc.case_status,
+      pc.overall_results_evaluation,
+      string_to_array(pc.initial_expectations_met, ',') as initial_expectations_met,
+      treatment_duration_sessions,
+      string_to_array(pc.healthy_life_habits_acquired, ',') as healthy_life_habits_acquired,
+      pc.additional_relevant_information,
+      TO_CHAR(pc.created_at, 'DD/MM/YYYY "às" HH24:MI') as created_at,
+      (SELECT nome_paciente FROM pacientes p WHERE p.paciente_id = pc.paciente_id),
       u.nome_usuario,
       COALESCE(sc.closure_signs, '[]') AS closure_signs
     FROM 
@@ -248,6 +255,11 @@ class Closure {
     WHERE 
       pc.patient_closure_id = \${closure_id}
     `;
+    try {
+      return await db.oneOrNone(query, { closure_id });
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

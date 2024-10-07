@@ -215,10 +215,9 @@ export default function PatientDetails() {
 
   const handleDownloadAnamnesisReportPDF = async (anamnesis_id) => {
     try {
-      const response = await api.get(
-        `/anamnesis/reports/pdf/${anamnesis_id}`,
-        { responseType: 'blob' }
-      );
+      const response = await api.get(`/anamnesis/reports/pdf/${anamnesis_id}`, {
+        responseType: 'blob',
+      });
 
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
@@ -233,10 +232,10 @@ export default function PatientDetails() {
     }
   };
 
-  const handleDownloadClosureReportPDF = async (closure) => {
+  const handleDownloadClosureReportPDF = async (patient_closure_id) => {
     try {
       const response = await api.get(
-        `/closure/reports/pdf/${closure.patient_closure_id}`,
+        `/closure/reports/pdf/${patient_closure_id}`,
         { responseType: 'blob' }
       );
 
@@ -244,7 +243,7 @@ export default function PatientDetails() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `alta_${paciente.nome_paciente}.pdf`;
+      a.download = `Relatorio_de_Alta_${paciente.nome_paciente}.pdf`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -419,11 +418,13 @@ export default function PatientDetails() {
                           <IconButton
                             aria-label="info"
                             onClick={() => {
-                              handleDownloadAnamnesisReportPDF(anamnesis.anamnesis_id);
+                              handleDownloadAnamnesisReportPDF(
+                                anamnesis.anamnesis_id
+                              );
                             }}
                           >
                             <Tooltip
-                              title="Ver Anamnese"
+                              title="Baixar a Anamnese"
                               arrow
                               disableInteractive
                             >
@@ -505,6 +506,24 @@ export default function PatientDetails() {
                               disableInteractive
                             >
                               <HistoryIcon color="success" />
+                            </Tooltip>
+                          </IconButton>
+                        )}
+                        {closure && (
+                          <IconButton
+                            aria-label="info"
+                            onClick={() => {
+                              handleDownloadClosureReportPDF(
+                                closure.patient_closure_id
+                              );
+                            }}
+                          >
+                            <Tooltip
+                              title="Baixar o relatório de Alta"
+                              arrow
+                              disableInteractive
+                            >
+                              <FileDownloadIcon color="primary" />
                             </Tooltip>
                           </IconButton>
                         )}
