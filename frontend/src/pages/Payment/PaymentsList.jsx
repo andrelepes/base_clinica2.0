@@ -17,7 +17,6 @@ import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import api from '../../services/api';
 import { useState } from 'react';
-import PaymentInfo from './PaymentInfo';
 import dayjs from 'dayjs';
 import Info from '../../components/Payments/Info';
 
@@ -276,10 +275,6 @@ export default function PaymentsList() {
     }
   };
 
-  const handlePaymentInfo = (payment) => {
-    setSelectedPayment(payment);
-    setIsOpenPaymentInfo(true);
-  };
   let isMounted = false;
   useEffect(() => {
     if (isMounted) {
@@ -330,12 +325,6 @@ export default function PaymentsList() {
           </TableContainer>
         )}
       </Paper>
-      <PaymentInfo
-        open={isOpenPaymentInfo}
-        setOpen={setIsOpenPaymentInfo}
-        selectedPayment={selectedPayment}
-        setSelectedPayment={setSelectedPayment}
-      />
     </Box>
   );
 }
