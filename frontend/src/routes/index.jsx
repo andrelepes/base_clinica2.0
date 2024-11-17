@@ -20,9 +20,6 @@ import PatientAppointmentSchedule from '../pages/Appointment/PatientAppointmentS
 import PsychologistAppointmentSchedule from '../pages/Appointment/PsychologistAppointmentSchedule';
 import PsychologistsList from '../pages/Psychologist/PsychologistsList';
 import Profile from '../pages/Profile';
-import Payment from '../pages/Payment/Payment';
-import PaymentFailure from '../pages/Payment/PaymentFailure';
-import PaymentSuccess from '../pages/Payment/PaymentSucess';
 import PaymentsList from '../pages/Payment/PaymentsList';
 
 function HomePage() {
