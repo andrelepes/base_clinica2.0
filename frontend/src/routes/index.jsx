@@ -68,8 +68,6 @@ export const router = createBrowserRouter(
         <Route path="clinicas" element={<ClinicDashboard />} />
         <Route path="payments">
           <Route path="" element={<PaymentsList />} />
-          <Route path="failure" element={<Payment />} />
-          <Route path="success/:id" element={<PaymentSuccess />} />
         </Route>
         <Route path="configuracoes" element={<Profile />} />
       </Route>
