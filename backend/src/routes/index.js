@@ -10,6 +10,7 @@ const { disponibilidadeRoutes } = require('./disponibilidadeRoutes.js');
 const { evolutionsRoutes } = require('./evolutionsRoutes.js');
 const { anamnesisRoutes } = require('./anamnesisRoutes.js');
 const { closureRoutes } = require('./closureRoutes.js');
+const { paymentsRoutes } = require('./paymentsRoutes.js');
 
 const router = require('express').Router();
 
@@ -25,5 +26,6 @@ router.use('/disponibilidade', disponibilidadeRoutes);
 router.use('/evolutions', evolutionsRoutes);
 router.use('/anamnesis', anamnesisRoutes);
 router.use('/closure', closureRoutes);
+router.use('/payment', paymentsRoutes);
 
 module.exports = { router };

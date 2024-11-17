@@ -17,6 +17,7 @@ import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 import Toolbar from '@mui/material/Toolbar';
 import Collapse from '@mui/material/Collapse';
@@ -131,14 +132,19 @@ export default function Sidebar() {
           </DrawerItem>
         )}
         {tipousuario === 'clinica' && (
-          <DrawerItem itemLink="/clinicas" itemText="Clínica">
-            <BusinessIcon />
-          </DrawerItem>
+          <>
+            <DrawerItem itemLink="/clinicas" itemText="Clínica">
+              <BusinessIcon />
+            </DrawerItem>
+            <DrawerItem itemLink="/payments" itemText="Pagamentos">
+              <AttachMoneyIcon />
+            </DrawerItem>
+          </>
         )}
         <DrawerItem itemLink="/cursos" itemText="Cursos">
           <SchoolIcon />
         </DrawerItem>
-        <DrawerItem itemLink="/configuracoes" itemText="Configurações">
+        <DrawerItem itemLink="/configuracoes" itemText="Perfil">
           <ManageAccountsIcon />
         </DrawerItem>
         <DrawerItem onClick={logout} itemText="Sair">

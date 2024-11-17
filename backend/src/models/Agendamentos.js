@@ -399,6 +399,25 @@ class Agendamentos {
             }
         }
 
+        static async getNextPsychologistIdByPatientId(pacienteId) {
+            try {
+                return await db.oneOrNone(`
+                    SELECT
+                        a.usuario_id
+                    FROM
+                        agendamentos a
+                    WHERE
+                        a.paciente_id = 75
+                    ORDER BY
+                        a.data_hora_inicio DESC
+                    LIMIT
+                        1
+                `, [pacienteId]);
+            } catch (error) {
+                throw error;
+            }
+        }
+
 }
 
 module.exports = Agendamentos;

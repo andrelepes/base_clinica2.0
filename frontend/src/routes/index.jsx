@@ -19,6 +19,11 @@ import MyAppointments from '../pages/Appointment/MyAppointments';
 import PatientAppointmentSchedule from '../pages/Appointment/PatientAppointmentSchedule';
 import PsychologistAppointmentSchedule from '../pages/Appointment/PsychologistAppointmentSchedule';
 import PsychologistsList from '../pages/Psychologist/PsychologistsList';
+import Profile from '../pages/Profile';
+import Payment from '../pages/Payment/Payment';
+import PaymentFailure from '../pages/Payment/PaymentFailure';
+import PaymentSuccess from '../pages/Payment/PaymentSucess';
+import PaymentsList from '../pages/Payment/PaymentsList';
 
 function HomePage() {
   return (
@@ -58,9 +63,18 @@ export const router = createBrowserRouter(
           <Route path="consultorios" element={<OfficeAppointmentSchedule />} />
           <Route path="minha" element={<MyAppointments />} />
           <Route path="pacientes" element={<PatientAppointmentSchedule />} />
-          <Route path="psicologos" element={<PsychologistAppointmentSchedule />} />
+          <Route
+            path="psicologos"
+            element={<PsychologistAppointmentSchedule />}
+          />
         </Route>
         <Route path="clinicas" element={<ClinicDashboard />} />
+        <Route path="payments">
+          <Route path="" element={<PaymentsList />} />
+          <Route path="failure" element={<Payment />} />
+          <Route path="success/:id" element={<PaymentSuccess />} />
+        </Route>
+        <Route path="configuracoes" element={<Profile />} />
       </Route>
     </Route>
   )

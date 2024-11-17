@@ -1307,6 +1307,44 @@ CREATE TABLE
     usuario_id INTEGER NOT NULL REFERENCES usuarios (usuario_id)
   );
 
+-- Added on 18/10/2024 by gabrielpaiv
+
+ALTER TABLE
+  "public"."usuarios"
+DROP COLUMN
+  "horarios_disponiveis";
+
+ALTER TABLE
+  "public"."usuarios"
+ADD COLUMN
+  "start_hour" TIME DEFAULT '07:00' NULL,
+ADD COLUMN
+  "end_hour" TIME DEFAULT '22:00' NULL;
+
+-- Added on 17/11/2024 by gabrielpaiv
+
+CREATE TABLE
+  public.payments (
+    payment_id uuid NOT NULL,
+    created_at timestamp without time zone NOT NULL DEFAULT now(),
+    payment_status character varying(255) NULL,
+    payment_code text NULL,
+    payment_url text NULL,
+    payment_qr_code text NULL,
+    paciente_id integer NOT NULL,
+    clinica_id integer NOT NULL,
+    updated_at timestamp without time zone NULL,
+    price integer NULL DEFAULT 20,
+    mercado_id integer NOT NULL,
+    psicologo_id integer NULL,
+    expires_in timestamp without time zone NULL
+  );
+
+ALTER TABLE
+  public.payments
+ADD
+  CONSTRAINT payments_pkey PRIMARY KEY (payment_id);
+
 --
 -- PostgreSQL database dump complete
 --

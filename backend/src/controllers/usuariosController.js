@@ -90,7 +90,7 @@ class UserController {
                 clinica_id: usuario.clinica_id           
             }
         };
-        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '2h' });
+        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1000h' });
 
         res.json({ message: 'Login realizado com sucesso', token: token, nome: usuario.nome_usuario });
     } catch (error) {
@@ -360,6 +360,18 @@ static async getLinkedSecretaries(req, res) {
       await Usuarios.updateUserById({user_id, user:{nome_usuario,email_usuario, usuario_id}});
 
       res.status(200);
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+  }
+
+  static async updateUserInformation(req,res){
+    try {
+      const user_id = req.params.usuario_id;
+      await Usuarios.updateUserInformationById(user_id, req.body);
+
+      res.status(200).send();
     } catch (error) {
       console.log(error)
       res.status(500).json({ error: 'Erro interno do servidor' });

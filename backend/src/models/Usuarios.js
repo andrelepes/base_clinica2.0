@@ -113,7 +113,7 @@ static async getLinkedSecretaries(clinicaId) {
 static async buscarPorId(usuario_id) {
   try {
     const usuario = await db.oneOrNone(
-      'SELECT nome_usuario, email_usuario, cpfcnpj, data_nascimento_usuario, telefone_usuario, cep_usuario, endereco_usuario, qualificacoes, horarios_disponiveis, registro_profissional, status_usuario FROM usuarios WHERE usuario_id = $1',
+      'SELECT nome_usuario, email_usuario, cpfcnpj, data_nascimento_usuario, telefone_usuario, cep_usuario, endereco_usuario, qualificacoes, registro_profissional, status_usuario, start_hour, end_hour, email_auxiliar FROM usuarios WHERE usuario_id = $1',
       [usuario_id]
     );
     return usuario;
@@ -251,6 +251,34 @@ static async buscarPorId(usuario_id) {
       throw error;
     }
   }
+  static async updateUserInformationById(user_id, user){
+    try {
+      const query = `
+      UPDATE
+        usuarios
+      SET
+        nome_usuario = \${nome_usuario},
+        email_usuario = \${email_usuario},
+        cpfcnpj = \${cpfcnpj},
+        endereco_usuario = \${endereco_usuario},
+        telefone_usuario = \${telefone_usuario},
+        cep_usuario = \${cep_usuario},
+        email_auxiliar = \${email_auxiliar},
+        start_hour = \${start_hour},
+        end_hour = \${end_hour}
+      WHERE
+        usuario_id = ${user_id}
+      `
+      return await db.oneOrNone(
+        query,
+        { ...user }
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
 
   static async deleteUserById(usuario_id){
     try {
