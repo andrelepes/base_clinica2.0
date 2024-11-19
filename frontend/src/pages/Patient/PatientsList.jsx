@@ -127,6 +127,14 @@ export default function PatientsList() {
     setSelectedPatient(patient);
     setIsOpenPatientDetailDialog(true);
   };
+  const handlePaymentAdd = async (patient) => {
+    try {
+      const response = await api.get(`/payment/paywithpix/${patient.paciente_id}`);
+      toast.success('Pagamento adicionado! Confira a listagem de pagamentos para verificar mais informações');
+    } catch (error) {
+      toast.error('Ocorreu um erro ao adicionar pagamento');
+    }
+  };
   const handleFolder = (patient) => {
     if (tipousuario !== 'secretario_vinculado') {
       navigate(`/pacientes/${patient.paciente_id}`);
@@ -221,6 +229,7 @@ export default function PatientsList() {
                   onInfo={() => handleInfo(patient)}
                   onSchedule={() => handleSchedule(patient)}
                   onFolder={() => handleFolder(patient)}
+                  onPaymentAdd={()=> handlePaymentAdd(patient)}
                   assignedPsychologists={
                     patient.psicologos_autorizados?.length > 0
                       ? patient.psicologos_autorizados

@@ -2,6 +2,7 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import AddCardIcon from '@mui/icons-material/AddCard';
 import Stack from '@mui/material/Stack';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -21,6 +22,7 @@ export default function PatientRow({
   onDelete,
   onInfo,
   onSchedule,
+  onPaymentAdd,
   onFolder,
   assignedPsychologists = 'Nenhum psicólogo autorizado',
 }) {
@@ -48,11 +50,18 @@ export default function PatientRow({
             </Tooltip>
           </IconButton>
           {tipousuario !== 'secretario_vinculado' && (
-            <IconButton aria-label="folder" onClick={onFolder}>
-              <Tooltip title="Pasta do paciente" arrow disableInteractive>
-                <ContentPasteIcon color="success" />
-              </Tooltip>
-            </IconButton>
+            <>
+              <IconButton aria-label="folder" onClick={onFolder}>
+                <Tooltip title="Pasta do paciente" arrow disableInteractive>
+                  <ContentPasteIcon color="success" />
+                </Tooltip>
+              </IconButton>
+              <IconButton aria-label="card" onClick={onPaymentAdd}>
+                <Tooltip title="Adicionar cobrança" arrow disableInteractive>
+                  <AddCardIcon color="warning" />
+                </Tooltip>
+              </IconButton>
+            </>
           )}
           <IconButton aria-label="info" onClick={onInfo}>
             <Tooltip title="Informações do paciente" arrow disableInteractive>
