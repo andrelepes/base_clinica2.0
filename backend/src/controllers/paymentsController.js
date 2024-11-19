@@ -77,10 +77,10 @@ class PaymentsController {
           payment_method_id: 'pix',
           payer: {
             email: patient.email_paciente,
-            identification: {
-              type: 'CPF',
-              number: patient.cpf_paciente.replace(/\.|-/g, ''),
-            },
+            // identification: {
+            //   type: 'CPF',
+            //   number: patient.cpf_paciente.replace(/\.|-/g, ''),
+            // },
           },
         },
       });

@@ -300,7 +300,6 @@ export default function PaymentsList() {
             Listagem de pagamentos
           </Typography>
         </Toolbar>
-        {payments.length > 0 && (
           <TableContainer component={Paper}>
             <Table aria-label="collapsible table">
               <TableHead>
@@ -311,7 +310,8 @@ export default function PaymentsList() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {payments.map((payment) => (
+              {payments?.length > 0 ?
+                payments.map((payment) => (
                   <YearRows
                     key={payment.ano}
                     count={payment.count_pagamentos_ano}
@@ -319,11 +319,16 @@ export default function PaymentsList() {
                     year={payment.ano}
                     meses={payment.meses}
                   />
-                ))}
+                )) :
+                <TableRow>
+                  <TableCell>
+                    Sem Registros
+                  </TableCell>
+                </TableRow>
+              }
               </TableBody>
             </Table>
           </TableContainer>
-        )}
       </Paper>
     </Box>
   );

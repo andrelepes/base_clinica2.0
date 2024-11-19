@@ -407,7 +407,7 @@ class Agendamentos {
                     FROM
                         agendamentos a
                     WHERE
-                        a.paciente_id = 75
+                        a.paciente_id = ${pacienteId}
                     ORDER BY
                         a.data_hora_inicio DESC
                     LIMIT
