@@ -45,11 +45,23 @@ usuariosRoutes.put(
   UserController.updateUserByUserId
 );
 
+usuariosRoutes.put(
+  '/:usuario_id',
+  ensureAuthenticated,
+  UserController.updateUserInformation
+)
+
 usuariosRoutes.get(
   '/psychologists/hours',
   ensureAuthenticated,
   UserController.getPsychologistsHours
 );
+
+usuariosRoutes.get(
+  '/psychologists/data/',
+  ensureAuthenticated,
+  UserController.getPsychologistsHoursById
+)
 
 usuariosRoutes.delete(
   '/:usuario_id',

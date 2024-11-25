@@ -12,14 +12,19 @@ class PaymentsController {
     try {
       const { patient_id } = req.params;
       const patient = await Pacientes.buscarPorId(patient_id);
+      const clinicId = req.clinicaId;
 
       if (!patient) {
         res.status(404).json({ message: 'Patient Not Found' });
       }
 
+      const clinicInfo = await new PaymentsModel().getMonthlyFeeByClinicId(
+        clinicId
+      );
+
       const now = new Date();
 
-      const dayToPay = 10;
+      const dayToPay = clinicInfo.expires_in_day;
 
       let monthToPay;
 
@@ -44,6 +49,12 @@ class PaymentsController {
         patient.paciente_id
       );
 
+      if (!clinicInfo) {
+        res.status(404).json({ message: 'Monthly Fee Not Found' });
+      }
+
+      const monthly_fee = clinicInfo.monthly_fee;
+
       const paymentCreate = new Payment(mercadoClient);
 
       const payment_id = uuidV4();
@@ -59,7 +70,7 @@ class PaymentsController {
                 title: `Consulta de ${patient.nome_paciente}`,
                 description: `Consulta de ${patient.nome_paciente} pela Base Clínica`,
                 quantity: 1,
-                unit_price: 20.0,
+                unit_price: monthly_fee,
                 category_id: 'consultas',
                 type: 'consultas',
               },
@@ -71,7 +82,7 @@ class PaymentsController {
                 .join(' '),
             },
           },
-          transaction_amount: 20.0,
+          transaction_amount: monthly_fee,
           date_of_expiration: expiresIn,
           description: `Consulta Base Clínica do paciente ${patient.nome_paciente}`,
           payment_method_id: 'pix',

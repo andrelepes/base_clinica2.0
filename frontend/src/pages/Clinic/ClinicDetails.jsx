@@ -24,11 +24,18 @@ export default function ClinicDetails() {
   const [auxiliarMail, setAuxiliarMail] = useState('');
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
+  const [monthlyFee, setMonthlyFee] = useState();
+  const [expiresIn, setExpiresIn] = useState();
 
-  const { user, usuarioId:usuario_id } = useAuth();
+  const { user, usuarioId: usuario_id } = useAuth();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if(expiresIn < 1 || expiresIn > 30){
+      toast.error('O dia de vencimento deve ser entre 1 e 30');
+      return;
+    }
 
     const clinicData = {
       nome_usuario: name,
@@ -40,6 +47,8 @@ export default function ClinicDetails() {
       email_auxiliar: auxiliarMail,
       start_hour: dayjs(startTime).format('HH:mm:ss'),
       end_hour: dayjs(endTime).format('HH:mm:ss'),
+      monthly_fee: monthlyFee,
+      expires_in_day: expiresIn,
     };
 
     try {
@@ -63,6 +72,8 @@ export default function ClinicDetails() {
       setAuxiliarMail(user.email_auxiliar);
       setStartTime(user.start_hour ? dayjs(user.start_hour, 'HH:mm:ss') : null);
       setEndTime(user.end_hour ? dayjs(user.end_hour, 'HH:mm:ss') : null);
+      setMonthlyFee(user.monthly_fee);
+      setExpiresIn(user.expires_in_day)
     }
   }, [user]);
   return (
@@ -113,7 +124,7 @@ export default function ClinicDetails() {
           </FormControl>
         </Grid>
         <Grid item xs={12} md={4.5}>
-          <FormControl variant="outlined" fullWidth required>
+          <FormControl variant="outlined" fullWidth>
             <InputLabel>Email Auxiliar</InputLabel>
             <OutlinedInput
               id="email_auxiliar_clinica"
@@ -127,7 +138,6 @@ export default function ClinicDetails() {
         </Grid>
         <Grid item xs={12} md={3}>
           <PhoneInput
-            required
             label="Telefone"
             name="telefone_clinica"
             id="telefone_clinica"
@@ -138,7 +148,6 @@ export default function ClinicDetails() {
         </Grid>
         <Grid item xs={12} md={3}>
           <CEPInput
-            required
             label="CEP"
             id="cep_clinica"
             name="cep_clinica"
@@ -148,7 +157,7 @@ export default function ClinicDetails() {
           />
         </Grid>
         <Grid item xs={12} md={9}>
-          <FormControl required variant="outlined" fullWidth>
+          <FormControl variant="outlined" fullWidth>
             <InputLabel>Endereço</InputLabel>
             <OutlinedInput
               id="endereco_clinica"
@@ -161,7 +170,32 @@ export default function ClinicDetails() {
           </FormControl>
         </Grid>
 
-        <Grid item md={6} xs={12} marginTop={2.5}>
+        <Grid item xs={12} md={2} marginTop={3}>
+          <FormControl variant="outlined" fullWidth>
+            <InputLabel>Mensalidade (em R$)</InputLabel>
+            <OutlinedInput
+              id="monthly_fee"
+              name="monthly_fee"
+              value={monthlyFee}
+              onChange={(event) => setMonthlyFee(event.target.value)}
+              label="Mensalidade (em R$)"
+              type="number"
+            />
+          </FormControl>
+          <FormControl variant="outlined" fullWidth sx={{marginTop:5}}>
+            <InputLabel>Dia de Vencimento da Cobrança</InputLabel>
+            <OutlinedInput
+              id="expires_in_day"
+              name="expires_in_day"
+              value={expiresIn}
+              onChange={(event) => setExpiresIn(event.target.value)}
+              label="Dia de Vencimento da Cobrança"
+              type="number"
+            />
+          </FormControl>
+        </Grid>
+
+        <Grid item md={5} xs={12} marginTop={2.5}>
           <InputLabel>Horário de Início</InputLabel>
           <DigitalClock
             ampm={false}
@@ -170,7 +204,7 @@ export default function ClinicDetails() {
             timeStep={30}
           />
         </Grid>
-        <Grid item md={6} xs={12} marginTop={2.5}>
+        <Grid item md={5} xs={12} marginTop={2.5}>
           <InputLabel>Horário de Fim</InputLabel>
           <DigitalClock
             ampm={false}

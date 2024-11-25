@@ -1249,7 +1249,7 @@ CREATE TABLE
   );
 
 
--- Added on 13/08/2024 by gabrielpa
+-- Added on 13/08/2024 by gabrielpaiv
 
 ALTER TABLE
   "public"."archives"
@@ -1344,6 +1344,15 @@ ALTER TABLE
   public.payments
 ADD
   CONSTRAINT payments_pkey PRIMARY KEY (payment_id);
+
+-- Added on 25/11/2024 by gabrielpaiv
+
+ALTER TABLE
+  "public"."usuarios"
+ADD COLUMN
+  "monthly_fee" INT4 DEFAULT '20' NULL,
+ADD COLUMN
+  "expires_in_day" INT4 DEFAULT '10' NULL;
 
 --
 -- PostgreSQL database dump complete

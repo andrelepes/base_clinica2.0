@@ -90,7 +90,7 @@ class UserController {
                 clinica_id: usuario.clinica_id           
             }
         };
-        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1000h' });
+        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '100h' });
 
         res.json({ message: 'Login realizado com sucesso', token: token, nome: usuario.nome_usuario });
     } catch (error) {
@@ -353,6 +353,16 @@ static async getLinkedSecretaries(req, res) {
       res.status(500).json({ error: 'Erro ao buscar usuário' });
     }
   }
+  static async getPsychologistsHoursById(req,res){
+    try{
+      const user_id = req.user;
+      const hours = await Usuarios.getPsychologistHoursById(user_id);
+
+      res.status(200).json({...hours});
+    }catch(error){
+      res.status(500).json({ error: 'Erro ao buscar usuário' });
+    }
+  }
   static async updateUserByUserId(req,res){
     try {
       const user_id = req.params.usuario_id;
@@ -369,7 +379,8 @@ static async getLinkedSecretaries(req, res) {
   static async updateUserInformation(req,res){
     try {
       const user_id = req.params.usuario_id;
-      await Usuarios.updateUserInformationById(user_id, req.body);
+      const tipousuario = req.tipousuario;
+      await Usuarios.updateUserInformationById(user_id, req.body, tipousuario);
 
       res.status(200).send();
     } catch (error) {

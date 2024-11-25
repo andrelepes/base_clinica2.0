@@ -208,6 +208,17 @@ class Payments {
       throw error;
     }
   }
+
+  async getMonthlyFeeByClinicId(clinicId) {
+    try {
+      return await db.oneOrNone(
+        'SELECT monthly_fee, expires_in_day FROM usuarios WHERE usuario_id = ${clinicId}',
+        { clinicId }
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 module.exports = Payments;

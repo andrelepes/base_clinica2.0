@@ -21,7 +21,7 @@ app.use(express.json());
 // Definindo as rotas
 app.use('/api', router);
 
-const PORT = 3000;
+const PORT = 3001;
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);

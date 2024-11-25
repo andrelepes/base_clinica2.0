@@ -113,7 +113,7 @@ static async getLinkedSecretaries(clinicaId) {
 static async buscarPorId(usuario_id) {
   try {
     const usuario = await db.oneOrNone(
-      'SELECT nome_usuario, email_usuario, cpfcnpj, data_nascimento_usuario, telefone_usuario, cep_usuario, endereco_usuario, qualificacoes, registro_profissional, status_usuario, start_hour, end_hour, email_auxiliar FROM usuarios WHERE usuario_id = $1',
+      'SELECT nome_usuario, email_usuario, cpfcnpj, data_nascimento_usuario, telefone_usuario, cep_usuario, endereco_usuario, qualificacoes, registro_profissional, status_usuario, start_hour, end_hour, email_auxiliar, monthly_fee, expires_in_day FROM usuarios WHERE usuario_id = $1',
       [usuario_id]
     );
     return usuario;
@@ -251,7 +251,7 @@ static async buscarPorId(usuario_id) {
       throw error;
     }
   }
-  static async updateUserInformationById(user_id, user){
+  static async updateUserInformationById(user_id, user, tipousuario){
     try {
       const query = `
       UPDATE
@@ -269,6 +269,18 @@ static async buscarPorId(usuario_id) {
       WHERE
         usuario_id = ${user_id}
       `
+
+      if(tipousuario=== 'clinica'){
+        const updateAllValues = `UPDATE usuarios SET monthly_fee = \${monthly_fee}, expires_in_day = \${expires_in_day} WHERE clinica_id = ${user_id};`
+        await db.tx(async (t) => {
+          await t.none(query, { ...user });
+  
+          await t.none(updateAllValues, { ...user });
+        });
+
+        return;
+      }
+      
       return await db.oneOrNone(
         query,
         { ...user }
@@ -289,6 +301,35 @@ static async buscarPorId(usuario_id) {
       return { success: true, message: 'Usuário deletado com sucesso!' };
     } catch (error) {
       throw error;
+    }
+  }
+
+  static async getPsychologistHoursById(user_id){
+    try {
+      const query = `      
+        SELECT
+            p.paciente_id,
+            to_char(a.data_hora_inicio, 'DD/MM/YYYY HH24:MI') AS data_hora_inicio,
+            a.status,
+            p.nome_paciente,
+            CASE
+              WHEN e.evolution_status IS FALSE THEN 'Não'
+              WHEN e.evolution_status IS TRUE THEN 'Sim'
+            END AS evolution_status
+        FROM
+            usuarios u
+        LEFT JOIN agendamentos a ON u.usuario_id = a.usuario_id
+            AND a.data_hora_fim <= CURRENT_TIMESTAMP
+        LEFT JOIN pacientes p ON a.paciente_id = p.paciente_id
+        LEFT JOIN evolutions e ON e.paciente_id = p.paciente_id 
+        WHERE
+            u.usuario_id = ${user_id}
+        ORDER BY
+            a.data_hora_inicio
+      `
+      return await db.any(query);
+    } catch (error) {
+        throw error;
     }
   }
 }

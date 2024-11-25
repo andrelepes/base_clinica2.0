@@ -27,15 +27,19 @@ const statusEnum = {
   cancelled: 'Cancelado',
 };
 
-function PatientRows({ total, count, nome_paciente, nome_psicologo, payments }) {
+function PatientRows({
+  total,
+  count,
+  nome_paciente,
+  nome_psicologo,
+  payments,
+}) {
   const [open, setOpen] = useState(false);
   return (
     <>
       <TableRow
         sx={{
           '& > *': { borderBottom: 'unset' },
-          backgroundColor:
-            payments.payment_status === 'pending' ? 'orangered' : 'lightgreen',
         }}
       >
         <TableCell>
@@ -51,7 +55,19 @@ function PatientRows({ total, count, nome_paciente, nome_psicologo, payments }) 
         <TableCell>{nome_paciente}</TableCell>
         <TableCell>{nome_psicologo ?? 'Não informado'}</TableCell>
         <TableCell>{dayjs(payments.expires_in).format('DD/MM/YYYY')}</TableCell>
-
+        <TableCell
+          sx={{
+            color:
+              payments.payment_status === 'pending'
+                ? 'red'
+                : 'lime',
+          }}
+        >
+          {payments.price.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+          })}
+        </TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -80,6 +96,8 @@ function PatientRows({ total, count, nome_paciente, nome_psicologo, payments }) 
 
 function MonthRows({ mes, total, count, patients, number }) {
   const [open, setOpen] = useState(false);
+  const [isOpenRealized, setIsOpenRealized] = useState(false);
+  const [isOpenNotRealized, setIsOpenNotRealized] = useState(false);
   return (
     <>
       <TableRow
@@ -114,88 +132,118 @@ function MonthRows({ mes, total, count, patients, number }) {
             <Box>
               <Typography variant="h6" gutterBottom component="div">
                 Pagamentos Realizados
-              </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow>
-                    <TableCell />
-                    <TableCell>Nome do paciente</TableCell>
-                    <TableCell>Psicólogo Responsável</TableCell>
-                    <TableCell>Data de Expiração</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {patients.filter(
-                    (item) => item.dados_pagamento.payment_status !== 'pending'
-                  ).length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={4} align="center">
-                        Sem registros
-                      </TableCell>
-                    </TableRow>
+                <IconButton
+                  aria-label="expand row"
+                  size="small"
+                  onClick={() => setIsOpenRealized(!isOpenRealized)}
+                >
+                  {isOpenRealized ? (
+                    <KeyboardArrowUpIcon />
                   ) : (
-                    patients.map((item) => {
-                      if (item.dados_pagamento.payment_status === 'pending') {
-                        return null;
-                      }
-                      return (
-                        <PatientRows
-                          key={item.nome_paciente}
-                          count={item.count_pagamentos_paciente}
-                          total={item.total_price_paciente}
-                          nome_paciente={item.nome_paciente}
-                          payments={item.dados_pagamento}
-                          nome_psicologo={item.nome_psicologo}
-                        />
-                      );
-                    })
+                    <KeyboardArrowDownIcon />
                   )}
-                </TableBody>
-              </Table>
+                </IconButton>
+              </Typography>
+              <Collapse in={isOpenRealized} timeout="auto" unmountOnExit>
+                <Table size="small" aria-label="purchases">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell />
+                      <TableCell>Nome do paciente</TableCell>
+                      <TableCell>Psicólogo Responsável</TableCell>
+                      <TableCell>Data de Expiração</TableCell>
+                      <TableCell>Valor</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {patients.filter(
+                      (item) =>
+                        item.dados_pagamento.payment_status !== 'pending'
+                    ).length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={5} align="center">
+                          Sem registros
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      patients.map((item) => {
+                        if (item.dados_pagamento.payment_status === 'pending') {
+                          return null;
+                        }
+                        return (
+                          <PatientRows
+                            key={item.nome_paciente}
+                            count={item.count_pagamentos_paciente}
+                            total={item.total_price_paciente}
+                            nome_paciente={item.nome_paciente}
+                            payments={item.dados_pagamento}
+                            nome_psicologo={item.nome_psicologo}
+                          />
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </Collapse>
               <Typography variant="h6" gutterBottom component="div">
                 Pagamentos Não Realizados
-              </Typography>
-              <Table
-                size="small"
-                aria-label="purchases"
-                sx={{ marginBottom: 5 }}
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell />
-                    <TableCell>Nome do paciente</TableCell>
-                    <TableCell>Psicólogo Responsável</TableCell>
-                    <TableCell>Data de Expiração</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {patients.filter(
-                    (item) => item.dados_pagamento.payment_status === 'pending'
-                  ).length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={4} align="center">
-                        Sem registros
-                      </TableCell>
-                    </TableRow>
+                <IconButton
+                  aria-label="expand row"
+                  size="small"
+                  onClick={() => setIsOpenNotRealized(!isOpenNotRealized)}
+                >
+                  {isOpenNotRealized ? (
+                    <KeyboardArrowUpIcon />
                   ) : (
-                    patients.map((item) => {
-                      if (item.dados_pagamento.payment_status !== 'pending') {
-                        return null; // Retorna null em vez de undefined para não renderizar nada
-                      }
-                      return (
-                        <PatientRows
-                          key={item.nome_paciente}
-                          count={item.count_pagamentos_paciente}
-                          total={item.total_price_paciente}
-                          nome_paciente={item.nome_paciente}
-                          payments={item.dados_pagamento}
-                          nome_psicologo={item.nome_psicologo}
-                        />
-                      );
-                    })
+                    <KeyboardArrowDownIcon />
                   )}
-                </TableBody>
-              </Table>
+                </IconButton>
+              </Typography>
+              <Collapse in={isOpenNotRealized} timeout="auto" unmountOnExit>
+                <Table
+                  size="small"
+                  aria-label="purchases"
+                  sx={{ marginBottom: 5 }}
+                >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell />
+                      <TableCell>Nome do paciente</TableCell>
+                      <TableCell>Psicólogo Responsável</TableCell>
+                      <TableCell>Data de Expiração</TableCell>
+                      <TableCell>Valor</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {patients.filter(
+                      (item) =>
+                        item.dados_pagamento.payment_status === 'pending'
+                    ).length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={5} align="center">
+                          Sem registros
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      patients.map((item) => {
+                        if (item.dados_pagamento.payment_status !== 'pending') {
+                          return null; // Retorna null em vez de undefined para não renderizar nada
+                        }
+                        return (
+                          <PatientRows
+                            key={item.nome_paciente}
+                            count={item.count_pagamentos_paciente}
+                            total={item.total_price_paciente}
+                            nome_paciente={item.nome_paciente}
+                            payments={item.dados_pagamento}
+                            nome_psicologo={item.nome_psicologo}
+                          />
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </Collapse>
             </Box>
           </Collapse>
         </TableCell>
@@ -300,17 +348,17 @@ export default function PaymentsList() {
             Listagem de pagamentos
           </Typography>
         </Toolbar>
-          <TableContainer component={Paper}>
-            <Table aria-label="collapsible table">
-              <TableHead>
-                <TableRow>
-                  <TableCell />
-                  <TableCell>Ano</TableCell>
-                  <TableCell>Total Anual</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-              {payments?.length > 0 ?
+        <TableContainer component={Paper}>
+          <Table aria-label="collapsible table">
+            <TableHead>
+              <TableRow>
+                <TableCell />
+                <TableCell>Ano</TableCell>
+                <TableCell>Total Anual</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {payments?.length > 0 ? (
                 payments.map((payment) => (
                   <YearRows
                     key={payment.ano}
@@ -319,16 +367,15 @@ export default function PaymentsList() {
                     year={payment.ano}
                     meses={payment.meses}
                   />
-                )) :
+                ))
+              ) : (
                 <TableRow>
-                  <TableCell>
-                    Sem Registros
-                  </TableCell>
+                  <TableCell>Sem Registros</TableCell>
                 </TableRow>
-              }
-              </TableBody>
-            </Table>
-          </TableContainer>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Paper>
     </Box>
   );
