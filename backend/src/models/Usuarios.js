@@ -266,7 +266,7 @@ static async buscarPorId(usuario_id) {
         email_auxiliar = \${email_auxiliar},
         start_hour = \${start_hour},
         end_hour = \${end_hour}
-        ${tipousuario !== 'clinica' && `,data_nascimento_usuario = \${data_nascimento}`}
+        ${tipousuario !== 'clinica' ? `,data_nascimento_usuario = \${data_nascimento}`: ''}
       WHERE
         usuario_id = ${user_id}
       `
