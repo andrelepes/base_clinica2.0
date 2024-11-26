@@ -358,8 +358,11 @@ static async getLinkedSecretaries(req, res) {
       const user_id = req.user;
       const hours = await Usuarios.getPsychologistHoursById(user_id);
 
-      res.status(200).json({...hours});
+      res.status(200).json(
+        hours
+      );
     }catch(error){
+      console.log(error);
       res.status(500).json({ error: 'Erro ao buscar usuário' });
     }
   }

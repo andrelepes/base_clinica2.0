@@ -265,7 +265,8 @@ static async buscarPorId(usuario_id) {
         cep_usuario = \${cep_usuario},
         email_auxiliar = \${email_auxiliar},
         start_hour = \${start_hour},
-        end_hour = \${end_hour}
+        end_hour = \${end_hour},
+        data_nascimento_usuario = \${data_nascimento}
       WHERE
         usuario_id = ${user_id}
       `
@@ -308,26 +309,45 @@ static async buscarPorId(usuario_id) {
     try {
       const query = `      
         SELECT
-            p.paciente_id,
-            to_char(a.data_hora_inicio, 'DD/MM/YYYY HH24:MI') AS data_hora_inicio,
-            a.status,
-            p.nome_paciente,
-            CASE
-              WHEN e.evolution_status IS FALSE THEN 'Não'
-              WHEN e.evolution_status IS TRUE THEN 'Sim'
-            END AS evolution_status
+          COALESCE(SUM(a.tipo_sessao) / 60, 0) AS total_horas_sessao,
+          (
+            SELECT
+              COUNT(*)
+            FROM
+              evolutions e_sub
+            WHERE
+              e_sub.usuario_id = a.usuario_id
+              AND e_sub.evolution_status = false
+          ) AS pending_evolutions_count,
+          jsonb_agg(
+            jsonb_build_object(
+              'paciente_id',
+              p.paciente_id,
+              'data_hora_inicio',
+              to_char(a.data_hora_inicio, 'DD/MM/YYYY HH24:MI'),
+              'nome_paciente',
+              p.nome_paciente,
+              'status',
+              a.status,
+              'evolution_status',
+              CASE
+                WHEN e.evolution_status IS FALSE THEN 'Não'
+                WHEN e.evolution_status IS TRUE THEN 'Sim'
+                ELSE 'Não Aplicável'
+              END
+            )
+          ) AS hours_data
         FROM
-            usuarios u
-        LEFT JOIN agendamentos a ON u.usuario_id = a.usuario_id
-            AND a.data_hora_fim <= CURRENT_TIMESTAMP
-        LEFT JOIN pacientes p ON a.paciente_id = p.paciente_id
-        LEFT JOIN evolutions e ON e.paciente_id = p.paciente_id 
+          agendamentos a
+          LEFT JOIN pacientes p ON p.paciente_id = a.paciente_id
+          LEFT JOIN evolutions e ON e.agendamento_id = a.agendamento_id
         WHERE
-            u.usuario_id = ${user_id}
-        ORDER BY
-            a.data_hora_inicio
+          a.usuario_id = ${user_id}
+          AND a.data_hora_fim <= CURRENT_TIMESTAMP
+        GROUP BY
+          a.usuario_id;        
       `
-      return await db.any(query);
+      return await db.oneOrNone(query);
     } catch (error) {
         throw error;
     }

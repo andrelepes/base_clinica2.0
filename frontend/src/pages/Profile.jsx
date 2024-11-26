@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import ClinicDetails from './Clinic/ClinicDetails';
+import PsychologistProfile from './Psychologist/PsychologistProfile';
 
 export default function Profile() {
   const { tipousuario } = useAuth();
@@ -32,6 +33,7 @@ export default function Profile() {
           </Typography>
         </Toolbar>
         {tipousuario === 'clinica' && <ClinicDetails />}
+        {tipousuario === 'psicologo_vinculado' && <PsychologistProfile />}
       </Paper>
     </Box>
   );
