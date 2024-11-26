@@ -141,9 +141,11 @@ export default function Sidebar() {
             </DrawerItem>
           </>
         )}
-        <DrawerItem itemLink="/cursos" itemText="Cursos">
-          <SchoolIcon />
-        </DrawerItem>
+        <a href="https://www.baseclinica.com.br/cursos" target='_blank'>
+          <DrawerItem itemText="Cursos">
+            <SchoolIcon />
+          </DrawerItem>
+        </a>
         <DrawerItem itemLink="/configuracoes" itemText="Perfil">
           <ManageAccountsIcon />
         </DrawerItem>
