@@ -21,14 +21,7 @@ import PsychologistAppointmentSchedule from '../pages/Appointment/PsychologistAp
 import PsychologistsList from '../pages/Psychologist/PsychologistsList';
 import Profile from '../pages/Profile';
 import PaymentsList from '../pages/Payment/PaymentsList';
-
-function HomePage() {
-  return (
-    <header className="App-header">
-      Selecione uma opção na barra lateral para exibir o conteúdo aqui.
-    </header>
-  );
-}
+import HomePage from '../pages/HomePage';
 
 function IsAuthenticated({ redirectPath }) {
   const token = localStorage.getItem('token');

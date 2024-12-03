@@ -84,7 +84,6 @@ export default function ScheduleForm({ open, setOpen }) {
   const fetchPsychologists = async () => {
     try {
       const { data } = await api.get('/usuarios/psychologists/from/clinic/');
-      console.log('Wtf?', tipousuario, user, usuarioId);
 
       setPsychologists(data);
     } catch (error) {

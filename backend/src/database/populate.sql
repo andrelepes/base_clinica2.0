@@ -1354,6 +1354,30 @@ ADD COLUMN
 ADD COLUMN
   "expires_in_day" INT4 DEFAULT '10' NULL;
 
+-- Added on 28/11/2024 by gabrielpaiv
+
+create table
+  "public"."clinic_messages" (
+    "message_id" SERIAL not null,
+    "created_at" timestamp not null default NOW(),
+    "updated_at" TIMESTAMP null default NOW(),
+    "subject" VARCHAR(255) null,
+    "message" TEXT null,
+    "clinic_id" INT not null,
+    "usuario_id" INT null,
+    constraint "clinic_messages_pkey" primary key ("message_id")
+  )
+  
+ALTER TABLE
+  "public"."clinic_messages"
+ADD
+  CONSTRAINT "clinic_messages_clinicas_relation" FOREIGN KEY ("clinic_id") REFERENCES "public"."usuarios" ("usuario_id") ON UPDATE NO ACTION ON DELETE NO ACTION
+  
+  ALTER TABLE
+  "public"."clinic_messages"
+ADD
+  CONSTRAINT "clinic_messages_usuarios_relation" FOREIGN KEY ("usuario_id") REFERENCES "public"."usuarios" ("usuario_id") ON UPDATE NO ACTION ON DELETE NO ACTION
+
 --
 -- PostgreSQL database dump complete
 --

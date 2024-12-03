@@ -11,6 +11,7 @@ const { evolutionsRoutes } = require('./evolutionsRoutes.js');
 const { anamnesisRoutes } = require('./anamnesisRoutes.js');
 const { closureRoutes } = require('./closureRoutes.js');
 const { paymentsRoutes } = require('./paymentsRoutes.js');
+const { clinicMessagesRoutes } = require('./clinicMessagesRoutes.js');
 
 const router = require('express').Router();
 
@@ -27,5 +28,6 @@ router.use('/evolutions', evolutionsRoutes);
 router.use('/anamnesis', anamnesisRoutes);
 router.use('/closure', closureRoutes);
 router.use('/payment', paymentsRoutes);
+router.use('/clinic-messages', clinicMessagesRoutes);
 
 module.exports = { router };

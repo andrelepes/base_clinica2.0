@@ -48,7 +48,7 @@ export function AuthProvider({ children }) {
     try {
       const response = await api.get(`/usuarios/${userId}`);
       setUser(response.data.user);
-      toast.success(`Bem-vindo ${response.data.user.nome_usuario}`);
+      // toast.success(`Bem-vindo ${response.data.user.nome_usuario}`);
     } catch (error) {
       toast.error('Ocorreu um erro ao resgatar suas informações');
     }

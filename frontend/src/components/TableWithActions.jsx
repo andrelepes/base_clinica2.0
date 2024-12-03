@@ -37,6 +37,7 @@ export default function TableWithActions({
   infoIcon = <InfoIcon color="info" />,
   startingPages = 5,
   otherFunction = {},
+  emptyMessage = 'Não foram encontrados registros',
 }) {
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('');
@@ -216,6 +217,13 @@ export default function TableWithActions({
                   })}
                 </TableRow>
               ))}
+              {data.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={fields.length} align="center">
+                    {emptyMessage}
+                  </TableCell>
+                </TableRow>
+              )}
               {emptyRows > 0 && (
                 <TableRow style={{ height: 73 * emptyRows }}>
                   <TableCell colSpan={6} />
