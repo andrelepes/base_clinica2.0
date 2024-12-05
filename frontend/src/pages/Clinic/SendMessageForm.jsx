@@ -25,7 +25,13 @@ const MenuProps = {
     },
   },
 };
-export default function SendMessageForm({ open, setOpen, fetchMessages }) {
+export default function SendMessageForm({
+  open,
+  setOpen,
+  fetchMessages,
+  selectedMessage,
+  setSelectedMessage,
+}) {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [psychologists, setPsychologists] = useState([]);
@@ -38,6 +44,7 @@ export default function SendMessageForm({ open, setOpen, fetchMessages }) {
     setSubject('');
     setSelectedPsychologist(null);
     setOpen(false);
+    setSelectedMessage(null);
   };
 
   const fetchPsychologists = async () => {
@@ -47,7 +54,6 @@ export default function SendMessageForm({ open, setOpen, fetchMessages }) {
       data.unshift({ nome_usuario: 'Todos', usuario_id: 0 });
 
       setPsychologists(data);
-
     } catch (error) {
       toast.error('Erro ao buscar psicólogos');
     }
@@ -61,8 +67,16 @@ export default function SendMessageForm({ open, setOpen, fetchMessages }) {
       usuario_id: selectedPsychologist.usuario_id,
     };
     try {
-      await api.post('/clinic-messages/', formData);
-      toast.success('Mensagem adicionada com sucesso!');
+      if (selectedMessage) {
+        await api.put(
+          `/clinic-messages/${selectedMessage.message_id}`,
+          formData
+        );
+        toast.success('Mensagem editada com sucesso!');
+      } else {
+        await api.post('/clinic-messages/', formData);
+        toast.success('Mensagem adicionada com sucesso!');
+      }
       fetchMessages();
       handleClose();
     } catch (error) {
@@ -74,6 +88,17 @@ export default function SendMessageForm({ open, setOpen, fetchMessages }) {
     if (psychologists.length < 1 && clinicaId) {
       fetchPsychologists();
     }
+
+    if (selectedMessage) {
+      setMessage(selectedMessage.message);
+      setSubject(selectedMessage.subject);
+      setSelectedPsychologist(
+        psychologists.find(
+          (psychologist) =>
+            psychologist.nome_usuario === selectedMessage.receiver
+        )
+      );
+    }
   }, [open]);
   return (
     <Dialog
@@ -83,7 +108,9 @@ export default function SendMessageForm({ open, setOpen, fetchMessages }) {
       fullWidth
       maxWidth={'md'}
     >
-      <DialogTitle>Adicionar mensagem ao mural</DialogTitle>
+      <DialogTitle>
+        {selectedMessage ? 'Editar mensagem' : 'Adicionar mensagem ao mural'}
+      </DialogTitle>
       <DialogContent>
         <Grid
           container
@@ -144,7 +171,7 @@ export default function SendMessageForm({ open, setOpen, fetchMessages }) {
             <DialogActions>
               <Button onClick={handleClose}>Cancelar</Button>
               <Button type="submit">
-                Adicionar ao Mural
+                {selectedMessage ? 'Editar mensagem' : 'Adicionar ao Mural'}
               </Button>
             </DialogActions>
           </Grid>

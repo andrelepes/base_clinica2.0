@@ -10,10 +10,12 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import SendMessageForm from './Clinic/SendMessageForm';
+import { toast } from 'react-toastify';
 
 export default function HomePage() {
   const [messages, setMessages] = useState([]);
   const [isOpenMessageForm, setIsOpenMessageForm] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState(null);
   const { tipousuario, user } = useAuth();
 
   const fetchMessages = async () => {
@@ -29,6 +31,24 @@ export default function HomePage() {
       toast.error('Não foi possível carregar as mensagens');
     }
   };
+
+  const handleDeleteMessage = async (item) => {
+    try {
+      await api.delete(`/clinic-messages/${item?.message_id}`);
+      toast.success('Mensagem excluída com sucesso');
+      setMessages((prevState) =>
+        prevState.filter((message) => message.message_id !== item.message_id)
+      );
+    } catch (error) {
+      toast.error('Não foi possível excluir a mensagem');
+    }
+  };
+
+  const handleEditMessage = (item) => {
+    setSelectedMessage(item);
+    setIsOpenMessageForm(true);
+  };
+
   useEffect(() => {
     if (tipousuario) {
       fetchMessages();
@@ -64,8 +84,13 @@ export default function HomePage() {
         <TableWithActions
           title={'Confira seu mural de mensagens'}
           data={messages}
+          deleteFunction={handleDeleteMessage}
+          editFunction={handleEditMessage}
           emptyMessage="Nenhuma mensagem foi recebida"
           fields={[
+            tipousuario === 'clinica' && {
+              dataTitle: 'acoes',
+            },
             {
               title: 'Destinatário',
               dataTitle: 'receiver',
@@ -81,6 +106,7 @@ export default function HomePage() {
             {
               title: 'Enviado em',
               dataTitle: 'created_at',
+              filterable: true,
             },
           ]}
         />
@@ -90,6 +116,8 @@ export default function HomePage() {
           open={isOpenMessageForm}
           setOpen={setIsOpenMessageForm}
           fetchMessages={fetchMessages}
+          selectedMessage={selectedMessage}
+          setSelectedMessage={setSelectedMessage}
         />
       )}
     </Box>

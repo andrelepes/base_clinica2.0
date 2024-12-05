@@ -1366,17 +1366,17 @@ create table
     "clinic_id" INT not null,
     "usuario_id" INT null,
     constraint "clinic_messages_pkey" primary key ("message_id")
-  )
+  );
   
 ALTER TABLE
   "public"."clinic_messages"
 ADD
-  CONSTRAINT "clinic_messages_clinicas_relation" FOREIGN KEY ("clinic_id") REFERENCES "public"."usuarios" ("usuario_id") ON UPDATE NO ACTION ON DELETE NO ACTION
+  CONSTRAINT "clinic_messages_clinicas_relation" FOREIGN KEY ("clinic_id") REFERENCES "public"."usuarios" ("usuario_id") ON UPDATE NO ACTION ON DELETE NO ACTION;
   
   ALTER TABLE
   "public"."clinic_messages"
 ADD
-  CONSTRAINT "clinic_messages_usuarios_relation" FOREIGN KEY ("usuario_id") REFERENCES "public"."usuarios" ("usuario_id") ON UPDATE NO ACTION ON DELETE NO ACTION
+  CONSTRAINT "clinic_messages_usuarios_relation" FOREIGN KEY ("usuario_id") REFERENCES "public"."usuarios" ("usuario_id") ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 --
 -- PostgreSQL database dump complete

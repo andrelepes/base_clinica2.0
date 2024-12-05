@@ -41,7 +41,7 @@ class ClinicMessagesController {
     try {
       const clinicMessages = new ClinicMessages();
       const { subject, message, usuario_id } = req.body;
-      const data = { subject, message, usuario_id };
+      const data = { subject, message, usuario_id: usuario_id ? usuario_id : null };
       const messageId = req.params.messageId;
       await clinicMessages.update(messageId, data);
 
