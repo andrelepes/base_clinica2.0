@@ -14,13 +14,13 @@ class PaymentsController {
       const patient = await Pacientes.buscarPorId(patient_id);
       const clinicId = req.clinicaId;
 
+      const paymentsModel = new PaymentsModel();
+
       if (!patient) {
         res.status(404).json({ message: 'Patient Not Found' });
       }
 
-      const clinicInfo = await new PaymentsModel().getMonthlyFeeByClinicId(
-        clinicId
-      );
+      const clinicInfo = await paymentsModel.getMonthlyFeeByClinicId(clinicId);
 
       const now = new Date();
 
@@ -45,6 +45,14 @@ class PaymentsController {
 
       const expiresIn = new Date(`${monthToPay + 1}/${dayToPay}/${yearToPay}`);
 
+      const nextOpenMonthlyPayment = await paymentsModel.getNextOpenMonthlyPaymentByPatientId(
+        patient_id
+      );
+
+      if (nextOpenMonthlyPayment) {
+        res.status(200).json(nextOpenMonthlyPayment);
+        return;
+      }
       const psicologo = await Agendamentos.getNextPsychologistIdByPatientId(
         patient.paciente_id
       );
@@ -112,7 +120,7 @@ class PaymentsController {
         pix_url:
           paymentCreated.point_of_interaction.transaction_data.ticket_url,
       };
-      await new PaymentsModel().createPayment(
+      await paymentsModel.createPayment(
         patient.clinica_id,
         patient.paciente_id,
         newPayment

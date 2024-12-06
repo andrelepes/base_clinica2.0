@@ -219,6 +219,16 @@ class Payments {
       throw error;
     }
   }
+
+  async getNextOpenMonthlyPaymentByPatientId(patientId) {
+    try {
+      const query =
+        'SELECT * FROM payments WHERE paciente_id = ${patientId} AND expires_in > NOW() order by expires_in DESC LIMIT 1';
+      return await db.oneOrNone(query, { patientId });
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 module.exports = Payments;

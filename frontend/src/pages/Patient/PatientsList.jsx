@@ -28,6 +28,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { getComparator, stableSort } from '../../utils/sortFunctions';
 import ScheduleForm from '../Appointment/ScheduleForm';
 import PatientDetailsDialog from './PatientDetailsDialog';
+import PaymentInfo from '../Payment/PaymentInfo';
 
 export default function PatientsList() {
   const [order, setOrder] = useState('asc');
@@ -42,6 +43,9 @@ export default function PatientsList() {
   const [isOpenPatientForm, setIsOpenPatientForm] = useState(false);
   const [isOpenScheduleForm, setIsOpenScheduleForm] = useState(false);
   const [isOpenConfirmation, setIsOpenConfirmation] = useState(false);
+
+  const [isOpenPaymentInfo, setIsOpenPaymentInfo] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(null);
 
   const { usuarioId: usuario_id, tipousuario } = useAuth();
 
@@ -129,9 +133,15 @@ export default function PatientsList() {
   };
   const handlePaymentAdd = async (patient) => {
     try {
-      const response = await api.get(`/payment/paywithpix/${patient.paciente_id}`);
-      toast.success('Pagamento adicionado! Confira a listagem de pagamentos para verificar mais informações');
+      const response = await api.get(
+        `/payment/paywithpix/${patient.paciente_id}`
+      );
+      setSelectedPatient(patient);
+      setSelectedPayment(response.data);
+      setIsOpenPaymentInfo(true);
+      toast.success('Pagamento adicionado!');
     } catch (error) {
+      console.log(error)
       toast.error('Ocorreu um erro ao adicionar pagamento');
     }
   };
@@ -229,7 +239,7 @@ export default function PatientsList() {
                   onInfo={() => handleInfo(patient)}
                   onSchedule={() => handleSchedule(patient)}
                   onFolder={() => handleFolder(patient)}
-                  onPaymentAdd={()=> handlePaymentAdd(patient)}
+                  onPaymentAdd={() => handlePaymentAdd(patient)}
                   assignedPsychologists={
                     patient.psicologos_autorizados?.length > 0
                       ? patient.psicologos_autorizados
@@ -295,6 +305,13 @@ export default function PatientsList() {
         setOpen={setIsOpenPatientDetailDialog}
         selectedPatient={selectedPatient}
         setSelectedPatient={setSelectedPatient}
+      />
+      <PaymentInfo
+        open={isOpenPaymentInfo}
+        setOpen={setIsOpenPaymentInfo}
+        selectedPayment={selectedPayment}
+        setSelectedPayment={setSelectedPayment}
+        patient={selectedPatient}
       />
     </Box>
   );
