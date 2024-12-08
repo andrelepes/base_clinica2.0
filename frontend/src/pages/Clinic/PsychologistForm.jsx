@@ -7,6 +7,7 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 import api from '../../services/api';
@@ -22,6 +23,7 @@ export default function PsychologistForm({
 }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
   const { clinicaId } = useAuth();
 
   const handleClose = () => {
@@ -32,6 +34,7 @@ export default function PsychologistForm({
   };
 
   const handleSubmit = async (event) => {
+    setLoading(true);
     event.preventDefault();
     const formData = {
       nome_usuario: name,
@@ -50,6 +53,7 @@ export default function PsychologistForm({
         await api.post('/usuarios/add-linked-psychologist', formData);
         toast.success('Psicólogo adicionado com sucesso!');
       }
+      setLoading(false);
       fetchPsychologists();
       handleClose();
     } catch (error) {
@@ -112,8 +116,11 @@ export default function PsychologistForm({
           <Grid item xs={12}>
             <DialogActions>
               <Button onClick={handleClose}>Cancelar</Button>
-              <Button type="submit">
+              <Button type="submit" disabled={loading}>
                 {selectedPsychologist ? 'Editar' : 'Adicionar'}
+                {loading && (
+                  <CircularProgress sx={{ marginLeft: 1 }} size={15} />
+                )}
               </Button>
             </DialogActions>
           </Grid>

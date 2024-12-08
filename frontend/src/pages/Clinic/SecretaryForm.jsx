@@ -22,6 +22,7 @@ export default function SecretaryForm({
 }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
   const { clinicaId } = useAuth();
 
   const handleClose = () => {
@@ -32,6 +33,7 @@ export default function SecretaryForm({
   };
 
   const handleSubmit = async (event) => {
+    setLoading(true);
     event.preventDefault();
     const formData = {
       nome_usuario: name,
@@ -50,6 +52,7 @@ export default function SecretaryForm({
         await api.post('/usuarios/add-linked-secretary', formData);
         toast.success('Secretário adicionado com sucesso!');
       }
+      setLoading(false);
       fetchSecretaries();
       handleClose();
     } catch (error) {
@@ -111,8 +114,11 @@ export default function SecretaryForm({
           <Grid item xs={12}>
             <DialogActions>
               <Button onClick={handleClose}>Cancelar</Button>
-              <Button type="submit">
+              <Button type="submit" disabled={loading}>
                 {selectedSecretary ? 'Editar' : 'Adicionar'}
+                {loading && (
+                  <CircularProgress sx={{ marginLeft: 1 }} size={15} />
+                )}
               </Button>
             </DialogActions>
           </Grid>
