@@ -75,7 +75,7 @@ class UserController {
     const { email_usuario, senha } = req.body;
 
     try {
-        const usuario = await db.oneOrNone('SELECT * FROM "public"."usuarios" WHERE "email_usuario" = "$1"', [email_usuario]);
+        const usuario = await db.oneOrNone('SELECT * FROM "public"."usuarios" WHERE "email_usuario" = $1', [email_usuario]);
         if (!usuario) {
             return res.status(400).json({ message: 'Usuário não encontrado' });
         }
