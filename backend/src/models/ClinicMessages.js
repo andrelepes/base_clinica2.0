@@ -67,7 +67,7 @@ class ClinicMessages {
         WHERE 
           cm.usuario_id = \${usuario_id} 
           OR (
-            cm.clinic_id = (SELECT clinica_id FROM usuarios WHERE usuario_id = \${usuario_id) 
+            cm.clinic_id = (SELECT clinica_id FROM usuarios WHERE usuario_id = \${usuario_id}) 
             AND 
             cm.usuario_id IS NULL
           )

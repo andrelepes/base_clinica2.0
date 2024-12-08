@@ -68,13 +68,13 @@ export default function PaymentInfo({
       {payment && (
         <DialogContent>
           <Typography>
-            Título do pagamento: Consulta de {patient.nome_paciente}
+            Título do pagamento: Consulta de {patient?.nome_paciente}
           </Typography>
-          <Typography>Valor: {payment.price.toLocaleString('pt-BR', {
+          <Typography>Valor: {payment?.price?.toLocaleString('pt-BR', {
             style: 'currency',
             currency: 'BRL',
           })}</Typography>
-          <Typography>Status: {statusEnum[payment.payment_status]}</Typography>
+          <Typography>Status: {statusEnum[payment?.payment_status]}</Typography>
 
           <Box>
             <Paper sx={{ padding: 1, paddingBottom: 3 }}>
@@ -82,7 +82,7 @@ export default function PaymentInfo({
               <Grid container>
                 <Grid item md={4}>
                   <img
-                    src={`data:image/png;base64,${payment.payment_qr_code}`}
+                    src={`data:image/png;base64,${payment?.payment_qr_code}`}
                     width={200}
                   />
                 </Grid>
@@ -98,7 +98,7 @@ export default function PaymentInfo({
                   <TextField
                     label="Código Pix"
                     fullWidth
-                    defaultValue={payment.payment_code}
+                    defaultValue={payment?.payment_code}
                     slotProps={{
                       input: {
                         readOnly: true,
@@ -117,7 +117,7 @@ export default function PaymentInfo({
                       /\D/g,
                       ''
                     )}?text=${encodeURIComponent(
-                      `Olá ${patient.nome_paciente},\nSegue o código Pix para os atendimentos do mês: \n${payment.payment_url}`
+                      `Olá ${patient?.nome_paciente},\nSegue o código Pix para os atendimentos do mês: \n${payment?.payment_url}`
                     )}`}
                     fullWidth
                     sx={{ marginTop: 2 }}

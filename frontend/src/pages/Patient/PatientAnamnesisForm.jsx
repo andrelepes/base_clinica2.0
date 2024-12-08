@@ -119,7 +119,7 @@ export default function PatientAnamnesisForm({
     };
 
     try {
-      if (!anamnesis.anamnesis_id) {
+      if (!anamnesis?.anamnesis_id) {
         await api.post('/anamnesis/', data);
         toast.success('Anamnese criada com sucesso!');
       } else {
@@ -132,6 +132,7 @@ export default function PatientAnamnesisForm({
       fetchAnamnesis();
       handleClose();
     } catch (error) {
+      console.log(error);
       toast.error('Ocorreu um erro ao enviar a Anamnese do paciente');
     }
   };
