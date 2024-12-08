@@ -97,6 +97,7 @@ export default function PsychologistDetailsDialog({
                 onChange={(event) => setName(event.target.value)}
                 autoComplete="full-name"
                 autoFocus
+                readOnly
               />
             </FormControl>
           </Grid>
@@ -109,6 +110,7 @@ export default function PsychologistDetailsDialog({
               value={cpf}
               handleChange={(event) => setCpf(event.target.value)}
               fullWidth
+              readOnly
             />
           </Grid>
           <Grid item xs={12} md={3}>
@@ -119,6 +121,7 @@ export default function PsychologistDetailsDialog({
               value={birthDate}
               onChange={(newValue) => setBirthDate(newValue)}
               slotProps={{ textField: { fullWidth: true } }}
+              readOnly
             />
           </Grid>
           <Grid item xs={12} md={4.5}>
@@ -131,6 +134,7 @@ export default function PsychologistDetailsDialog({
                 onChange={(event) => setEmail(event.target.value)}
                 autoComplete="email"
                 label="Email"
+                readOnly
               />
             </FormControl>
           </Grid>
@@ -144,6 +148,7 @@ export default function PsychologistDetailsDialog({
                 onChange={(event) => setAuxiliarMail(event.target.value)}
                 autoComplete="email"
                 label="Email Auxiliar"
+                readOnly
               />
             </FormControl>
           </Grid>
@@ -155,6 +160,7 @@ export default function PsychologistDetailsDialog({
               value={phone}
               fullWidth
               handleChange={(event) => setPhone(event.target.value)}
+              readOnly
             />
           </Grid>
           <Grid item xs={12} md={3}>
@@ -165,6 +171,7 @@ export default function PsychologistDetailsDialog({
               value={cep}
               fullWidth
               handleChange={(event) => setCep(event.target.value)}
+              readOnly
             />
           </Grid>
           <Grid item xs={12} md={9}>
@@ -177,6 +184,7 @@ export default function PsychologistDetailsDialog({
                 value={address}
                 onChange={(event) => setAddress(event.target.value)}
                 label="Endereço"
+                readOnly
               />
             </FormControl>
           </Grid>
