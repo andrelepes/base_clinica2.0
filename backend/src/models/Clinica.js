@@ -11,6 +11,15 @@ const Clinica = {
                 u.status_usuario,
                 u.tipousuario,
                 u.clinica_id,
+                u.cpfcnpj, 
+                u.data_nascimento_usuario, 
+                u.telefone_usuario, 
+                u.cep_usuario, 
+                u.endereco_usuario, 
+                u.qualificacoes, 
+                u.registro_profissional, 
+                u.start_hour, 
+                u.end_hour,
                 COALESCE(
                     json_agg(
                     json_build_object(

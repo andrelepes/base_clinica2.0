@@ -17,6 +17,7 @@ import SecretaryForm from './SecretaryForm';
 import OfficeForm from './OfficeForm';
 import { useNavigate } from 'react-router-dom';
 import VinculatePsychologistDialog from '../Psychologist/VinculatePsychologistDialog';
+import PsychologistDetailsDialog from '../Psychologist/PsychologistDetailsDialog';
 
 export default function ClinicDashboard() {
   const [psychologists, setPsychologists] = useState([]);
@@ -33,6 +34,8 @@ export default function ClinicDashboard() {
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [confirmRoute, setConfirmRoute] = useState('');
   const [confirmMessage, setConfirmMessage] = useState('');
+  const [isOpenPsychologistDetails, setIsOpenPsychologistDetails] =
+    useState(false);
 
   const { clinicaId } = useAuth();
 
@@ -148,9 +151,10 @@ export default function ClinicDashboard() {
                 setSelectedPsychologist(psychologist);
                 setIsOpenPsychologistForm(true);
               }}
-              infoFunction={(psychologist) =>
-                navigate(`/psicologo/${psychologist.usuario_id}`)
-              }
+              infoFunction={(psychologist) => {
+                setSelectedPsychologist(psychologist);
+                setIsOpenPsychologistDetails(true);
+              }}
               deleteFunction={(psychologist) => {
                 confirmButton(
                   `Excluir ${psychologist.nome_usuario}`,
@@ -201,9 +205,9 @@ export default function ClinicDashboard() {
                 setSelectedSecretary(secretary);
                 setIsOpenSecretaryForm(true);
               }}
-              infoFunction={(secretary) =>
-                navigate(`/secretario/${secretary.usuario_id}`)
-              }
+              // infoFunction={(secretary) =>
+              //   navigate(`/secretario/${secretary.usuario_id}`)
+              // }
               deleteFunction={(secretary) => {
                 confirmButton(
                   'Excluir o secretário?',
@@ -312,6 +316,12 @@ export default function ClinicDashboard() {
         confirmAction={handleDelete}
         message={confirmMessage}
         open={openConfirmation}
+      />
+      <PsychologistDetailsDialog
+        open={isOpenPsychologistDetails}
+        setOpen={setIsOpenPsychologistDetails}
+        selectedPsychologist={selectedPsychologist}
+        setSelectedPsychologist={setSelectedPsychologist}
       />
     </Box>
   );

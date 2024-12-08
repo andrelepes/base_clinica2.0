@@ -1,12 +1,8 @@
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import Tooltip from '@mui/material/Tooltip';
 import Grid from '@mui/material/Grid';
 
 import PersonIcon from '@mui/icons-material/Person';
@@ -16,12 +12,10 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import MailIcon from '@mui/icons-material/Mail';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import HomeIcon from '@mui/icons-material/Home';
-import Switch from '@mui/material/Switch';
 import dayjs from 'dayjs';
 
 export default function PatientDetailCard({
   patient = {},
-  handleChangeStatus,
 }) {
   return (
     <Box sx={{ width: '100%', paddingRight: 6 }}>
@@ -33,20 +27,6 @@ export default function PatientDetailCard({
         </Grid>
         <Grid item md={4} xs={12}>
           <ListItem>
-            <Tooltip
-              title={patient?.status_paciente}
-              arrow
-              disableInteractive
-              placement="right"
-            >
-              <Switch
-                value={patient?.status_paciente === 'ativo'}
-                checked={patient?.status_paciente === 'ativo'}
-                edge="start"
-                onChange={handleChangeStatus}
-                inputProps={{ 'aria-labelledby': 'switch-status-label' }}
-              />
-            </Tooltip>
             <ListItemText
               primary={
                 patient?.status_paciente === 'ativo' ? 'Ativo' : 'Inativo'
