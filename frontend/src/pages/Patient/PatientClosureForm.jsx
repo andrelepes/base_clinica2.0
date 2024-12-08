@@ -95,7 +95,7 @@ export default function PatientClosureForm({
     };
 
     try {
-      if (!closure.patient_closure_id) {
+      if (!closure?.patient_closure_id) {
         await api.post('/closure/', data);
         toast.success('Formulário de Alta criado com sucesso!');
       } else {

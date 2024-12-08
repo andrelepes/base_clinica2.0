@@ -16,6 +16,7 @@ export default function PatientDetailsDialog({
   setOpen,
   selectedPatient,
   setSelectedPatient,
+  changeStatusFunction
 }) {
   const [paciente, setPaciente] = useState({});
   const { usuarioId: usuario_id } = useAuth();
@@ -23,38 +24,6 @@ export default function PatientDetailsDialog({
   const handleClose = () => {
     setOpen(false);
     setSelectedPatient(null);
-  };
-
-  const handleChangeStatus = async () => {
-    try {
-      const updateData = {
-        usuario_id,
-      };
-
-      if (paciente?.status_paciente === 'ativo') {
-        await api.put(
-          `/pacientes/${selectedPatient.paciente_id}/inativo`,
-          updateData
-        );
-        setPaciente((prevState) => ({
-          ...prevState,
-          status_paciente: 'inativo',
-        }));
-        toast.success('Status do paciente alterado com sucesso!');
-      } else if (paciente?.status_paciente === 'inativo') {
-        await api.put(
-          `/pacientes/${selectedPatient.paciente_id}/ativo`,
-          updateData
-        ); // Use paciente_id aqui
-        setPaciente((prevState) => ({
-          ...prevState,
-          status_paciente: 'ativo',
-        }));
-        toast.success('Status do paciente alterado com sucesso!');
-      }
-    } catch (error) {
-      toast.error('Ocorreu um erro ao trocar o status do paciente');
-    }
   };
 
   useEffect(() => {
@@ -87,7 +56,7 @@ export default function PatientDetailsDialog({
       </AppBar>
       <DialogContent>
         <PatientDetailCard
-          handleChangeStatus={handleChangeStatus}
+          handleChangeStatus={changeStatusFunction}
           patient={paciente}
         />
       </DialogContent>

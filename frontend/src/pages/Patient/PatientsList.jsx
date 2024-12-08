@@ -108,24 +108,9 @@ export default function PatientsList() {
     setSelectedPatient(patient);
     setIsOpenScheduleForm(true);
   };
-  const handleConfirmDelete = (patient) => {
+  const handleConfirmStatusChange = (patient) => {
     setSelectedPatient(patient);
     setIsOpenConfirmation(true);
-  };
-  const handleDelete = async () => {
-    try {
-      setIsOpenConfirmation(false);
-      await api.put(`/pacientes/${selectedPatient.paciente_id}/inativo`, {
-        usuario_id,
-      });
-      toast.success(
-        `${selectedPatient.nome_paciente} foi inativado com sucesso`
-      );
-      setSelectedPatient(null);
-      fetchPatients();
-    } catch (error) {
-      toast.error('Ocorreu um erro ao inativar o paciente');
-    }
   };
   const handleInfo = (patient) => {
     setSelectedPatient(patient);
@@ -141,7 +126,6 @@ export default function PatientsList() {
       setIsOpenPaymentInfo(true);
       toast.success('Pagamento adicionado!');
     } catch (error) {
-      console.log(error)
       toast.error('Ocorreu um erro ao adicionar pagamento');
     }
   };
@@ -150,6 +134,34 @@ export default function PatientsList() {
       navigate(`/pacientes/${patient.paciente_id}`);
     }
   };
+
+  const handleChangeStatus = async () => {
+    try {
+      setIsOpenConfirmation(false);
+      const updateData = {
+        usuario_id,
+      };
+
+      if (selectedPatient?.status_paciente === 'ativo') {
+        await api.put(
+          `/pacientes/${selectedPatient.paciente_id}/inativo`,
+          updateData
+        );
+        fetchPatients();
+        toast.success(`${selectedPatient.nome_paciente} foi inativado com sucesso`);
+      } else if (selectedPatient?.status_paciente === 'inativo') {
+        await api.put(
+          `/pacientes/${selectedPatient.paciente_id}/ativo`,
+          updateData
+        ); // Use paciente_id aqui
+        fetchPatients();
+        toast.success(`${selectedPatient.nome_paciente} foi ativado com sucesso`);
+      }
+    } catch (error) {
+      toast.error('Ocorreu um erro ao trocar o status do paciente');
+    }
+  };
+
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
@@ -234,7 +246,7 @@ export default function PatientsList() {
                 <PatientRow
                   patient={patient}
                   key={patient.paciente_id}
-                  onDelete={() => handleConfirmDelete(patient)}
+                  onChangeStatus={() => handleConfirmStatusChange(patient)}
                   onEdit={() => handleEdit(patient)}
                   onInfo={() => handleInfo(patient)}
                   onSchedule={() => handleSchedule(patient)}
@@ -296,15 +308,20 @@ export default function PatientsList() {
           setIsOpenConfirmation(false);
           setSelectedPatient(null);
         }}
-        title={`Inativar ${selectedPatient?.nome_paciente}`}
-        message="Tem certeza que deseja inativar o paciente?"
-        confirmAction={handleDelete}
+        title={`${
+          selectedPatient?.status_paciente === 'ativo' ? 'Inativar' : 'Ativar'
+        } ${selectedPatient?.nome_paciente}`}
+        message={`Tem certeza que deseja ${
+          selectedPatient?.status_paciente === 'ativo' ? 'inativar' : 'ativar'
+        } o paciente?`}
+        confirmAction={handleChangeStatus}
       />
       <PatientDetailsDialog
         open={isOpenPatientDetailDialog}
         setOpen={setIsOpenPatientDetailDialog}
         selectedPatient={selectedPatient}
         setSelectedPatient={setSelectedPatient}
+        changeStatusFunction={handleChangeStatus}
       />
       <PaymentInfo
         open={isOpenPaymentInfo}

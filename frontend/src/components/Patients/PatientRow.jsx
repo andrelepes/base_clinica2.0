@@ -7,6 +7,7 @@ import Stack from '@mui/material/Stack';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
+import ReplayIcon from '@mui/icons-material/Replay';
 import Tooltip from '@mui/material/Tooltip';
 import { useAuth } from '../../contexts/AuthContext';
 // import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
@@ -19,7 +20,7 @@ export default function PatientRow({
     pending_evolutions_count: '',
   },
   onEdit,
-  onDelete,
+  onChangeStatus,
   onInfo,
   onSchedule,
   onPaymentAdd,
@@ -36,17 +37,19 @@ export default function PatientRow({
               <EditIcon />
             </Tooltip>
           </IconButton>
-          <IconButton
-            aria-label="delete"
-            onClick={onDelete}
-            disabled={patient.status_paciente === 'inativo'}
-          >
-            <Tooltip title="Excluir" arrow disableInteractive>
-              <DeleteIcon
-                color={
-                  patient.status_paciente === 'inativo' ? 'disabled' : 'error'
-                }
-              />
+          <IconButton aria-label="change-status" onClick={onChangeStatus}>
+            <Tooltip
+              title={
+                patient.status_paciente === 'ativo' ? 'Inativar' : 'Ativar'
+              }
+              arrow
+              disableInteractive
+            >
+              {patient.status_paciente === 'ativo' ? (
+                <DeleteIcon color="error" />
+              ) : (
+                <ReplayIcon color="warning" />
+              )}
             </Tooltip>
           </IconButton>
           {tipousuario !== 'secretario_vinculado' && (
