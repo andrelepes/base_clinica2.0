@@ -9,6 +9,11 @@ usuariosRoutes.post(
   '/solicitar-recuperacao-senha',
   UserController.forgotPassword
 ); // Utilizando a função forgotPassword do controller
+usuariosRoutes.get(
+  '/coordinator',
+  ensureAuthenticated,
+  UserController.getCoordinatorInfo
+)
 usuariosRoutes.get('/:id', UserController.getUserById); // Utilizando a função getUserById do controller
 usuariosRoutes.post(
   '/add-linked-psychologist',
@@ -32,6 +37,14 @@ usuariosRoutes.post(
   '/first-access/:firstAccessToken',
   UserController.createFromFirstAccess
 );
+
+usuariosRoutes.put(
+  '/coordinator',
+  ensureAuthenticated,
+  UserController.UpdateCoordinatorInfo
+)
+
+
 
 usuariosRoutes.get(
   '/psychologists/from/clinic',
@@ -68,4 +81,6 @@ usuariosRoutes.delete(
   ensureAuthenticated,
   UserController.deleteUser
 );
+
+
 module.exports = { usuariosRoutes };

@@ -29,6 +29,7 @@ import { getComparator, stableSort } from '../../utils/sortFunctions';
 import ScheduleForm from '../Appointment/ScheduleForm';
 import PatientDetailsDialog from './PatientDetailsDialog';
 import PaymentInfo from '../Payment/PaymentInfo';
+import { patientListPermissions } from '../../utils/usersPermissions';
 
 export default function PatientsList() {
   const [order, setOrder] = useState('asc');
@@ -130,7 +131,7 @@ export default function PatientsList() {
     }
   };
   const handleFolder = (patient) => {
-    if (tipousuario !== 'secretario_vinculado') {
+    if (!patientListPermissions[tipousuario]?.cantEnter) {
       navigate(`/pacientes/${patient.paciente_id}`);
     }
   };
@@ -185,7 +186,7 @@ export default function PatientsList() {
               <CalendarMonthIcon color="success" fontSize="large" />
             </IconButton>
           </Tooltip>
-          {tipousuario !== 'psicologo_vinculado' && (
+          {!patientListPermissions[tipousuario]?.cantAdd && (
             <Tooltip title="Adicionar Paciente" disableInteractive>
               <IconButton onClick={() => setIsOpenPatientForm(true)}>
                 <PersonAddIcon fontSize="large" />

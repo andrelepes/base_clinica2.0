@@ -66,8 +66,8 @@ export default function PsychologistsList() {
               <TableRow>
                 <TableCell />
                 <TableCell>Nome do Aluno</TableCell>
-                <TableCell>Horas Atendidas</TableCell>
-                <TableCell>Horas Não Atendidas</TableCell>
+                <TableCell>Horas Confirmadas</TableCell>
+                <TableCell>Horas Pendentes</TableCell>
                 <TableCell>Evoluções Pendentes</TableCell>
               </TableRow>
             </TableHead>
@@ -83,11 +83,11 @@ export default function PsychologistsList() {
                       dataTitle: 'nome_usuario',
                     },
                     {
-                      title: 'Horas Atendidas',
+                      title: 'Horas Confirmadas',
                       dataTitle: 'total_horas_sessao',
                     },
                     {
-                      title: 'Horas Não Atendidas',
+                      title: 'Horas Pendentes',
                       dataTitle: 'horas_restantes',
                     },
                     {

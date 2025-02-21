@@ -402,5 +402,55 @@ static async getLinkedSecretaries(req, res) {
       res.status(500).json({ error: 'Erro interno do servidor' });
     }
   }
+
+  static async UpdateCoordinatorInfo(req,res){
+    try{
+      const clinic_id = req.clinicaId;
+      const {
+        nome_coordenador,
+        email_coordenador,
+        cpf_coordenador,
+        telefone_coordenador,
+      } = req.body;
+
+      const coordinatorExists = await Usuarios.getCoordinatorInfo(clinic_id)
+
+      if(coordinatorExists){
+        await Usuarios.updateCoordinatorInfo({
+          nome_coordenador,
+          clinic_id,
+          email_coordenador,
+          cpf_coordenador,
+          telefone_coordenador
+        });
+      }else{
+        await Usuarios.createCoordinatorInfo({
+          nome_coordenador,
+          clinic_id,
+          email_coordenador,
+          cpf_coordenador,
+          telefone_coordenador
+        });
+      }
+      res.status(200).send();
+    }catch(error){
+      res.status(500).json({ error: 'Erro ao atualizar usuário', message: error });
+    }
+  }
+
+  static async getCoordinatorInfo(req,res){
+    try{
+      const clinica_id = req.clinicaId;
+      const coordinator = await Usuarios.getCoordinatorInfo(clinica_id);
+
+      if(!coordinator){
+        res.status(404).send()
+      }else{
+        res.status(200).json(coordinator);
+      }
+    }catch(error){
+      res.status(500).json({ error: 'Erro ao buscar usuário', message: error });
+    }
+  }
 }
 module.exports = UserController;

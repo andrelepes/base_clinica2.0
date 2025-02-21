@@ -352,6 +352,56 @@ static async buscarPorId(usuario_id) {
         throw error;
     }
   }
+  static async updateCoordinatorInfo(data){
+    try {
+      const query = `
+      UPDATE
+        clinic_details
+      SET
+        nome_coordenador = \${nome_coordenador},
+        email_coordenador = \${email_coordenador},
+        cpf_coordenador = \${cpf_coordenador},
+        telefone_coordenador = \${telefone_coordenador},
+      WHERE
+        clinic_id = \${clinic_id}
+      `
+      return await db.none(query, { ...data });
+    } catch (error) {
+        throw error;
+    }
+  }
+  static async createCoordinatorInfo(data){
+    try {
+      const query = `
+      INSERT INTO
+        clinic_details (clinic_id, nome_coordenador, email_coordenador, cpf_coordenador, telefone_coordenador)
+      VALUES
+        (\${clinic_id}, \${nome_coordenador}, \${email_coordenador}, \${cpf_coordenador}, \${telefone_coordenador})
+      `
+      return await db.none(query, { ...data });
+    } catch (error) {
+        throw error;
+    }
+  }
+
+  static async getCoordinatorInfo(clinic_id){
+    try {
+      const query = `
+      SELECT
+        nome_coordenador,
+        email_coordenador,
+        cpf_coordenador,
+        telefone_coordenador
+      FROM
+        clinic_details
+      WHERE
+        clinic_id = ${clinic_id}
+      `
+      return await db.oneOrNone(query);
+    } catch (error) {
+        throw error;
+    }
+  }
 }
 
 module.exports = Usuarios;

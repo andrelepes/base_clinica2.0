@@ -1,0 +1,27 @@
+# Dockerfile para Backend (Produção)
+FROM node:20 as builder
+
+WORKDIR /usr/src/app
+
+# Copiar arquivos de dependência e instalar pacotes
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Copiar código-fonte
+COPY . .
+
+# Build final
+RUN npm run build
+
+# Segunda etapa - Executável
+FROM node:20-alpine
+WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+
+# Variáveis e porta
+ENV NODE_ENV=production
+EXPOSE 3001
+
+CMD ["node", "dist/server.js"]

@@ -10,6 +10,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import ReplayIcon from '@mui/icons-material/Replay';
 import Tooltip from '@mui/material/Tooltip';
 import { useAuth } from '../../contexts/AuthContext';
+import { patientListPermissions } from '../../utils/usersPermissions';
 // import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 export default function PatientRow({
@@ -52,19 +53,19 @@ export default function PatientRow({
               )}
             </Tooltip>
           </IconButton>
-          {tipousuario !== 'secretario_vinculado' && (
-            <>
-              <IconButton aria-label="folder" onClick={onFolder}>
-                <Tooltip title="Pasta do paciente" arrow disableInteractive>
-                  <ContentPasteIcon color="success" />
-                </Tooltip>
-              </IconButton>
-              <IconButton aria-label="card" onClick={onPaymentAdd}>
-                <Tooltip title="Adicionar cobrança" arrow disableInteractive>
-                  <AddCardIcon color="warning" />
-                </Tooltip>
-              </IconButton>
-            </>
+          {!patientListPermissions[tipousuario]?.cantEnter && (
+            <IconButton aria-label="folder" onClick={onFolder}>
+              <Tooltip title="Pasta do paciente" arrow disableInteractive>
+                <ContentPasteIcon color="success" />
+              </Tooltip>
+            </IconButton>
+          )}
+          {!patientListPermissions[tipousuario]?.cantCharge && (
+            <IconButton aria-label="card" onClick={onPaymentAdd}>
+              <Tooltip title="Adicionar cobrança" arrow disableInteractive>
+                <AddCardIcon color="warning" />
+              </Tooltip>
+            </IconButton>
           )}
           <IconButton aria-label="info" onClick={onInfo}>
             <Tooltip title="Informações do paciente" arrow disableInteractive>

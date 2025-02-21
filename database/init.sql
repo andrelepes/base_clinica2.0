@@ -1383,6 +1383,36 @@ ALTER TABLE ONLY public.payments
 ALTER TABLE ONLY public.payments
     ADD CONSTRAINT payments_psicologos_fk FOREIGN KEY (psicologo_id) REFERENCES public.usuarios(usuario_id);
 
+CREATE TABLE
+  public.clinic_messages (
+    message_id serial NOT NULL,
+    created_at timestamp without time zone NOT NULL DEFAULT now(),
+    updated_at timestamp without time zone NULL DEFAULT now(),
+    subject character varying(255) NULL,
+    message text NULL,
+    clinic_id integer NOT NULL,
+    usuario_id integer NULL
+  );
+
+ALTER TABLE
+  public.clinic_messages
+ADD
+  CONSTRAINT clinic_messages_pkey PRIMARY KEY (message_id);
+
+
+CREATE TABLE
+  public.clinic_details (
+    clinic_id integer NOT NULL,
+    nome_coordenador character varying(255) NOT NULL,
+    email_coordenador character varying(255) NULL,
+    telefone_coordenador character varying(15) NULL,
+    cpf_coordenador character varying(14) NULL
+  );
+
+ALTER TABLE
+  "public"."clinic_details"
+ADD
+  CONSTRAINT "clinic_details_usuarios_pk" FOREIGN KEY ("clinic_id") REFERENCES "public"."usuarios" ("usuario_id") ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 -- Completed on 2024-11-19 13:55:39
 

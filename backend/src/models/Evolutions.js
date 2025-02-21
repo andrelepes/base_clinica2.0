@@ -28,10 +28,23 @@ class Evolutions {
       SELECT 
         e.evolution_id,
         (SELECT count(*) FROM evolution_sign WHERE status = true AND evolution_id = e.evolution_id) as signatures,
+        (
+          SELECT 
+            status 
+          FROM 
+            evolution_sign qes
+          WHERE 
+            qes.evolution_id = e.evolution_id 
+            AND 
+            qes.usuario_id 
+              IN (SELECT clinica_id FROM usuarios WHERE usuario_id = e.usuario_id)
+        ) AS is_locked,
         json_agg(
           json_build_object(
             'evolution_sign_id',
             esgn.evolution_sign_id,
+            'usuario_id',
+            esgn.usuario_id,
             'status',
             esgn.status,
             'nome_usuario',
@@ -89,6 +102,7 @@ class Evolutions {
       e.therapist_notes, 
       e.evolution_status, 
       a.data_hora_inicio AS session_date,
+      sc.is_locked,
       sc.signatures,
       COALESCE(ac.archive, '[]') AS archive,
       COALESCE(sc.evolution_signs, '[]') AS evolution_signs${
@@ -427,13 +441,17 @@ class Evolutions {
             esgn.status,
             'nome_usuario',
             (
-              SELECT nome_usuario
-              FROM usuarios
-              WHERE usuario_id = esgn.usuario_id
+              SELECT 
+                CASE 
+                  WHEN u.usuario_id = cd.clinic_id THEN cd.nome_coordenador
+                  ELSE u.nome_usuario 
+                END
+              FROM usuarios u
+              LEFT JOIN clinic_details cd ON u.usuario_id = cd.clinic_id
+              WHERE u.usuario_id = esgn.usuario_id
             ),
             'signed_at',
-            TO_CHAR(esgn.signed_at, 'DD "de" TMMonth "de" YYYY "às" HH24:MI')
-            
+            TO_CHAR(esgn.signed_at, 'DD "de" TMMonth "de" YYYY "às" HH24:MI')            
           )
         ) FILTER (
           WHERE esgn.evolution_sign_id IS NOT NULL
