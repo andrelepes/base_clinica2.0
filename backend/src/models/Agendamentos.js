@@ -20,7 +20,7 @@ class Agendamentos {
         `;
 
         try {
-            const agendamento_id = await db.query(query, [
+            const {agendamento_id} = await db.oneOrNone(query, [
                 agendamento.paciente_id,
                 agendamento.usuario_id,
                 agendamento.data_hora_inicio,

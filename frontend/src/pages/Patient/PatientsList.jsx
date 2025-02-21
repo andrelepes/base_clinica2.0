@@ -268,6 +268,10 @@ export default function PatientsList() {
                   <TableCell colSpan={6} />
                 </TableRow>
               )}
+              {visibleRows.length < 1 &&
+              <TableRow>
+                  <TableCell colSpan={6} align='center'>Não foram encontrados registros</TableCell>
+                </TableRow>}
             </TableBody>
             <TableFooter>
               <TableRow>

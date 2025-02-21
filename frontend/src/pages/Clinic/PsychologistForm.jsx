@@ -58,6 +58,7 @@ export default function PsychologistForm({
       handleClose();
     } catch (error) {
       toast.error('Ocorreu um erro ao adicionar o psicólogo');
+      setLoading(false);
     }
   };
 

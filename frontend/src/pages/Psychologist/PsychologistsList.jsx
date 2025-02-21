@@ -124,6 +124,10 @@ export default function PsychologistsList() {
                   ]}
                 />
               ))}
+              {psychologists.length < 1 && 
+                <TableRow>
+                  <TableCell align='center' colSpan={6}>Não foram encontrados registros</TableCell>
+                </TableRow>}
             </TableBody>
           </Table>
         </TableContainer>

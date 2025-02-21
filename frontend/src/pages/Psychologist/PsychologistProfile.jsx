@@ -236,13 +236,13 @@ export default function PsychologistProfile() {
           </Grid>
         </Collapse>
         <ListItemButton onClick={() => setIsOpenHours(!isOpenHours)}>
-          <ListItemText primary="Horas Realizadas" secondary={`Total de horas: ${hours.total_horas_sessao} | Evoluções pendentes: ${hours.pending_evolutions_count}`}/>
+          <ListItemText primary="Horas Realizadas" secondary={`Total de horas: ${hours?.total_horas_sessao ?? '0'} | Evoluções pendentes: ${hours?.pending_evolutions_count ?? '0'}`}/>
           {isOpenHours ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
         </ListItemButton>
         <Collapse in={isOpenHours} timeout="auto">
           <TableWithActions
             data={hours.hours_data}
-            startingPages={-1}
+            startingPages={5}
             fields={[
               {
                 title: 'Data da Sessão',
