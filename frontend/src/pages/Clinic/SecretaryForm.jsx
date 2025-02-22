@@ -7,6 +7,7 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 import api from '../../services/api';
@@ -56,6 +57,7 @@ export default function SecretaryForm({
       fetchSecretaries();
       handleClose();
     } catch (error) {
+      setLoading(false);
       toast.error('Ocorreu um erro ao adicionar o secretário');
     }
   };

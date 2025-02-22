@@ -428,65 +428,323 @@ class Evolutions {
   }
 
   async getEvolutionDataToPDFDocument(evolution_id) {
-    const query = `
-    WITH SignCTE AS (
+    const query =
+    `WITH SignCTE AS (
+        SELECT
+          e.evolution_id,
+          (
+            SELECT
+              count(*)
+            FROM
+              evolution_sign
+            WHERE
+              status = true
+              AND evolution_id = e.evolution_id
+          ) as signatures,
+          json_agg(
+            json_build_object(
+              'evolution_sign_id',
+              esgn.evolution_sign_id,
+              'status',
+              esgn.status,
+              'nome_usuario',
+              (
+                SELECT
+                  nome_usuario
+                FROM
+                  usuarios
+                WHERE
+                  usuario_id = esgn.usuario_id
+              ),
+              'signed_at',
+              TO_CHAR(esgn.signed_at, 'DD') || ' de ' || CASE
+                WHEN EXTRACT(
+                  MONTH
+                  FROM
+                    esgn.signed_at
+                ) = 1 THEN 'Janeiro'
+                WHEN EXTRACT(
+                  MONTH
+                  FROM
+                    esgn.signed_at
+                ) = 2 THEN 'Fevereiro'
+                WHEN EXTRACT(
+                  MONTH
+                  FROM
+                    esgn.signed_at
+                ) = 3 THEN 'Março'
+                WHEN EXTRACT(
+                  MONTH
+                  FROM
+                    esgn.signed_at
+                ) = 4 THEN 'Abril'
+                WHEN EXTRACT(
+                  MONTH
+                  FROM
+                    esgn.signed_at
+                ) = 5 THEN 'Maio'
+                WHEN EXTRACT(
+                  MONTH
+                  FROM
+                    esgn.signed_at
+                ) = 6 THEN 'Junho'
+                WHEN EXTRACT(
+                  MONTH
+                  FROM
+                    esgn.signed_at
+                ) = 7 THEN 'Julho'
+                WHEN EXTRACT(
+                  MONTH
+                  FROM
+                    esgn.signed_at
+                ) = 8 THEN 'Agosto'
+                WHEN EXTRACT(
+                  MONTH
+                  FROM
+                    esgn.signed_at
+                ) = 9 THEN 'Setembro'
+                WHEN EXTRACT(
+                  MONTH
+                  FROM
+                    esgn.signed_at
+                ) = 10 THEN 'Outubro'
+                WHEN EXTRACT(
+                  MONTH
+                  FROM
+                    esgn.signed_at
+                ) = 11 THEN 'Novembro'
+                WHEN EXTRACT(
+                  MONTH
+                  FROM
+                    esgn.signed_at
+                ) = 12 THEN 'Dezembro'
+              END || ' de ' || TO_CHAR(esgn.signed_at, 'YYYY  "às" HH24:MI')
+            )
+          ) FILTER (
+            WHERE
+              esgn.evolution_sign_id IS NOT NULL
+          ) AS evolution_signs
+        FROM
+          evolutions e
+          LEFT JOIN evolution_sign esgn ON e.evolution_id = esgn.evolution_id
+        GROUP BY
+          e.evolution_id
+      )
       SELECT
         e.evolution_id,
-        (SELECT count(*) FROM evolution_sign WHERE status = true AND evolution_id = e.evolution_id) as signatures,
-        json_agg(
-          json_build_object(
-            'evolution_sign_id',
-            esgn.evolution_sign_id,
-            'status',
-            esgn.status,
-            'nome_usuario',
-            (
-              SELECT 
-                CASE 
-                  WHEN u.usuario_id = cd.clinic_id THEN cd.nome_coordenador
-                  ELSE u.nome_usuario 
-                END
-              FROM usuarios u
-              LEFT JOIN clinic_details cd ON u.usuario_id = cd.clinic_id
-              WHERE u.usuario_id = esgn.usuario_id
-            ),
-            'signed_at',
-            TO_CHAR(esgn.signed_at, 'DD "de" TMMonth "de" YYYY "às" HH24:MI')            
-          )
-        ) FILTER (
-          WHERE esgn.evolution_sign_id IS NOT NULL
-        ) AS evolution_signs
-      FROM evolutions e
-        LEFT JOIN evolution_sign esgn ON e.evolution_id = esgn.evolution_id
-      GROUP BY e.evolution_id
-    )
-    SELECT
-      e.evolution_id,
-      e.usuario_id,
-      e.paciente_id,
-      (SELECT title FROM attended_options WHERE id = e.attendance_status) as attendance_status,
-      (SELECT title FROM punctuality_options WHERE id = e.punctuality_status) as punctuality_status,      
-      e.arrival_mood_state,
-      e.discussion_topic,
-      e.analysis_intervention,
-      e.next_session_plan,
-      e.departure_mood_state,
-      e.therapist_notes,
-      e.evolution_status,
-      TO_CHAR(a.data_hora_inicio, 'DD "de" TMMonth "de" YYYY "às" HH24:MI') AS session_date,
-      sc.signatures,
-      TO_CHAR(now(), 'DD "de" TMMonth "de" YYYY "às" HH24:MI') AS now,
-      COALESCE(sc.evolution_signs, '[]') AS evolution_signs
-    FROM
-      evolutions e
-    INNER JOIN
-      agendamentos a ON e.agendamento_id = a.agendamento_id
-    LEFT JOIN
-      SignCTE sc ON e.evolution_id = sc.evolution_id
+        e.usuario_id,
+        e.paciente_id,
+        (
+          SELECT
+            title
+          FROM
+            attended_options
+          WHERE
+            id = e.attendance_status
+        ) as attendance_status,
+        (
+          SELECT
+            title
+          FROM
+            punctuality_options
+          WHERE
+            id = e.punctuality_status
+        ) as punctuality_status,
+        e.arrival_mood_state,
+        e.discussion_topic,
+        e.analysis_intervention,
+        e.next_session_plan,
+        e.departure_mood_state,
+        e.therapist_notes,
+        e.evolution_status,
+        TO_CHAR(a.data_hora_inicio, 'DD') || ' de ' || CASE
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              a.data_hora_inicio
+          ) = 1 THEN 'Janeiro'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              a.data_hora_inicio
+          ) = 2 THEN 'Fevereiro'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              a.data_hora_inicio
+          ) = 3 THEN 'Março'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              a.data_hora_inicio
+          ) = 4 THEN 'Abril'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              a.data_hora_inicio
+          ) = 5 THEN 'Maio'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              a.data_hora_inicio
+          ) = 6 THEN 'Junho'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              a.data_hora_inicio
+          ) = 7 THEN 'Julho'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              a.data_hora_inicio
+          ) = 8 THEN 'Agosto'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              a.data_hora_inicio
+          ) = 9 THEN 'Setembro'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              a.data_hora_inicio
+          ) = 10 THEN 'Outubro'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              a.data_hora_inicio
+          ) = 11 THEN 'Novembro'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              a.data_hora_inicio
+          ) = 12 THEN 'Dezembro'
+        END || ' de ' || TO_CHAR(a.data_hora_inicio, 'YYYY  "às" HH24:MI') AS session_date,
+        sc.signatures,
+        TO_CHAR(now(), 'DD') || ' de ' || CASE
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              now()
+          ) = 1 THEN 'Janeiro'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              now()
+          ) = 2 THEN 'Fevereiro'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              now()
+          ) = 3 THEN 'Março'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              now()
+          ) = 4 THEN 'Abril'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              now()
+          ) = 5 THEN 'Maio'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              now()
+          ) = 6 THEN 'Junho'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              now()
+          ) = 7 THEN 'Julho'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              now()
+          ) = 8 THEN 'Agosto'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              now()
+          ) = 9 THEN 'Setembro'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              now()
+          ) = 10 THEN 'Outubro'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              now()
+          ) = 11 THEN 'Novembro'
+          WHEN EXTRACT(
+            MONTH
+            FROM
+              now()
+          ) = 12 THEN 'Dezembro'
+        END || ' de ' || TO_CHAR(now(), 'YYYY  "às" HH24:MI') AS now,
+        COALESCE(sc.evolution_signs, '[]') AS evolution_signs
+      FROM
+        evolutions e
+        INNER JOIN agendamentos a ON e.agendamento_id = a.agendamento_id
+        LEFT JOIN SignCTE sc ON e.evolution_id = sc.evolution_id
+      WHERE
+        e.evolution_id = ${evolution_id}
+  `
+    //  `
+    // WITH SignCTE AS (
+    //   SELECT
+    //     e.evolution_id,
+    //     (SELECT count(*) FROM evolution_sign WHERE status = true AND evolution_id = e.evolution_id) as signatures,
+    //     json_agg(
+    //       json_build_object(
+    //         'evolution_sign_id',
+    //         esgn.evolution_sign_id,
+    //         'status',
+    //         esgn.status,
+    //         'nome_usuario',
+    //         (
+    //           SELECT nome_usuario
+    //           FROM usuarios
+    //           WHERE usuario_id = esgn.usuario_id
+    //         ),
+    //         'signed_at',
+    //         TO_CHAR(esgn.signed_at, 'DD "de" TMMonth "de" YYYY "às" HH24:MI')
+            
+    //       )
+    //     ) FILTER (
+    //       WHERE esgn.evolution_sign_id IS NOT NULL
+    //     ) AS evolution_signs
+    //   FROM evolutions e
+    //     LEFT JOIN evolution_sign esgn ON e.evolution_id = esgn.evolution_id
+    //   GROUP BY e.evolution_id
+    // )
+    // SELECT
+    //   e.evolution_id,
+    //   e.usuario_id,
+    //   e.paciente_id,
+    //   (SELECT title FROM attended_options WHERE id = e.attendance_status) as attendance_status,
+    //   (SELECT title FROM punctuality_options WHERE id = e.punctuality_status) as punctuality_status,      
+    //   e.arrival_mood_state,
+    //   e.discussion_topic,
+    //   e.analysis_intervention,
+    //   e.next_session_plan,
+    //   e.departure_mood_state,
+    //   e.therapist_notes,
+    //   e.evolution_status,
+    //   TO_CHAR(a.data_hora_inicio, 'DD "de" TMMonth "de" YYYY "às" HH24:MI') AS session_date,
+    //   sc.signatures,
+    //   TO_CHAR(now(), 'DD "de" TMMonth "de" YYYY "às" HH24:MI') AS now,
+    //   COALESCE(sc.evolution_signs, '[]') AS evolution_signs
+    // FROM
+    //   evolutions e
+    // INNER JOIN
+    //   agendamentos a ON e.agendamento_id = a.agendamento_id
+    // LEFT JOIN
+    //   SignCTE sc ON e.evolution_id = sc.evolution_id
 
-    WHERE
-      e.evolution_id = ${evolution_id}
-    `;
+    // WHERE
+    //   e.evolution_id = ${evolution_id}
+    // `;
     try {
       return await db.oneOrNone(query);
     } catch (error) {
